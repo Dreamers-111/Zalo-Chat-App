@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>665522953674-tg1oiue4s4gr0ns9kr8ulg0rslbia6h6.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.665522953674-tg1oiue4s4gr0ns9kr8ulg0rslbia6h6</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAuE595XiYnsthx7IXZZXK-1WyQiVxf9Kw</string>
+	<key>GCM_SENDER_ID</key>
+	<string>665522953674</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>personal.ZaloChatApp</string>
+	<key>PROJECT_ID</key>
+	<string>mydb02-18128</string>
+	<key>STORAGE_BUCKET</key>
+	<string>mydb02-18128.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:665522953674:ios:7dadceb494000dea6a0333</string>
+	<key>DATABASE_URL</key>
+	<string>https://mydb02-18128-default-rtdb.asia-southeast1.firebasedatabase.app</string>
+</dict>
+</plist>
