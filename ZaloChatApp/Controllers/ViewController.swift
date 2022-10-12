@@ -82,10 +82,10 @@ class ViewController: UIViewController {
         navigationController?.pushViewController(vc, animated: true)
     }
     
-    @objc private func didTapRegister() {
-        let vc = RegisterEnterUserInfoViewController()
-        navigationController?.pushViewController(vc, animated: true)
-    }
+//    @objc private func didTapRegister() {
+//        let vc = RegisterEnterUserInfoViewController()
+//        navigationController?.pushViewController(vc, animated: true)
+//    }
     
     private let registerButton: UIButton = {
         let button = UIButton()

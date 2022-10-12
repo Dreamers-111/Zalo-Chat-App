@@ -150,8 +150,8 @@ class LoginViewController: UIViewController {
     }
     
     @objc private func didTapRegister() {
-        let vc = RegisterEnterUserInfoViewController()
-        navigationController?.pushViewController(vc, animated: true)
+//        let vc = RegisterEnterUserInfoViewController()
+//        navigationController?.pushViewController(vc, animated: true)
     }
     
     func alertUserLoginError() {
