@@ -12,6 +12,7 @@ pod 'FirebaseAuth'
 pod 'Alamofire'
 pod 'Kingfisher'
 pod 'ObjectMapper'
-
+pod 'Firebase/Core'
+pod 'Firebase/Firestore'
 
 end
