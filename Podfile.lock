@@ -704,6 +704,7 @@ PODS:
     - Libuv-gRPC (= 0.0.10)
   - gRPC-Core/Interface (1.44.0)
   - GTMSessionFetcher/Core (2.1.0)
+  - JGProgressHUD (2.2)
   - Kingfisher (7.3.2)
   - leveldb-library (1.22.1)
   - Libuv-gRPC (0.0.10):
@@ -724,6 +725,7 @@ DEPENDENCIES:
   - Alamofire
   - FirebaseAuth
   - FirebaseFirestore
+  - JGProgressHUD
   - Kingfisher
   - ObjectMapper
 
@@ -742,6 +744,7 @@ SPEC REPOS:
     - "gRPC-C++"
     - gRPC-Core
     - GTMSessionFetcher
+    - JGProgressHUD
     - Kingfisher
     - leveldb-library
     - Libuv-gRPC
@@ -763,6 +766,7 @@ SPEC CHECKSUMS:
   "gRPC-C++": 9675f953ace2b3de7c506039d77be1f2e77a8db2
   gRPC-Core: 943e491cb0d45598b0b0eb9e910c88080369290b
   GTMSessionFetcher: ffbb25ec00ebcb5201adab0a56d808f6f1902d9f
+  JGProgressHUD: d83d7a981b85d11205e19ff8ad5bb9c40571c847
   Kingfisher: 0086ad83719761ba9b2cdaf6ef4d5b4878cbae23
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   Libuv-gRPC: 55e51798e14ef436ad9bc45d12d43b77b49df378
@@ -770,6 +774,6 @@ SPEC CHECKSUMS:
   ObjectMapper: 1eb41f610210777375fa806bf161dc39fb832b81
   PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
 
-PODFILE CHECKSUM: fcede22c55278b50c2dfb9c0aa82b3ea1f411d37
+PODFILE CHECKSUM: 7a436c652cea7a63c5d2118a262b220a2a8ecb67
 
 COCOAPODS: 1.11.3

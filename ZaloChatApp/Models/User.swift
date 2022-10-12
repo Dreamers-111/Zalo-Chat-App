@@ -6,3 +6,14 @@
 //
 
 import Foundation
+
+struct User {
+    
+    var userID : String
+    let userName: String
+    let userEmail: String
+    let userBitrhDay: String
+    let userGender: String
+    let userStatus: Bool
+    
+}

@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		2AD82DD584A1D908812A8341 /* Pods_ZaloChatApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14002B1733CCB7736111DF3C /* Pods_ZaloChatApp.framework */; };
+		C450041F28F5D26D001F37D7 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C450041E28F5D26D001F37D7 /* RegisterViewController.swift */; };
+		C450042328F5D2F0001F37D7 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C450042228F5D2F0001F37D7 /* LoginViewController.swift */; };
+		C450042528F5D338001F37D7 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C450042428F5D338001F37D7 /* Extensions.swift */; };
+		C49B973828F6A6AD0002AF5C /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C49B973728F6A6AD0002AF5C /* RegisterViewModel.swift */; };
 		E559280828E2EFF9006ADC72 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E559280728E2EFF9006ADC72 /* AppDelegate.swift */; };
 		E559280A28E2EFF9006ADC72 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E559280928E2EFF9006ADC72 /* SceneDelegate.swift */; };
 		E559280C28E2EFF9006ADC72 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E559280B28E2EFF9006ADC72 /* ViewController.swift */; };
@@ -24,6 +28,10 @@
 		11172BB7910D2998ECE386FA /* Pods-ZaloChatApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZaloChatApp.debug.xcconfig"; path = "Target Support Files/Pods-ZaloChatApp/Pods-ZaloChatApp.debug.xcconfig"; sourceTree = "<group>"; };
 		14002B1733CCB7736111DF3C /* Pods_ZaloChatApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ZaloChatApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B167E43E163FD2DFB2AEE00 /* Pods-ZaloChatApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZaloChatApp.release.xcconfig"; path = "Target Support Files/Pods-ZaloChatApp/Pods-ZaloChatApp.release.xcconfig"; sourceTree = "<group>"; };
+		C450041E28F5D26D001F37D7 /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
+		C450042228F5D2F0001F37D7 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		C450042428F5D338001F37D7 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		C49B973728F6A6AD0002AF5C /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
 		E559280428E2EFF9006ADC72 /* ZaloChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZaloChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E559280728E2EFF9006ADC72 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E559280928E2EFF9006ADC72 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -67,6 +75,15 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		C450042128F5D2DF001F37D7 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				C450041E28F5D26D001F37D7 /* RegisterViewController.swift */,
+				C450042228F5D2F0001F37D7 /* LoginViewController.swift */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
 		E55927FB28E2EFF9006ADC72 = {
 			isa = PBXGroup;
 			children = (
@@ -106,6 +123,7 @@
 				E559280728E2EFF9006ADC72 /* AppDelegate.swift */,
 				E559280928E2EFF9006ADC72 /* SceneDelegate.swift */,
 				E559281028E2EFFA006ADC72 /* Assets.xcassets */,
+				C450042428F5D338001F37D7 /* Extensions.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -122,6 +140,7 @@
 			isa = PBXGroup;
 			children = (
 				E559280B28E2EFF9006ADC72 /* ViewController.swift */,
+				C450042128F5D2DF001F37D7 /* Login */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -130,6 +149,7 @@
 			isa = PBXGroup;
 			children = (
 				E559282A28E2F89F006ADC72 /* LoginViewModel.swift */,
+				C49B973728F6A6AD0002AF5C /* RegisterViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -266,9 +286,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C450042328F5D2F0001F37D7 /* LoginViewController.swift in Sources */,
 				E559282928E2F88B006ADC72 /* ConversationsTableViewCell.swift in Sources */,
 				E559280C28E2EFF9006ADC72 /* ViewController.swift in Sources */,
 				E559280828E2EFF9006ADC72 /* AppDelegate.swift in Sources */,
+				C49B973828F6A6AD0002AF5C /* RegisterViewModel.swift in Sources */,
+				C450041F28F5D26D001F37D7 /* RegisterViewController.swift in Sources */,
+				C450042528F5D338001F37D7 /* Extensions.swift in Sources */,
 				E559282528E2F826006ADC72 /* Database.swift in Sources */,
 				E559282728E2F840006ADC72 /* User.swift in Sources */,
 				E559280A28E2EFF9006ADC72 /* SceneDelegate.swift in Sources */,

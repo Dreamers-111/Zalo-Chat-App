@@ -9,6 +9,7 @@ target 'ZaloChatApp' do
 
 pod 'FirebaseFirestore'
 pod 'FirebaseAuth'
+pod 'JGProgressHUD'
 pod 'Alamofire'
 pod 'Kingfisher'
 pod 'ObjectMapper'
