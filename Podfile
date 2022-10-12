@@ -7,12 +7,33 @@ target 'ZaloChatApp' do
 
   # Pods for ZaloChatApp
 
+# nền tảng Firebase
 pod 'FirebaseFirestore'
 pod 'FirebaseAuth'
+
+# spinner
 pod 'JGProgressHUD'
-pod 'Alamofire'
-pod 'Kingfisher'
+
+# giao diện chat
+pod 'MessageKit'
+
+# giúp chuyển đổi dữ liệu JSON sang đối tượng thuộc lớp, struct
 pod 'ObjectMapper'
+
+# đăng nhập google
+pod 'GoogleSignIn'
+
+# thao tác api
+pod 'Alamofire'
+
+# thao tác dữ liệu được lưu trong bộ nhớ đệm
+pod 'RealmSwift'
+
+# url hình ảnh
+pod 'Kingfisher'
+pod 'SDWebImage'
+
+
 
 
 end
