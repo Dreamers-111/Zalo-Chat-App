@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "1936908_camera_instagram_photo_polaroid_selfie_icon (1).png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -10,16 +10,32 @@ import UIKit
 
 // border to UItextfield
 extension UITextField {
-    func addBottomBorder() {
-        let bottomBorder = UIView(frame: .zero)
-        bottomBorder.backgroundColor = UIColor(red: 0.22, green: 0.82, blue: 0.93, alpha: 1.00)
-        bottomBorder.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(bottomBorder)
-        // Setup Anchors
-        bottomBorder.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 15).isActive = true
-        bottomBorder.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        bottomBorder.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        bottomBorder.heightAnchor.constraint(equalToConstant: 2).isActive = true // CHiều cao của border
+    
+    func setFieldLoginAndRegister() {
+        translatesAutoresizingMaskIntoConstraints = false
+        autocapitalizationType = .none
+        autocorrectionType = .no
+        returnKeyType = .continue
+        clearButtonMode = .whileEditing
+        layer.cornerRadius = 15
+        backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.00)
+        font = .systemFont(ofSize: 16, weight: .medium)
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: self.frame.size.height))
+        leftView = paddingView
+        leftViewMode = .always
+        heightAnchor.constraint(greaterThanOrEqualToConstant: 55).isActive = true
+        
+        if let placeholder = placeholder {
+            attributedPlaceholder = NSAttributedString(string:placeholder,
+                                                       attributes: [NSAttributedString.Key.foregroundColor: UIColor(red: 0.40, green: 0.38, blue: 0.38, alpha: 1.00)])
+        }
+        
+        // Shadow Color
+        layer.shadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.25).cgColor
+        layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
+        layer.shadowOpacity = 0.6
+        layer.shadowRadius = 1
+        layer.masksToBounds = false
     }
 }
 

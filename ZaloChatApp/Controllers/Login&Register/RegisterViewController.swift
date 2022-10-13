@@ -11,7 +11,7 @@ import FirebaseAuth
 class RegisterViewController: UIViewController {
     
     let gender = ["Nam", "Nữ"]
-    let ctlbnf : CGFloat = 20, ctleftright : CGFloat = 10, cttop : CGFloat = 10
+    let ctlbnf : CGFloat = 20, ctleftright : CGFloat = 20, cttop : CGFloat = 10
     
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -23,19 +23,52 @@ class RegisterViewController: UIViewController {
     private let contentView: UIView = {
         var contentView = UIView()
         contentView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.clipsToBounds = true
         return contentView
     }()
 
+    private let imageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(named: "addAvt")
+        imageView.contentMode = .scaleToFill
+        imageView.layer.masksToBounds = true
+        return imageView
+    }()
+
+    private let userNameField: UITextField = {
+        let field = UITextField()
+        field.placeholder = "Nhập tên người dùng..."
+        field.setFieldLoginAndRegister()
+        return field
+    }()
+
+    private let emailField: UITextField = {
+        let field = UITextField()
+        field.keyboardType = .emailAddress
+        field.placeholder = "Nhập email..."
+        field.setFieldLoginAndRegister()
+        
+        return field
+    }()
+    
+    private let passwordField: UITextField = {
+        let field = UITextField()
+        field.placeholder = "Nhập mật khẩu..."
+        field.setFieldLoginAndRegister()
+        field.clearButtonMode = .always
+        field.isSecureTextEntry = true
+        
+        return field
+    }()
+    
     private let genderfield: UITextField = {
         let field = UITextField()
         field.translatesAutoresizingMaskIntoConstraints = false
         field.placeholder = "Nhập giới tính của bạn..."
-        field.addBottomBorder()
+        field.setFieldLoginAndRegister()
+        field.clearButtonMode = .never
         return field
     }()
-    
-
     
     private let pickerView: UIPickerView = {
         let pickerView = UIPickerView()
@@ -45,147 +78,10 @@ class RegisterViewController: UIViewController {
         return pickerView
     }()
     
-    private let imageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = UIImage(systemName: "person.circle")
-        imageView.contentMode = .scaleToFill
-        imageView.layer.masksToBounds = true
-        imageView.tintColor = UIColor(red: 0.06, green: 0.76, blue: 0.49, alpha: 1.00)
-        return imageView
-    }()
-
-    private let userNameField: UITextField = {
-        let field = UITextField()
-        field.translatesAutoresizingMaskIntoConstraints = false
-        field.autocapitalizationType = .none
-        field.autocorrectionType = .no
-        field.returnKeyType = .continue
-        field.placeholder = "Nhập tên người dùng..."
-        field.addBottomBorder()
-        field.clearButtonMode = .always
-        return field
-    }()
-
-    private let labelandButtonStackView: UIStackView = {
-        let stackView = UIStackView()
-        let label = UILabel()
-        let button = UIButton()
-        
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .horizontal
-        stackView.distribution = .fill
-        stackView.alignment = .fill
-
-        stackView.addArrangedSubview(label)
-        stackView.addArrangedSubview(button)
-
-        // (Add some test data, a little spacing, and the background color
-        // make the labels easier to see visually.)
-        label.font = .systemFont(ofSize: 14,weight: .regular)
-        label.numberOfLines = 2
-        label.lineBreakMode = .byWordWrapping
-        let labelText = NSMutableAttributedString.init(string: "Tiếp tục nghĩa là bạn đồng ý với các điều khoản sử dụng của chúng tôi")
-        labelText.setAttributes([NSAttributedString.Key.foregroundColor: UIColor.gray],
-                                range: NSMakeRange(0, 33))
-        labelText.setAttributes([NSAttributedString.Key.foregroundColor:   UIColor(red: 0.53, green: 0.87, blue: 0.74, alpha: 1.00)],
-                                range: NSMakeRange(33, 36))
-        label.attributedText = labelText
-        label.widthAnchor.constraint(equalTo: button.widthAnchor, multiplier: 4,constant: 20).isActive = true
-        
-        button.setImage(UIImage(systemName: "arrow.right",
-                                withConfiguration: UIImage.SymbolConfiguration(pointSize: 20)), for: .normal)
-        button.tintColor = .white
-        button.backgroundColor = UIColor(red: 0.06, green: 0.76, blue: 0.49, alpha: 1.00)
-        button.layer.cornerRadius = 10
-        button.clipsToBounds = true
-        button.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
-        return stackView
-    }()
-
-    private let nameLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Tên tài khoản:"
-        label.textColor = .black
-        label.font = .systemFont(ofSize: 16, weight: .medium)
-        label.sizeToFit()
-        return label
-    }()
-    
-    private let genderLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Giới tính:"
-        label.textColor = .black
-        label.font = .systemFont(ofSize: 16, weight: .medium)
-        label.sizeToFit()
-        return label
-    }()
-    
-    private let emailLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Email:"
-        label.textColor = .black
-        label.font = .systemFont(ofSize: 16, weight: .medium)
-        label.sizeToFit()
-        return label
-    }()
-    
-    private let emailField: UITextField = {
-        let field = UITextField()
-        field.translatesAutoresizingMaskIntoConstraints = false
-        field.keyboardType = .emailAddress
-        field.autocapitalizationType = .none
-        field.autocorrectionType = .no
-        field.returnKeyType = .continue
-        field.placeholder = "Nhập email..."
-        field.addBottomBorder()
-        field.clearButtonMode = .always
-        
-        return field
-    }()
-    
-    private let passwordLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Password:"
-        label.textColor = .black
-        label.font = .systemFont(ofSize: 16, weight: .medium)
-        label.sizeToFit()
-        return label
-    }()
-    
-    private let passwordField: UITextField = {
-        let field = UITextField()
-        field.translatesAutoresizingMaskIntoConstraints = false
-        field.autocapitalizationType = .none
-        field.autocorrectionType = .no
-        field.returnKeyType = .continue
-        field.placeholder = "Nhập mật khẩu..."
-        field.addBottomBorder()
-        field.clearButtonMode = .always
-        field.isSecureTextEntry = true
-        
-        return field
-    }()
-    
-    private let dateLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Ngày sinh:"
-        label.textColor = .black
-        label.font = .systemFont(ofSize: 16, weight: .medium)
-        label.sizeToFit()
-        return label
-    }()
-    
     private let dayField: UITextField = {
         let field = UITextField()
-        field.translatesAutoresizingMaskIntoConstraints = false
         field.placeholder = "Nhập ngày sinh của bạn..."
-        field.addBottomBorder()
+        field.setFieldLoginAndRegister()
         field.datePicker(target: self,
                          doneAction: #selector(doneAction),
                          cancelAction: #selector(cancelAction),
@@ -193,10 +89,44 @@ class RegisterViewController: UIViewController {
         return field
     }()
     
+    private let registerButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Đăng ký", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 22, weight: .bold)
+        button.tintColor = .white
+        button.backgroundColor = UIColor(red: 0.90, green: 0.00, blue: 0.21, alpha: 1.00)
+        button.layer.cornerRadius = 15
+        button.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
+        // Shadow Color
+        button.layer.shadowColor = UIColor(red: 1.00, green: 0.59, blue: 0.69, alpha: 1.00).cgColor
+        button.layer.shadowOffset = CGSize(width: 0.0, height: 3.0)
+        button.layer.shadowOpacity = 1
+        button.layer.shadowRadius = 1
+        button.layer.masksToBounds = false
+        return button
+    }()
+    
+    private let alertLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 14,weight: .regular)
+        label.numberOfLines = 2
+        label.lineBreakMode = .byWordWrapping
+        let labelText = NSMutableAttributedString.init(string: "Tiếp tục nghĩa là bạn đồng ý với các điều khoản sử dụng của chúng tôi")
+        labelText.setAttributes([NSAttributedString.Key.foregroundColor: UIColor.gray],
+        range: NSMakeRange(0, 33))
+        labelText.setAttributes([NSAttributedString.Key.foregroundColor: UIColor(red: 0.90, green: 0.00, blue: 0.21, alpha: 1.00)],
+        range: NSMakeRange(33, 36))
+        label.attributedText = labelText
+        label.textAlignment = .center
+        return label
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        
+
         // Connect data:
         pickerView.delegate = self
         pickerView.dataSource = self
@@ -211,25 +141,23 @@ class RegisterViewController: UIViewController {
         
         scrollView.addSubview(contentView)
         contentView.addSubview(imageView)
-        contentView.addSubview(emailLabel)
         contentView.addSubview(emailField)
-        contentView.addSubview(passwordLabel)
         contentView.addSubview(passwordField)
-        contentView.addSubview(nameLabel)
         contentView.addSubview(userNameField)
-        contentView.addSubview(genderLabel)
         contentView.addSubview(genderfield)
-        contentView.addSubview(dateLabel)
         contentView.addSubview(dayField)
-        contentView.addSubview(labelandButtonStackView)
-        
+        contentView.addSubview(registerButton)
+        contentView.addSubview(alertLabel)
+
         imageView.isUserInteractionEnabled = true
         contentView.isUserInteractionEnabled = true
         scrollView.isUserInteractionEnabled = true
+        
 
         let gesture = UITapGestureRecognizer(target: self,
                                              action: #selector(didTapChangeProfilePic))
         imageView.addGestureRecognizer(gesture)
+        
         
     }
     
@@ -266,9 +194,6 @@ class RegisterViewController: UIViewController {
                                       style: .cancel, handler: nil))
         self.present(alert, animated: true, completion: nil)
         
- 
-   
-        
     }
     
     func alertUserLoginError(message: String = "Vui lòng nhập đầy đủ thông tin") {
@@ -279,6 +204,7 @@ class RegisterViewController: UIViewController {
                                       style: .cancel, handler: nil))
         self.present(alert, animated: true)
     }
+    
 
     // datepicker
     @objc func cancelAction() {
@@ -291,10 +217,6 @@ class RegisterViewController: UIViewController {
            dateFormatter.dateFormat = "dd/MM/yyyy"
            let dateString = dateFormatter.string(from: datePickerView.date)
            self.dayField.text = dateString
-           
-           print(datePickerView.date)
-           print(dateString)
-           
            self.dayField.resignFirstResponder()
        }
     }
@@ -307,74 +229,58 @@ class RegisterViewController: UIViewController {
         
         // Add
         let constraints = [
-            scrollView.topAnchor.constraint(equalTo:  view.safeAreaLayoutGuide.topAnchor),
+
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
-            contentView.topAnchor.constraint(equalTo:  scrollView.topAnchor),
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            contentView.heightAnchor.constraint(equalTo: scrollView.heightAnchor),
-        
-            imageView.topAnchor.constraint(equalTo: contentView.topAnchor,constant: cttop),
+            
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor,constant: 5),
             imageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1/4),
             imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor),
             imageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
             
-            emailLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor,constant: cttop),
-            emailLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: ctleftright),
-            emailLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,constant: -ctleftright),
-            
-            
-            emailField.topAnchor.constraint(equalTo: emailLabel.bottomAnchor,constant: cttop),
+            emailField.topAnchor.constraint(equalTo: imageView.bottomAnchor,constant: 25),
             emailField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: ctleftright),
             emailField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,constant: -ctleftright),
             
-            passwordLabel.topAnchor.constraint(equalTo: emailField.bottomAnchor,constant: ctlbnf),
-            passwordLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: ctleftright),
-            passwordLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,constant: -ctleftright),
-            
-            passwordField.topAnchor.constraint(equalTo: passwordLabel.bottomAnchor,constant: cttop),
+            passwordField.topAnchor.constraint(equalTo: emailField.bottomAnchor,constant: cttop),
             passwordField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: ctleftright),
             passwordField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,constant: -ctleftright),
             
-            
-            nameLabel.topAnchor.constraint(equalTo: passwordField.bottomAnchor,constant: ctlbnf),
-            nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: ctleftright),
-            nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,constant: -ctleftright),
-            
-            userNameField.topAnchor.constraint(equalTo: nameLabel.bottomAnchor,constant: cttop),
+            userNameField.topAnchor.constraint(equalTo: passwordField.bottomAnchor,constant: cttop),
             userNameField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: ctleftright),
             userNameField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,constant: -ctleftright),
-            
-            genderLabel.topAnchor.constraint(equalTo: userNameField.bottomAnchor,constant: ctlbnf),
-            genderLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: ctleftright),
-            genderLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,constant: -ctleftright),
-            
-            genderfield.topAnchor.constraint(equalTo: genderLabel.bottomAnchor,constant: cttop),
+               
+            genderfield.topAnchor.constraint(equalTo: userNameField.bottomAnchor,constant: cttop),
             genderfield.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: ctleftright),
             genderfield.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,constant: -ctleftright),
             
-            dateLabel.topAnchor.constraint(equalTo: genderfield.bottomAnchor,constant: ctlbnf),
-            dateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: ctleftright),
-            dateLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,constant: -ctleftright),
-            
-            dayField.topAnchor.constraint(equalTo: dateLabel.bottomAnchor,constant: cttop),
+            dayField.topAnchor.constraint(equalTo: genderfield.bottomAnchor,constant: cttop),
             dayField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: ctleftright),
             dayField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,constant: -ctleftright),
             
-            labelandButtonStackView.leadingAnchor.constraint(
-                equalTo: contentView.leadingAnchor,constant: ctleftright),
-            labelandButtonStackView.trailingAnchor.constraint(
-                equalTo: contentView.trailingAnchor,constant: -ctleftright),
-//            labelandButtonStackView.topAnchor.constraint(
-//                equalTo: dayField.bottomAnchor, constant: 30),
-            labelandButtonStackView.bottomAnchor.constraint(
-                equalTo: contentView.bottomAnchor, constant: -10),
-            labelandButtonStackView.heightAnchor.constraint(equalTo: dayField.heightAnchor, multiplier: 1.5)
+            registerButton.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor,constant: 10),
+            registerButton.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor,constant: -10),
+            registerButton.topAnchor.constraint(
+                equalTo: dayField.bottomAnchor, constant: 30),
+            registerButton.heightAnchor.constraint(equalTo: dayField.heightAnchor, multiplier: 1.1),
+            
+            alertLabel.topAnchor.constraint(equalTo: registerButton.bottomAnchor,constant: 20),
+            alertLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            alertLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 300),
+            
+            contentView.bottomAnchor.constraint(greaterThanOrEqualTo: alertLabel.bottomAnchor),
+
+            
         ]
 
         // Activate
@@ -470,6 +376,7 @@ extension RegisterViewController : UIPickerViewDelegate, UIPickerViewDataSource 
     func pickerView(_ pickerView:UIPickerView,didSelectRow row: Int,inComponent component: Int){
         genderfield.text = gender[row]
         genderfield.resignFirstResponder()
+        
     }
     
 }
@@ -483,6 +390,7 @@ extension RegisterViewController : UITextFieldDelegate {
     }
     
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+        
         if textField.text == "" || textField.text == nil {return true}
         if (textField == emailField && textField.text!.isEmail) {
             return true
@@ -498,4 +406,5 @@ extension RegisterViewController : UITextFieldDelegate {
         }
         return true
     }
+    
 }

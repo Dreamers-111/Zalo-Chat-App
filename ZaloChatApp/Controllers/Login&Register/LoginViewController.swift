@@ -33,27 +33,16 @@ class LoginViewController: UIViewController {
     
     private let emailField: UITextField = {
         let field = UITextField()
-        field.translatesAutoresizingMaskIntoConstraints = false
-        field.autocapitalizationType = .none
-        field.autocorrectionType = .no
-        field.returnKeyType = .continue
         field.placeholder = "Nhập email..."
-        field.addBottomBorder()
-        field.clearButtonMode = .always
+        field.setFieldLoginAndRegister()
         field.keyboardType = .emailAddress
         return field
     }()
     
     private let passwordField: UITextField = {
         let field = UITextField()
-        field.translatesAutoresizingMaskIntoConstraints = false
-        field.autocapitalizationType = .none
-        field.autocorrectionType = .no
-        field.returnKeyType = .continue
         field.placeholder = "Nhập mật khẩu..."
-        field.addBottomBorder()
-        field.clearButtonMode = .always
-        field.keyboardType = .default
+        field.setFieldLoginAndRegister()
         return field
     }()
     
@@ -70,7 +59,7 @@ class LoginViewController: UIViewController {
     private let passwordLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Password:"
+        label.text = "Mật khẩu:"
         label.textColor = .black
         label.font = .systemFont(ofSize: 16, weight: .medium)
         label.sizeToFit()
@@ -166,6 +155,7 @@ class LoginViewController: UIViewController {
             emailLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             emailLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
             
+            
             emailField.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 10),
             emailField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             emailField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
@@ -173,6 +163,7 @@ class LoginViewController: UIViewController {
             passwordLabel.topAnchor.constraint(equalTo: emailField.bottomAnchor, constant: 20),
             passwordLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             passwordLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+
             
             passwordField.topAnchor.constraint(equalTo: passwordLabel.bottomAnchor, constant: 10),
             passwordField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
