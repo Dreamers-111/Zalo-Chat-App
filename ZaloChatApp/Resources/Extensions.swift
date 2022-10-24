@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 
 // border to UItextfield
+
 extension UITextField {
     
     func setFieldLoginAndRegister() {
@@ -40,7 +41,7 @@ extension UITextField {
 }
 
 extension UIColor {
-    static var mainColor = UIColor(red: 0.03, green: 0.45, blue: 1.00, alpha: 1.00)
+    static var mainColor = UIColor(red: 0.90, green: 0.00, blue: 0.21, alpha: 1.00)
 }
 
 extension Date {
@@ -54,6 +55,19 @@ extension Date {
 
 // Datepicker in UItextfield
 extension UITextField {
+    
+    func addBottomBorder() {
+        let bottomBorder = UIView(frame: .zero)
+        bottomBorder.backgroundColor = UIColor(red: 0.22, green: 0.82, blue: 0.93, alpha: 1.00)
+        bottomBorder.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(bottomBorder)
+        // Setup Anchors
+        bottomBorder.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 15).isActive = true
+        bottomBorder.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        bottomBorder.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        bottomBorder.heightAnchor.constraint(equalToConstant: 2).isActive = true // CHiều cao của border
+    }
+    
     func datePicker<T>(target: T,
                        doneAction: Selector,
                        cancelAction: Selector,

@@ -8,6 +8,7 @@
 import UIKit
 
 class Login_RegisterViewController: UIViewController {
+
     private let logoView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "logo")
@@ -17,26 +18,34 @@ class Login_RegisterViewController: UIViewController {
     }()
       
     private let loginButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Login", for: .normal)
-        button.setTitleColor(.mainColor, for: .focused)
-        button.backgroundColor = .mainColor
-        button.layer.cornerRadius = 20
-        button.layer.masksToBounds = true
-        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .medium)
+        var filled = UIButton.Configuration.borderless()
+        filled.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
+        let button = UIButton(configuration: filled, primaryAction: nil)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Đăng nhập", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 22, weight: .bold)
+        button.tintColor = .black
+        button.backgroundColor = .lightGray
+        button.layer.cornerRadius = 15
         return button
     }()
     
     private let registerButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Register", for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        button.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.98, alpha: 1.00)
-        button.layer.cornerRadius = 20
-        button.layer.masksToBounds = true
-        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .medium)
+        var filled = UIButton.Configuration.borderless()
+        filled.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
+        let button = UIButton(configuration: filled, primaryAction: nil)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Đăng ký", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 22, weight: .bold)
+        button.tintColor = .white
+        button.backgroundColor = UIColor(red: 0.90, green: 0.00, blue: 0.21, alpha: 1.00)
+        button.layer.cornerRadius = 15
+        // Shadow Color
+        button.layer.shadowColor = UIColor(red: 1.00, green: 0.59, blue: 0.69, alpha: 1.00).cgColor
+        button.layer.shadowOffset = CGSize(width: 0.0, height: 3.0)
+        button.layer.shadowOpacity = 1
+        button.layer.shadowRadius = 1
+        button.layer.masksToBounds = false
         return button
     }()
 
