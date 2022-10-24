@@ -10,6 +10,7 @@ target 'ZaloChatApp' do
 # nền tảng Firebase
 pod 'FirebaseFirestore'
 pod 'FirebaseAuth'
+pod 'FirebaseStorage'
 
 # spinner
 pod 'JGProgressHUD'

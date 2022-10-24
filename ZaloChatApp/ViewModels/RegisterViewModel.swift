@@ -38,7 +38,7 @@ final class RegisterViewModel {
         let spinner = JGProgressHUD(style: .dark)
         spinner.show(in: vc.view)
 
-        FirebaseAuth.Auth.auth().createUser(withEmail: user.userEmail, password: password) {[weak self] authResult, error in
+        FirebaseAuth.Auth.auth().createUser(withEmail: user.userEmail, password: password) { authResult, error in
             guard let result = authResult, error == nil else {
                 print("Đã thất bại đăng nhập user với email \(user.userEmail).", error!.localizedDescription)
                 DispatchQueue.main.async {

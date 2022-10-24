@@ -21,11 +21,14 @@ extension UITextField {
         layer.cornerRadius = 15
         backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.00)
         font = .systemFont(ofSize: 16, weight: .medium)
+        
+        // Thêm padding left cho textfiled
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: self.frame.size.height))
         leftView = paddingView
         leftViewMode = .always
         heightAnchor.constraint(greaterThanOrEqualToConstant: 55).isActive = true
         
+        // màu placeholder
         if let placeholder = placeholder {
             attributedPlaceholder = NSAttributedString(string:placeholder,
                                                        attributes: [NSAttributedString.Key.foregroundColor: UIColor(red: 0.40, green: 0.38, blue: 0.38, alpha: 1.00)])
