@@ -22,19 +22,22 @@ final class DatabaseManager {
 
 extension DatabaseManager {
     /// tạo tài khoản mới
-    public func insertUser(with user: User) {
+
+    func insertUser(with user: User, completion: @escaping (Bool) -> Void) {
         db.collection("user").document(user.userID).setData([
             "email": user.userEmail,
             "name": user.userName,
             "gender": user.userGender,
             "birthDay": user.userBitrhDay,
             "status": user.userStatus,
-        ]) { err in
-            if let err = err {
-                print("Error writing user account: \(err)")
-            } else {
-                print("User account successfully written to database!")
+        ]) { error in
+            guard error == nil else {
+                print("Failed to write to Firebase")
+                completion(false)
+                return
             }
+            completion(true)
         }
     }
+    
 }

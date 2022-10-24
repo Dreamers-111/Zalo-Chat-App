@@ -16,4 +16,8 @@ struct User {
     let userGender: String
     let userStatus: Bool
     
+    var profilePictureFilename: String {
+        return "\(userEmail)_profile_picture.png"
+    }
+    
 }

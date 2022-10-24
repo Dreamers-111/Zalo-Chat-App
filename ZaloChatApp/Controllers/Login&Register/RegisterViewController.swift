@@ -95,7 +95,7 @@ class RegisterViewController: UIViewController {
         button.setTitle("Đăng ký", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 22, weight: .bold)
         button.tintColor = .white
-        button.backgroundColor = UIColor(red: 0.90, green: 0.00, blue: 0.21, alpha: 1.00)
+        button.backgroundColor = UIColor(red: 0.90, green: 0.00, blue: 0.19, alpha: 1.00)
         button.layer.cornerRadius = 15
         button.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
         // Shadow Color
@@ -116,7 +116,7 @@ class RegisterViewController: UIViewController {
         let labelText = NSMutableAttributedString.init(string: "Tiếp tục nghĩa là bạn đồng ý với các điều khoản sử dụng của chúng tôi")
         labelText.setAttributes([NSAttributedString.Key.foregroundColor: UIColor.gray],
         range: NSMakeRange(0, 33))
-        labelText.setAttributes([NSAttributedString.Key.foregroundColor: UIColor(red: 0.90, green: 0.00, blue: 0.21, alpha: 1.00)],
+        labelText.setAttributes([NSAttributedString.Key.foregroundColor: UIColor(red: 0.90, green: 0.00, blue: 0.19, alpha: 1.00)],
         range: NSMakeRange(33, 36))
         label.attributedText = labelText
         label.textAlignment = .center
@@ -187,7 +187,7 @@ class RegisterViewController: UIViewController {
         let alert = UIAlertController(title: "Xác nhận sử dụng email " + (emailField.text ?? ""), message: "", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Đồng ý", style: .default, handler: { action in
             
-            RegisterViewModel.shared.registerUser(with: User(userID: "", userName: userName, userEmail: email, userBitrhDay: userBirthDay, userGender: userGender, userStatus: true), password: password)
+            RegisterViewModel.shared.registerUser(with: User(userID: "", userName: userName, userEmail: email, userBitrhDay: userBirthDay, userGender: userGender, userStatus: true), password: password, image: self.imageView.image!)
                 
         }))
         alert.addAction(UIAlertAction(title:"Huỷ bỏ",
