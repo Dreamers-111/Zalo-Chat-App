@@ -23,10 +23,10 @@ class SwipingCollectionViewController: UICollectionViewController, UICollectionV
     }
 
     let pages = [
-        SwipePageModel(imageName: "swipingImage_1", headerText: "Gọi video ổn định", bodyText: "Trò chuyện thân mật với hình ảnh sắc nét, tiếng chất, âm chuẩn dưới mọi điều kiện mạng."),
-        SwipePageModel(imageName: "swipingImage_2", headerText: "Chat nhóm tiện lợi", bodyText: "Cùng trao đổi, giữ liên lạc với gia đình, bạn bè và đồng nghiệp mọi lúc mọi nơi"),
-        SwipePageModel(imageName: "swipingImage_3", headerText: "Gửi ảnh nhanh chóng", bodyText: "Chia sẻ hình ảnh chất lượng cao với bạn bè, người thân nhanh chóng và dễ dàng"),
-        SwipePageModel(imageName: "swipingImage_4", headerText: "Nhật ký bạn bè", bodyText: "Nơi cập nhật hoạt động mới nhất của những người bạn quan tâm")
+        SwipePageModel(imageName: "swiping1", headerText: "Gọi video ổn định", bodyText: "Trò chuyện thân mật với hình ảnh sắc nét, tiếng chất, âm chuẩn dưới mọi điều kiện mạng."),
+        SwipePageModel(imageName: "swiping2", headerText: "Chat nhóm tiện lợi", bodyText: "Cùng trao đổi, giữ liên lạc với gia đình, bạn bè và đồng nghiệp mọi lúc mọi nơi"),
+        SwipePageModel(imageName: "swiping3", headerText: "Gửi ảnh nhanh chóng", bodyText: "Chia sẻ hình ảnh chất lượng cao với bạn bè, người thân nhanh chóng và dễ dàng"),
+        SwipePageModel(imageName: "swiping4", headerText: "Nhật ký bạn bè", bodyText: "Nơi cập nhật hoạt động mới nhất của những người bạn quan tâm")
     ]
     
     private lazy var pageControl: UIPageControl = {
@@ -46,10 +46,14 @@ class SwipingCollectionViewController: UICollectionViewController, UICollectionV
         view.addSubview(bottomControlsStackView)
         
         NSLayoutConstraint.activate([
-            bottomControlsStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0),
+            bottomControlsStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40),
             bottomControlsStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             bottomControlsStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
+        
+        if UIDevice.current.orientation.isLandscape {
+            bottomControlsStackView.isHidden = true
+        }
     }
     
     override func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {

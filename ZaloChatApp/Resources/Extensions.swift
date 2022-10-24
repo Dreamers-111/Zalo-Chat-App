@@ -8,8 +8,6 @@
 import Foundation
 import UIKit
 
-// border to UItextfield
-
 extension UITextField {
     
     func setFieldLoginAndRegister() {
@@ -58,18 +56,6 @@ extension Date {
 
 // Datepicker in UItextfield
 extension UITextField {
-    
-    func addBottomBorder() {
-        let bottomBorder = UIView(frame: .zero)
-        bottomBorder.backgroundColor = UIColor(red: 0.22, green: 0.82, blue: 0.93, alpha: 1.00)
-        bottomBorder.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(bottomBorder)
-        // Setup Anchors
-        bottomBorder.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 15).isActive = true
-        bottomBorder.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        bottomBorder.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        bottomBorder.heightAnchor.constraint(equalToConstant: 2).isActive = true // CHiều cao của border
-    }
     
     func datePicker<T>(target: T,
                        doneAction: Selector,

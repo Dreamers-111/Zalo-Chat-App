@@ -13,15 +13,17 @@ class PageViewCell: UICollectionViewCell {
         didSet {
             guard let unwrappedPage = page else { return }
             swipingImageView.image = UIImage(named: unwrappedPage.imageName)
-            let attributedText = NSMutableAttributedString(string: unwrappedPage.headerText, attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 24)])
-            attributedText.append(NSAttributedString(string: "\n\n\(unwrappedPage.bodyText)", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.gray]))
+            let attributedText = NSMutableAttributedString(string: unwrappedPage.headerText,
+                                                              attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 24)])
+            attributedText.append(NSAttributedString(string: "\n\n\(unwrappedPage.bodyText)",
+                                                       attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.lightGray]))
             descriptionTextView.attributedText = attributedText
             descriptionTextView.textAlignment = .center
         }
     }
     
     private let swipingImageView: UIImageView = {
-        let imageView = UIImageView(image: #imageLiteral(resourceName: "swipingImage_1"))
+        let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         return imageView
@@ -29,10 +31,15 @@ class PageViewCell: UICollectionViewCell {
     
     private let descriptionTextView: UITextView = {
         let textView = UITextView()
+        let attributedText = NSMutableAttributedString(string: "", attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 24)])
+        attributedText.append(NSAttributedString(string: "", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.gray]))
         
-        let attributedText = NSMutableAttributedString(string: "Join us today in our fun and games!", attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 24)])
-        
-        attributedText.append(NSAttributedString(string: "\n\nAre you ready for loads and loads of fun? Don't wait any longer! We hope to see you in our stores soon.", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.gray]))
+        var attributes = [NSAttributedString.Key: Any]()
+        let paragraphStyle: NSMutableParagraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 100
+        attributes[NSAttributedString.Key.paragraphStyle] = paragraphStyle
+        attributes[NSAttributedString.Key.font] = UIFont.preferredFont(forTextStyle: .body)
+        textView.typingAttributes = attributes
         
         textView.attributedText = attributedText
         textView.translatesAutoresizingMaskIntoConstraints = false
@@ -52,21 +59,22 @@ class PageViewCell: UICollectionViewCell {
         
         addSubview(topImageContainerView)
         topImageContainerView.translatesAutoresizingMaskIntoConstraints = false
-        topImageContainerView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        topImageContainerView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        topImageContainerView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        topImageContainerView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.7).isActive = true
-        topImageContainerView.heightAnchor.constraint(greaterThanOrEqualToConstant: 200).isActive = true
+        topImageContainerView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor).isActive = true
+        topImageContainerView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
+        topImageContainerView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
+        topImageContainerView.heightAnchor.constraint(equalTo: safeAreaLayoutGuide.heightAnchor, multiplier: 1/2).isActive = true
+        topImageContainerView.widthAnchor.constraint(equalTo: safeAreaLayoutGuide.widthAnchor).isActive = true
         
         topImageContainerView.addSubview(swipingImageView)
         swipingImageView.centerXAnchor.constraint(equalTo: topImageContainerView.centerXAnchor).isActive = true
         swipingImageView.centerYAnchor.constraint(equalTo: topImageContainerView.centerYAnchor).isActive = true
-        swipingImageView.heightAnchor.constraint(equalTo: topImageContainerView.heightAnchor, multiplier: 1).isActive = true
+        swipingImageView.heightAnchor.constraint(equalTo: topImageContainerView.heightAnchor).isActive = true
+        swipingImageView.widthAnchor.constraint(equalTo: topImageContainerView.widthAnchor).isActive = true
         
         addSubview(descriptionTextView)
         descriptionTextView.topAnchor.constraint(equalTo: topImageContainerView.bottomAnchor).isActive = true
-        descriptionTextView.leftAnchor.constraint(equalTo: leftAnchor, constant: 24).isActive = true
-        descriptionTextView.rightAnchor.constraint(equalTo: rightAnchor, constant: -24).isActive = true
+        descriptionTextView.leftAnchor.constraint(equalTo: leftAnchor, constant: 22).isActive = true
+        descriptionTextView.rightAnchor.constraint(equalTo: rightAnchor, constant: -22).isActive = true
         descriptionTextView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0).isActive = true
     }
     

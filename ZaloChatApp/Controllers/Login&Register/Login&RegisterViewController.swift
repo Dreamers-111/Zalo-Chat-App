@@ -8,14 +8,6 @@
 import UIKit
 
 class Login_RegisterViewController: UIViewController {
-
-    private let logoView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "123")
-        imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        return imageView
-    }()
       
     private let loginButton: UIButton = {
         var filled = UIButton.Configuration.borderless()
@@ -41,11 +33,6 @@ class Login_RegisterViewController: UIViewController {
         button.tintColor = .white
         button.backgroundColor = UIColor(red: 0.90, green: 0.00, blue: 0.21, alpha: 1.00)
         button.layer.cornerRadius = 15
-//        // Shadow Color
-//        button.layer.shadowColor = UIColor(red: 1.00, green: 0.59, blue: 0.69, alpha: 1.00).cgColor
-//        button.layer.shadowOffset = CGSize(width: 0.0, height: 3.0)
-//        button.layer.shadowOpacity = 1
-//        button.layer.shadowRadius = 1
         button.layer.masksToBounds = false
         button.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMaxXMinYCorner]
         return button
@@ -72,7 +59,6 @@ class Login_RegisterViewController: UIViewController {
         buttonStackView.addArrangedSubview(loginButton)
         buttonStackView.addArrangedSubview(registerButton)
         
-        view.addSubview(logoView)
         view.addSubview(buttonStackView)
     }
       
@@ -105,19 +91,10 @@ class Login_RegisterViewController: UIViewController {
         super.viewDidLayoutSubviews()
           
         NSLayoutConstraint.activate([
-
-            logoView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,constant: 5),
-            logoView.heightAnchor.constraint(greaterThanOrEqualToConstant: 500),
-            logoView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1/1.7),
-            logoView.widthAnchor.constraint(equalTo: logoView.heightAnchor),
-            logoView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            
             buttonStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-            buttonStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
-            buttonStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
-            buttonStackView.heightAnchor.constraint(greaterThanOrEqualTo: view.heightAnchor, multiplier: 1/15),
+            buttonStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            buttonStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
             buttonStackView.heightAnchor.constraint(greaterThanOrEqualToConstant: 55)
-
         ])
     }
 }
