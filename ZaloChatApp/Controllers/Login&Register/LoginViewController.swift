@@ -24,7 +24,7 @@ class LoginViewController: UIViewController {
     private let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = UIImage(named: "logo")
+        imageView.image = UIImage(named: "login")
         imageView.contentMode = .scaleAspectFit
         imageView.layer.masksToBounds = true
         imageView.tintColor = UIColor(red: 0.06, green: 0.76, blue: 0.49, alpha: 1.00)
@@ -33,27 +33,16 @@ class LoginViewController: UIViewController {
     
     private let emailField: UITextField = {
         let field = UITextField()
-        field.translatesAutoresizingMaskIntoConstraints = false
-        field.autocapitalizationType = .none
-        field.autocorrectionType = .no
-        field.returnKeyType = .continue
         field.placeholder = "Nhập email..."
-        field.addBottomBorder()
-        field.clearButtonMode = .always
+        field.setFieldLoginAndRegister()
         field.keyboardType = .emailAddress
         return field
     }()
     
     private let passwordField: UITextField = {
         let field = UITextField()
-        field.translatesAutoresizingMaskIntoConstraints = false
-        field.autocapitalizationType = .none
-        field.autocorrectionType = .no
-        field.returnKeyType = .continue
         field.placeholder = "Nhập mật khẩu..."
-        field.addBottomBorder()
-        field.clearButtonMode = .always
-        field.keyboardType = .default
+        field.setFieldLoginAndRegister()
         return field
     }()
     
@@ -80,19 +69,33 @@ class LoginViewController: UIViewController {
     private let loginButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Login", for: .normal)
-        button.backgroundColor = .link
-        button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 12
-        button.layer.masksToBounds = true
-        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
+        button.setTitle("Đăng nhập", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 22, weight: .bold)
+        button.tintColor = .white
+        button.backgroundColor = UIColor(red: 0.90, green: 0.00, blue: 0.21, alpha: 1.00)
+        button.layer.cornerRadius = 15
+        // Shadow Color
+        button.layer.shadowColor = UIColor(red: 1.00, green: 0.59, blue: 0.69, alpha: 1.00).cgColor
+        button.layer.shadowOffset = CGSize(width: 0.0, height: 3.0)
+        button.layer.shadowOpacity = 1
+        button.layer.shadowRadius = 1
+        button.layer.masksToBounds = false
         return button
     }()
     
     private let googleSignInButton: GIDSignInButton = {
-        let btn = GIDSignInButton()
-        btn.translatesAutoresizingMaskIntoConstraints = false
-        return btn
+        let button = GIDSignInButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.tintColor = .white
+        button.backgroundColor = UIColor(red: 0.90, green: 0.00, blue: 0.21, alpha: 1.00)
+        button.layer.cornerRadius = 15
+        // Shadow Color
+        button.layer.shadowColor = UIColor(red: 1.00, green: 0.59, blue: 0.69, alpha: 1.00).cgColor
+        button.layer.shadowOffset = CGSize(width: 0.0, height: 3.0)
+        button.layer.shadowOpacity = 1
+        button.layer.shadowRadius = 1
+        button.layer.masksToBounds = false
+        return button
     }()
     
     override func viewDidLoad() {
@@ -159,7 +162,7 @@ class LoginViewController: UIViewController {
             
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: 1 / 4),
+            imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: 1/4),
             imageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
             
             emailLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 10),
@@ -180,11 +183,11 @@ class LoginViewController: UIViewController {
             
             loginButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 50),
             loginButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -50),
-            loginButton.topAnchor.constraint(equalTo: passwordField.bottomAnchor, constant: 50),
+            loginButton.topAnchor.constraint(equalTo: passwordField.bottomAnchor, constant: 30),
             
             googleSignInButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 50),
             googleSignInButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -50),
-            googleSignInButton.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 50),
+            googleSignInButton.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 30),
         ]
 
         // Activate
