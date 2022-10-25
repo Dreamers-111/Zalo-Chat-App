@@ -42,7 +42,8 @@ extension UITextField {
 }
 
 extension UIColor {
-    static var mainColor = UIColor(red: 0.90, green: 0.00, blue: 0.21, alpha: 1.00)
+    static var mainColor = UIColor(red: 0.28, green: 0.55, blue: 0.31, alpha: 1.00) //#488b4f
+    static var subColor = UIColor(red: 0.01, green: 0.41, blue: 0.99, alpha: 1.00) //#0269fd
 }
 
 extension Date {

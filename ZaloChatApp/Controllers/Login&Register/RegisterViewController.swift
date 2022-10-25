@@ -95,13 +95,13 @@ class RegisterViewController: UIViewController {
         button.setTitle("Đăng ký", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 22, weight: .bold)
         button.tintColor = .white
-        button.backgroundColor = UIColor(red: 0.90, green: 0.00, blue: 0.19, alpha: 1.00)
+        button.backgroundColor = UIColor.mainColor
         button.layer.cornerRadius = 15
         button.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
         // Shadow Color
-        button.layer.shadowColor = UIColor(red: 1.00, green: 0.59, blue: 0.69, alpha: 1.00).cgColor
+        button.layer.shadowColor = UIColor.mainColor.cgColor
         button.layer.shadowOffset = CGSize(width: 0.0, height: 3.0)
-        button.layer.shadowOpacity = 1
+        button.layer.shadowOpacity = 0.5
         button.layer.shadowRadius = 1
         button.layer.masksToBounds = false
         return button
@@ -116,7 +116,7 @@ class RegisterViewController: UIViewController {
         let labelText = NSMutableAttributedString.init(string: "Tiếp tục nghĩa là bạn đồng ý với các điều khoản sử dụng của chúng tôi")
         labelText.setAttributes([NSAttributedString.Key.foregroundColor: UIColor.gray],
         range: NSMakeRange(0, 33))
-        labelText.setAttributes([NSAttributedString.Key.foregroundColor: UIColor(red: 0.90, green: 0.00, blue: 0.19, alpha: 1.00)],
+        labelText.setAttributes([NSAttributedString.Key.foregroundColor: UIColor.mainColor],
         range: NSMakeRange(33, 36))
         label.attributedText = labelText
         label.textAlignment = .center
@@ -241,11 +241,11 @@ class RegisterViewController: UIViewController {
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
-            imageView.topAnchor.constraint(equalTo: contentView.topAnchor,constant: 5),
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
             imageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1/4),
             imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor),
             imageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            
+
             emailField.topAnchor.constraint(equalTo: imageView.bottomAnchor,constant: 25),
             emailField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: ctleftright),
             emailField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,constant: -ctleftright),

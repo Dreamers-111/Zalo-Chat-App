@@ -10,13 +10,11 @@ import UIKit
 class Login_RegisterViewController: UIViewController {
       
     private let loginButton: UIButton = {
-        var filled = UIButton.Configuration.borderless()
-        filled.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
-        let button = UIButton(configuration: filled, primaryAction: nil)
+        let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Đăng nhập", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 22, weight: .bold)
-        button.tintColor = .black
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 22, weight: .medium)
+        button.tintColor = .white
         button.backgroundColor = .lightGray
         button.layer.cornerRadius = 15
         button.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMinXMinYCorner]
@@ -24,14 +22,12 @@ class Login_RegisterViewController: UIViewController {
     }()
     
     private let registerButton: UIButton = {
-        var filled = UIButton.Configuration.borderless()
-        filled.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
-        let button = UIButton(configuration: filled, primaryAction: nil)
+        let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Đăng ký", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 22, weight: .bold)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 22, weight: .medium)
         button.tintColor = .white
-        button.backgroundColor = UIColor(red: 0.90, green: 0.00, blue: 0.21, alpha: 1.00)
+        button.backgroundColor = UIColor.mainColor
         button.layer.cornerRadius = 15
         button.layer.masksToBounds = false
         button.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMaxXMinYCorner]
@@ -42,7 +38,7 @@ class Login_RegisterViewController: UIViewController {
         var buttonStackView = UIStackView()
         buttonStackView.translatesAutoresizingMaskIntoConstraints = false
         buttonStackView.axis = .horizontal
-        buttonStackView.distribution = .fill
+        buttonStackView.distribution = .fillEqually
         return buttonStackView
     }()
 
@@ -91,10 +87,10 @@ class Login_RegisterViewController: UIViewController {
         super.viewDidLayoutSubviews()
           
         NSLayoutConstraint.activate([
-            buttonStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            buttonStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40),
             buttonStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             buttonStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            buttonStackView.heightAnchor.constraint(greaterThanOrEqualToConstant: 55)
+            buttonStackView.heightAnchor.constraint(greaterThanOrEqualToConstant: 58)
         ])
     }
 }
