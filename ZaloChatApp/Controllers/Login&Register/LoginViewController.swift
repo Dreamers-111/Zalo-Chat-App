@@ -155,6 +155,7 @@ class LoginViewController: UIViewController {
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            contentView.bottomAnchor.constraint(greaterThanOrEqualTo: googleSignInButton.bottomAnchor),
             
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: -30),
             imageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1/3),
@@ -172,7 +173,6 @@ class LoginViewController: UIViewController {
             passwordLabel.topAnchor.constraint(equalTo: emailField.bottomAnchor, constant: 20),
             passwordLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             passwordLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-
             
             passwordField.topAnchor.constraint(equalTo: passwordLabel.bottomAnchor, constant: 10),
             passwordField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
