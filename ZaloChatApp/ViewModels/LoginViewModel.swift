@@ -46,6 +46,7 @@ final class LoginViewModel {
                 return
             }
             print("Đăng nhập thành công người dùng với email và mật khẩu.")
+            UserDefaults.standard.set(email, forKey: "email")
             vc.navigationController?.dismiss(animated: true)
         })
     }
@@ -107,6 +108,7 @@ final class LoginViewModel {
             return
         }
         print("Đã đăng nhập thành công user vói Google", email, displayName)
+        UserDefaults.standard.set(email, forKey: "email")
 
         // Kiểm tra xem Google user đã đăng nhập Firebase đã đăng nhập thành công hay chưa
         let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: user.authentication.accessToken)

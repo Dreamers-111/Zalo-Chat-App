@@ -133,15 +133,18 @@ class LoginViewController: UIViewController {
     }
 
     @objc private func googleSignInButtonTapped() {
+        emailField.resignFirstResponder()
+        passwordField.resignFirstResponder()
+
         LoginViewModel.shared.googleSignIn()
     }
     
     func alertUserLoginError() {
         let alert = UIAlertController(title: "",
-                                        message: "Vui lòng nhập đúng thông tin",
-                                        preferredStyle: .alert)
+                                      message: "Vui lòng nhập đúng thông tin",
+                                      preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Đồng ý",
-                                        style: .cancel, handler: nil))
+                                      style: .cancel, handler: nil))
         present(alert, animated: true)
     }
     
@@ -159,7 +162,7 @@ class LoginViewController: UIViewController {
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            imageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1/4),
+            imageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1 / 4),
             imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor),
             imageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
             

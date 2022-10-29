@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 
 extension UITextField {
-    
     func setFieldLoginAndRegister() {
         translatesAutoresizingMaskIntoConstraints = false
         autocapitalizationType = .none
@@ -19,19 +18,19 @@ extension UITextField {
         layer.cornerRadius = 15
         backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.00)
         font = .systemFont(ofSize: 16, weight: .medium)
-        
+
         // Thêm padding left cho textfiled
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: self.frame.size.height))
         leftView = paddingView
         leftViewMode = .always
         heightAnchor.constraint(greaterThanOrEqualToConstant: 55).isActive = true
-        
+
         // màu placeholder
         if let placeholder = placeholder {
-            attributedPlaceholder = NSAttributedString(string:placeholder,
+            attributedPlaceholder = NSAttributedString(string: placeholder,
                                                        attributes: [NSAttributedString.Key.foregroundColor: UIColor(red: 0.40, green: 0.38, blue: 0.38, alpha: 1.00)])
         }
-        
+
         // Shadow Color
         layer.shadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.25).cgColor
         layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
@@ -42,8 +41,8 @@ extension UITextField {
 }
 
 extension UIColor {
-    static var mainColor = UIColor(red: 0.28, green: 0.55, blue: 0.31, alpha: 1.00) //#488b4f
-    static var subColor = UIColor(red: 0.01, green: 0.41, blue: 0.99, alpha: 1.00) //#0269fd
+    static var mainColor = UIColor(red: 0.28, green: 0.55, blue: 0.31, alpha: 1.00) // #488b4f
+    static var subColor = UIColor(red: 0.01, green: 0.41, blue: 0.99, alpha: 1.00) // #0269fd
 }
 
 extension Date {
@@ -57,7 +56,6 @@ extension Date {
 
 // Datepicker in UItextfield
 extension UITextField {
-    
     func datePicker<T>(target: T,
                        doneAction: Selector,
                        cancelAction: Selector,
@@ -175,3 +173,4 @@ extension String {
         return emailTest.evaluate(with: self)
     }
 }
+

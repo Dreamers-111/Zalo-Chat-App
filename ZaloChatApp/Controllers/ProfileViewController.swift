@@ -26,7 +26,7 @@ class ProfileViewController: UIViewController {
 
         profileTableView.dataSource = self
         profileTableView.delegate = self
-
+        profileTableView.tableHeaderView = createTableHeader()
         view.addSubview(profileTableView)
     }
 
@@ -40,6 +40,52 @@ class ProfileViewController: UIViewController {
         ]
 
         NSLayoutConstraint.activate(constraints)
+    }
+
+    private func createTableHeader() -> UIView? {
+        guard let emailAddress = UserDefaults.standard.value(forKey: "email") as? String else {
+            return nil
+        }
+
+        let safeEmailAddress = emailAddress.replacingOccurrences(of: "-", with: ".")
+
+        let fileName = "\(safeEmailAddress)_profile_picture.png"
+        let path = "images/\(fileName)"
+
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: view.width, height: 300))
+        headerView.backgroundColor = .link
+
+        let imageView = UIImageView(frame: CGRect(x: (headerView.width - 150) / 2, y: 75, width: 150, height: 150))
+        imageView.contentMode = .scaleAspectFill
+        imageView.backgroundColor = .white
+        imageView.layer.borderColor = UIColor.white.cgColor
+        imageView.layer.borderWidth = 3
+        imageView.layer.cornerRadius = imageView.width / 2
+        imageView.layer.masksToBounds = true
+        headerView.addSubview(imageView)
+
+        StorageManager.shared.downloadURL(for: path) { [weak self] result in
+            switch result {
+            case .success(let url):
+                self?.downloadImage(for: imageView, with: url)
+            case .failure(let error):
+                print("Storage Errors: \(error)")
+            }
+        }
+
+        return headerView
+    }
+
+    private func downloadImage(for imageView: UIImageView, with url: URL) {
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            guard let data = data, error == nil else {
+                return
+            }
+            DispatchQueue.main.async {
+                let image = UIImage(data: data)
+                imageView.image = image
+            }
+        }.resume()
     }
 }
 
@@ -62,7 +108,9 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         let actionSheet = UIAlertController(title: "", message: "Do you really want to log out?", preferredStyle: .actionSheet)
 
         actionSheet.addAction(UIAlertAction(title: "Log Out", style: .destructive) { [weak self] _ in
+
             GIDSignIn.sharedInstance.signOut()
+
             do {
                 try FirebaseAuth.Auth.auth().signOut()
                 let vc = Login_RegisterViewController()
