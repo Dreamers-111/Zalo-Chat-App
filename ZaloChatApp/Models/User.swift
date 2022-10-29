@@ -66,9 +66,9 @@ extension User: UserDocumentSerializable {
               let email = dictionary["email"] as? String,
               let gender = dictionary["gender"] as? String,
               let birthday = dictionary["birthday"] as? String,
-              let status = dictionary["status"] as? Bool
+              let status = dictionary["status"] as? Int
         else { return nil }
 
-        self.init(id: id, name: name, email: email, birthday: birthday, gender: gender, status: status)
+        self.init(id: id, name: name, email: email, birthday: birthday, gender: gender, status: status == 1 ? true : false)
     }
 }

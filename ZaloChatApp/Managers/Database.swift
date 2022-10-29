@@ -68,7 +68,7 @@ extension DatabaseManager {
             return
         }
 
-        let usersRef = db.collection("users")
+        let usersRef = db.collection("user")
         var query = usersRef.whereField("keywords.\(searchTextComponents[0])", isEqualTo: true)
         for (index, component) in searchTextComponents.enumerated() {
             guard index != 0 else {
@@ -82,12 +82,13 @@ extension DatabaseManager {
                 completion(.failure(.failedToSearchUsers))
                 return
             }
+
             let results = querySnapshot.documents.compactMap { document in
                 var userDict = document.data()
+                userDict["id"] = document.documentID
                 userDict["keywords"] = nil
                 return User(dictionary: userDict)
             }
-
             guard results.count > 0 else {
                 completion(.failure(.DocumentSerializationFailure))
                 return

@@ -35,6 +35,7 @@ class NewConversationViewController: UIViewController {
         lbl.textAlignment = .center
         lbl.textColor = .green
         lbl.font = .systemFont(ofSize: 21, weight: .medium)
+        lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.isHidden = true
         return lbl
     }()
@@ -65,9 +66,7 @@ class NewConversationViewController: UIViewController {
             searchResultsTableView.topAnchor.constraint(equalTo: view.topAnchor),
             searchResultsTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
-            noSearchResultsLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.25),
             noSearchResultsLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            noSearchResultsLabel.heightAnchor.constraint(equalToConstant: 200),
             noSearchResultsLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ]
 
