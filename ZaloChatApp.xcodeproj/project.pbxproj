@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2AD82DD584A1D908812A8341 /* Pods_ZaloChatApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14002B1733CCB7736111DF3C /* Pods_ZaloChatApp.framework */; };
+		B6B89FB22906EEBA009CD1D7 /* ScanQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B89FB12906EEB9009CD1D7 /* ScanQRCodeViewController.swift */; };
 		C450041F28F5D26D001F37D7 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C450041E28F5D26D001F37D7 /* RegisterViewController.swift */; };
 		C450042328F5D2F0001F37D7 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C450042228F5D2F0001F37D7 /* LoginViewController.swift */; };
 		C450042528F5D338001F37D7 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C450042428F5D338001F37D7 /* Extensions.swift */; };
@@ -40,6 +41,7 @@
 		11172BB7910D2998ECE386FA /* Pods-ZaloChatApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZaloChatApp.debug.xcconfig"; path = "Target Support Files/Pods-ZaloChatApp/Pods-ZaloChatApp.debug.xcconfig"; sourceTree = "<group>"; };
 		14002B1733CCB7736111DF3C /* Pods_ZaloChatApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ZaloChatApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B167E43E163FD2DFB2AEE00 /* Pods-ZaloChatApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZaloChatApp.release.xcconfig"; path = "Target Support Files/Pods-ZaloChatApp/Pods-ZaloChatApp.release.xcconfig"; sourceTree = "<group>"; };
+		B6B89FB12906EEB9009CD1D7 /* ScanQRCodeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanQRCodeViewController.swift; sourceTree = "<group>"; };
 		C450041E28F5D26D001F37D7 /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		C450042228F5D2F0001F37D7 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		C450042428F5D338001F37D7 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -175,6 +177,7 @@
 				E5719D7528F6C41200AAF3E0 /* ChatViewController.swift */,
 				E5856A3E28F6C58B00A6DE5A /* ContactsViewController.swift */,
 				E5856A4028F6C59F00A6DE5A /* TimelineViewController.swift */,
+				B6B89FB12906EEB9009CD1D7 /* ScanQRCodeViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -333,6 +336,7 @@
 				E559280828E2EFF9006ADC72 /* AppDelegate.swift in Sources */,
 				C49B973828F6A6AD0002AF5C /* RegisterViewModel.swift in Sources */,
 				C450041F28F5D26D001F37D7 /* RegisterViewController.swift in Sources */,
+				B6B89FB22906EEBA009CD1D7 /* ScanQRCodeViewController.swift in Sources */,
 				E5719D7828F6C43F00AAF3E0 /* MainTabBarViewController.swift in Sources */,
 				E5856A4328F6D20000A6DE5A /* Login&RegisterViewController.swift in Sources */,
 				C450042528F5D338001F37D7 /* Extensions.swift in Sources */,

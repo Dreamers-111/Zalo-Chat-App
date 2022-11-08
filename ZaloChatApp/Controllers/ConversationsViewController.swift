@@ -37,7 +37,9 @@ class ConversationsViewController: UIViewController {
         navigationItem.largeTitleDisplayMode = .always
         navigationController?.navigationBar.prefersLargeTitles = true
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(didTapComposeNavBarButton))
+        let create = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(didTapComposeNavBarButton))
+        let scan = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(didTapScanNavBarButton))
+        navigationItem.rightBarButtonItems = [create, scan]
 
         view.addSubview(conversationstTableView)
         view.addSubview(noConversationsLabel)
@@ -84,6 +86,12 @@ class ConversationsViewController: UIViewController {
 
     @objc private func didTapComposeNavBarButton() {
         let vc = NewConversationViewController()
+        let nav = UINavigationController(rootViewController: vc)
+        present(nav, animated: true)
+    }
+    
+    @objc private func didTapScanNavBarButton() {
+        let vc = ScanQRCodeViewController()
         let nav = UINavigationController(rootViewController: vc)
         present(nav, animated: true)
     }
