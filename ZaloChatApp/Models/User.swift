@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MessageKit
 
 @propertyWrapper
 struct NSC_UCD_RWR_Formatted {
@@ -22,36 +23,71 @@ struct NSC_UCD_RWR_Formatted {
     }
 }
 
-struct User {
+struct User: SenderType {
     var id: String
     @NSC_UCD_RWR_Formatted var name: String
     var email: String
-    var birthday: String
     var gender: String
-    var status: Bool
+    var birthday: String
+    var profilePictureUrl: String
+    var isActive: Bool
+
+    var senderId: String
+    var displayName: String
 
     var profilePictureFilename: String {
         return "\(email)_profile_picture.png"
     }
 
-    var dictionary: [String: Any] {
-        return [
-            "id": id,
-            "name": name,
-            "email": email,
-            "gender": gender,
-            "birthday": birthday,
-            "status": status
-        ]
+    init() {
+        id = ""
+        email = ""
+        gender = ""
+        birthday = ""
+        profilePictureUrl = ""
+        isActive = false
+        senderId = ""
+        displayName = ""
+        name = ""
     }
 
-    init(id: String, name: String, email: String, birthday: String, gender: String, status: Bool) {
+    init(id: String,
+         name: String,
+         email: String,
+         gender: String,
+         birthday: String,
+         profilePictureUrl: String,
+         isActive: Bool)
+    {
         self.id = id
         self.email = email
-        self.birthday = birthday
         self.gender = gender
-        self.status = status
+        self.birthday = birthday
+        self.profilePictureUrl = profilePictureUrl
+        self.isActive = isActive
+        senderId = ""
+        displayName = ""
         self.name = name
+
+        // tuân theo protocol SenderType
+        senderId = self.id
+        displayName = self.name
+    }
+
+    init(id: String, name: String, profilePictureUrl: String, isActive: Bool) {
+        self.id = id
+        email = ""
+        gender = ""
+        birthday = ""
+        self.profilePictureUrl = profilePictureUrl
+        self.isActive = isActive
+        senderId = ""
+        displayName = ""
+        self.name = name
+
+        // tuân theo protocol SenderType
+        senderId = self.id
+        displayName = self.name
     }
 }
 
@@ -66,9 +102,16 @@ extension User: UserDocumentSerializable {
               let email = dictionary["email"] as? String,
               let gender = dictionary["gender"] as? String,
               let birthday = dictionary["birthday"] as? String,
-              let status = dictionary["status"] as? Int
+              let profilePictureUrl = dictionary["profile_picture_url"] as? String,
+              let isActive = dictionary["is_active"] as? Int
         else { return nil }
 
-        self.init(id: id, name: name, email: email, birthday: birthday, gender: gender, status: status == 1 ? true : false)
+        self.init(id: id,
+                  name: name,
+                  email: email,
+                  gender: gender,
+                  birthday: birthday,
+                  profilePictureUrl: profilePictureUrl,
+                  isActive: isActive == 1 ? true : false)
     }
 }

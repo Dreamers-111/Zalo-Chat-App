@@ -35,11 +35,9 @@ public extension UIView {
 }
 
 extension UIImage {
-
     func isEqualToImage(_ image: UIImage) -> Bool {
         return self.pngData() == image.pngData()
     }
-
 }
 
 extension String {
@@ -100,7 +98,6 @@ extension String {
                         // Các trường hợp còn lại là chữ cái không có dấu
                         // Kiểm tra nếu có trường hợp ngoài mong muốn
                         nextNonAccentedComponent = partialResult.nonAccentedComponent+String(char)
-                        print(char)
                     }
                     // END - Xử lý thành phần thứ hai của kết quả đầu ra
 
@@ -190,7 +187,6 @@ extension String {
                         // Các trường hợp còn lại là chữ cái không có dấu
                         // Kiểm tra nếu có trường hợp ngoài mong muốn
                         nextPartialResult = partialResult+String(char)
-                        print(char)
                     }
                 }
                 else if "0" ... "9" ~= char {

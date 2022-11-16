@@ -7,15 +7,41 @@
 
 import FirebaseAuth
 import GoogleSignIn
+import Kingfisher
 import UIKit
 
 class ProfileViewController: UIViewController {
+    // MARK: Parameters - Data
+
+    private var currentUser = User()
+
+    // MARK: Parameters - UIKit
+
     private let profileTableView: UITableView = {
         let tableView = UITableView()
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cellID")
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
     }()
+
+    private let profileTableHeaderView: UIView = {
+        let headerView = UIView(frame: .zero)
+        headerView.backgroundColor = .link
+        return headerView
+    }()
+
+    private let profileTableHeaderImageView: UIImageView = {
+        let imageView = UIImageView(frame: .zero)
+        imageView.image = UIImage(named: "default_avatar")
+        imageView.contentMode = .scaleAspectFill
+        imageView.backgroundColor = .white
+        imageView.layer.borderColor = UIColor.white.cgColor
+        imageView.layer.borderWidth = 3
+        imageView.layer.masksToBounds = true
+        return imageView
+    }()
+
+    // MARK: Methods - Override
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,8 +52,10 @@ class ProfileViewController: UIViewController {
 
         profileTableView.dataSource = self
         profileTableView.delegate = self
-        profileTableView.tableHeaderView = createTableHeader()
+        profileTableView.tableHeaderView = profileTableHeaderView
+
         view.addSubview(profileTableView)
+        profileTableHeaderView.addSubview(profileTableHeaderImageView)
     }
 
     override func viewDidLayoutSubviews() {
@@ -38,56 +66,56 @@ class ProfileViewController: UIViewController {
             profileTableView.topAnchor.constraint(equalTo: view.topAnchor),
             profileTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ]
-
         NSLayoutConstraint.activate(constraints)
+        //
+        profileTableHeaderView.frame = CGRect(x: 0, y: 0, width: view.width, height: 300)
+        profileTableHeaderImageView.frame = CGRect(x: (profileTableHeaderView.width - 150) / 2, y: 75, width: 150, height: 150)
+        profileTableHeaderImageView.layer.cornerRadius = profileTableHeaderImageView.width / 2
     }
 
-    private func createTableHeader() -> UIView? {
-        guard let emailAddress = UserDefaults.standard.value(forKey: "email") as? String else {
-            return nil
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        startListeningForCurrentUser()
+    }
+
+    // MARK: Methods - Data
+
+    private func startListeningForCurrentUser() {
+        guard let currentUserId = UserDefaults.standard.value(forKey: "id") as? String else {
+            print("Thất bại lấy thông tin người dùng hiện tại, được lưu trong bộ nhớ đệm")
+            return
         }
 
-        let safeEmailAddress = emailAddress.replacingOccurrences(of: "-", with: ".")
+        guard !DatabaseManager.shared.isListeningForUser else {
+            print("Đang lắng nghe người dùng hiện tại từ csdl")
+            return
+        }
 
-        let fileName = "\(safeEmailAddress)_profile_picture.png"
-        let path = "images/\(fileName)"
-
-        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: view.width, height: 300))
-        headerView.backgroundColor = .link
-
-        let imageView = UIImageView(frame: CGRect(x: (headerView.width - 150) / 2, y: 75, width: 150, height: 150))
-        imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = .white
-        imageView.layer.borderColor = UIColor.white.cgColor
-        imageView.layer.borderWidth = 3
-        imageView.layer.cornerRadius = imageView.width / 2
-        imageView.layer.masksToBounds = true
-        headerView.addSubview(imageView)
-
-        StorageManager.shared.downloadURL(for: path) { [weak self] result in
+        DatabaseManager.shared.listenForUser(with: currentUserId) { [weak self] result in
             switch result {
-            case .success(let url):
-                self?.downloadImage(for: imageView, with: url)
+            case .success(let user):
+                self?.currentUser = user
+                DispatchQueue.main.async {
+                    self?.updateUI()
+                }
             case .failure(let error):
-                print("Storage Errors: \(error)")
+                print("Thất bại lắng nghe người dùng hiện tại từ csdl: \(error)")
             }
         }
-
-        return headerView
     }
 
-    private func downloadImage(for imageView: UIImageView, with url: URL) {
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            guard let data = data, error == nil else {
-                return
-            }
-            DispatchQueue.main.async {
-                let image = UIImage(data: data)
-                imageView.image = image
-            }
-        }.resume()
+    // MARK: Methods - UI
+
+    private func updateUI() {
+        if currentUser.profilePictureUrl.isEmpty {
+            profileTableHeaderImageView.image = UIImage(named: "default_avatar")
+        } else {
+            profileTableHeaderImageView.kf.setImage(with: URL(string: currentUser.profilePictureUrl))
+        }
     }
 }
+
+// MARK: UITableViewDataSource, UITableViewDelegate
 
 extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -108,18 +136,20 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         let actionSheet = UIAlertController(title: "", message: "Do you really want to log out?", preferredStyle: .actionSheet)
 
         actionSheet.addAction(UIAlertAction(title: "Log Out", style: .destructive) { [weak self] _ in
-
             GIDSignIn.sharedInstance.signOut()
-
             do {
                 try FirebaseAuth.Auth.auth().signOut()
                 let vc = Login_RegisterViewController()
                 let nav = UINavigationController(rootViewController: vc)
                 nav.modalPresentationStyle = .fullScreen
-                self?.present(nav, animated: true)
-            }
-            catch {
-                print("Failed to Log Out", error.localizedDescription)
+                self?.present(nav, animated: true) {
+                    UserDefaults.standard.removeObject(forKey: "id")
+                    UserDefaults.standard.removeObject(forKey: "name")
+                    UserDefaults.standard.removeObject(forKey: "profile_picture_url")
+                    DatabaseManager.shared.removeAllListeners()
+                }
+            } catch {
+                print("Đăng xuất thất bại", error.localizedDescription)
             }
         })
 

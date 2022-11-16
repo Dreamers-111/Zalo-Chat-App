@@ -7,16 +7,21 @@
 
 import UIKit
 
+struct SwipePageModel {
+    let imageName: String
+    let headerText: String
+    let bodyText: String
+}
+
 class PageViewCell: UICollectionViewCell {
-    
     var page: SwipePageModel? {
         didSet {
             guard let unwrappedPage = page else { return }
             swipingImageView.image = UIImage(named: unwrappedPage.imageName)
             let attributedText = NSMutableAttributedString(string: unwrappedPage.headerText,
-                                                              attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 24)])
+                                                           attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 24)])
             attributedText.append(NSAttributedString(string: "\n\n\(unwrappedPage.bodyText)",
-                                                       attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.lightGray]))
+                                                     attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.lightGray]))
             descriptionTextView.attributedText = attributedText
             descriptionTextView.textAlignment = .center
         }
@@ -35,7 +40,7 @@ class PageViewCell: UICollectionViewCell {
         attributedText.append(NSAttributedString(string: "", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.gray]))
         
         var attributes = [NSAttributedString.Key: Any]()
-        let paragraphStyle: NSMutableParagraphStyle = NSMutableParagraphStyle()
+        let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 100
         attributes[NSAttributedString.Key.paragraphStyle] = paragraphStyle
         attributes[NSAttributedString.Key.font] = UIFont.preferredFont(forTextStyle: .body)
@@ -62,7 +67,7 @@ class PageViewCell: UICollectionViewCell {
         topImageContainerView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor).isActive = true
         topImageContainerView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
         topImageContainerView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
-        topImageContainerView.heightAnchor.constraint(equalTo: safeAreaLayoutGuide.heightAnchor, multiplier: 1/2).isActive = true
+        topImageContainerView.heightAnchor.constraint(equalTo: safeAreaLayoutGuide.heightAnchor, multiplier: 1 / 2).isActive = true
         topImageContainerView.widthAnchor.constraint(equalTo: safeAreaLayoutGuide.widthAnchor).isActive = true
         
         topImageContainerView.addSubview(swipingImageView)
@@ -78,6 +83,7 @@ class PageViewCell: UICollectionViewCell {
         descriptionTextView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0).isActive = true
     }
     
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

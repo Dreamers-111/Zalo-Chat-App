@@ -220,12 +220,17 @@ class RegisterViewController: UIViewController {
             alertUserLoginError()
             return
         }
-        // Luôn có image
-        var profileImage = imageView.image
-        if let _profileImage = profileImage, _profileImage.isEqualToImage(UIImage(named: "addAvt")!) {
-            profileImage = nil
-        }
-        let newUser = User(id: "", name: name, email: email, birthday: birthday, gender: gender, status: true)
+        /// Nếu imageView.image là hình ảnh mặc địch, thì profileImage là nil, còn không thì là imageView.image
+        ///  imageView.image luôn khác nil nên có thể sử dụng !
+        let profileImage = imageView.image!.isEqualToImage(UIImage(named: "addAvt")!) ? nil : imageView.image
+        
+        let newUser = User(id: "",
+                           name: name,
+                           email: email,
+                           gender: gender,
+                           birthday: birthday,
+                           profilePictureUrl: "",
+                           isActive: true)
         
         let alert = UIAlertController(title: "Xác nhận sử dụng email " + email, message: "", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Đồng ý", style: .default, handler: { _ in

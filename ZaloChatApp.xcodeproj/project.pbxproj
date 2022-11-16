@@ -34,7 +34,8 @@
 		E5856A4328F6D20000A6DE5A /* Login&RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5856A4228F6D20000A6DE5A /* Login&RegisterViewController.swift */; };
 		E5856A4528F6D36300A6DE5A /* SwipingCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5856A4428F6D36300A6DE5A /* SwipingCollectionViewController.swift */; };
 		E5856A4728F6D3E900A6DE5A /* PageViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5856A4628F6D3E900A6DE5A /* PageViewCell.swift */; };
-		E5856A4928F6D3F800A6DE5A /* SwipePageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5856A4828F6D3F800A6DE5A /* SwipePageModel.swift */; };
+		E597F44D2922978E000F8B12 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = E597F44C2922978E000F8B12 /* Message.swift */; };
+		E5E9C320291BC75D00B6E896 /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E9C31F291BC75D00B6E896 /* Conversation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -69,7 +70,8 @@
 		E5856A4228F6D20000A6DE5A /* Login&RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Login&RegisterViewController.swift"; sourceTree = "<group>"; };
 		E5856A4428F6D36300A6DE5A /* SwipingCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipingCollectionViewController.swift; sourceTree = "<group>"; };
 		E5856A4628F6D3E900A6DE5A /* PageViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewCell.swift; sourceTree = "<group>"; };
-		E5856A4828F6D3F800A6DE5A /* SwipePageModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipePageModel.swift; sourceTree = "<group>"; };
+		E597F44C2922978E000F8B12 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		E5E9C31F291BC75D00B6E896 /* Conversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Conversation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -205,7 +207,8 @@
 			isa = PBXGroup;
 			children = (
 				E559282628E2F840006ADC72 /* User.swift */,
-				E5856A4828F6D3F800A6DE5A /* SwipePageModel.swift */,
+				E5E9C31F291BC75D00B6E896 /* Conversation.swift */,
+				E597F44C2922978E000F8B12 /* Message.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -333,11 +336,13 @@
 				E5719D7028F6C39800AAF3E0 /* ConversationsViewController.swift in Sources */,
 				E5856A4728F6D3E900A6DE5A /* PageViewCell.swift in Sources */,
 				E5856A3F28F6C58B00A6DE5A /* ContactsViewController.swift in Sources */,
+				E597F44D2922978E000F8B12 /* Message.swift in Sources */,
 				E559280828E2EFF9006ADC72 /* AppDelegate.swift in Sources */,
 				C49B973828F6A6AD0002AF5C /* RegisterViewModel.swift in Sources */,
 				C450041F28F5D26D001F37D7 /* RegisterViewController.swift in Sources */,
 				B6B89FB22906EEBA009CD1D7 /* ScanQRCodeViewController.swift in Sources */,
 				E5719D7828F6C43F00AAF3E0 /* MainTabBarViewController.swift in Sources */,
+				E5E9C320291BC75D00B6E896 /* Conversation.swift in Sources */,
 				E5856A4328F6D20000A6DE5A /* Login&RegisterViewController.swift in Sources */,
 				C450042528F5D338001F37D7 /* Extensions.swift in Sources */,
 				E5856A4128F6C59F00A6DE5A /* TimelineViewController.swift in Sources */,
@@ -345,7 +350,6 @@
 				E559282528E2F826006ADC72 /* Database.swift in Sources */,
 				E559282728E2F840006ADC72 /* User.swift in Sources */,
 				E559280A28E2EFF9006ADC72 /* SceneDelegate.swift in Sources */,
-				E5856A4928F6D3F800A6DE5A /* SwipePageModel.swift in Sources */,
 				E5719D7628F6C41200AAF3E0 /* ChatViewController.swift in Sources */,
 				E559282B28E2F89F006ADC72 /* LoginViewModel.swift in Sources */,
 				E5856A4528F6D36300A6DE5A /* SwipingCollectionViewController.swift in Sources */,

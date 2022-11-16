@@ -37,24 +37,39 @@ final class LoginViewModel {
         spinner.show(in: vc.view)
 
         // Firebase Login
-        FirebaseAuth.Auth.auth().signIn(withEmail: email, password: password, completion: { authResult, error in
-            guard authResult != nil, error == nil else {
-                print("Thất bại đăng nhập người dùng với email: \(email)", error!.localizedDescription)
+        FirebaseAuth.Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
+            guard let authResult = authResult, error == nil else {
+                print("Thất bại đăng nhập người dùng với email: \(email)", error?.localizedDescription ?? "")
                 DispatchQueue.main.async {
                     spinner.dismiss(animated: true)
                 }
                 return
             }
-            print("Đăng nhập thành công người dùng với email và mật khẩu.")
-            UserDefaults.standard.set(email, forKey: "email")
-            vc.navigationController?.dismiss(animated: true)
-        })
+            // Đăng nhập thành công người dùng với email và mật khẩu.
+            let id = authResult.user.uid
+            // Lấy thông tin người dùng về để lưu vào bộ nhớ đệm
+            DatabaseManager.shared.userDoesExist(withId: id) { _, userData in
+                guard let userData = userData,
+                      let name = userData["name"] as? String,
+                      let profilePictureUrl = userData["profile_picture_url"] as? String
+                else {
+                    return
+                }
+
+                UserDefaults.standard.set(id, forKey: "id")
+                UserDefaults.standard.set(name, forKey: "name")
+                UserDefaults.standard.set(profilePictureUrl, forKey: "profile_picture_url")
+                DispatchQueue.main.async {
+                    vc.navigationController?.dismiss(animated: true)
+                }
+            }
+        }
     }
 
     func googleGetUser(completion: @escaping (GIDGoogleUser) -> Void) {
         GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
             guard let user = user, error == nil else {
-                print(error!.localizedDescription)
+                print(error?.localizedDescription ?? "")
                 return
             }
             completion(user)
@@ -86,43 +101,135 @@ final class LoginViewModel {
 
     private func googleAuthenticateUser(for user: GIDGoogleUser?, with error: Error?) {
         // Sau khi AuthenicationViewController của GoogleSignIn kết thúc
-        // Lấy LoginViewController hiện tại hiển thị, hiển thị spinner đang tải
+        // Lấy LoginViewController hiện tại hiển thị
         guard let vc = getCurrentLoginVC() else {
             print("Lấy LoginViewController hiện đang hiển thị không thành công.")
             return
         }
+
+        // hiển thị spinner đang tải
         let spinner = JGProgressHUD(style: .dark)
         spinner.show(in: vc.view)
 
-        // Kiểm tra xem user đã đăng nhập Google thành công hay chưa.
+        // Kiểm tra xem user đã đăng nhập vô Google thành công hay chưa.
         guard let user = user,
               let idToken = user.authentication.idToken,
               let email = user.profile?.email,
-              let displayName = user.profile?.name,
+              let name = user.profile?.name,
+              let userHasImage = user.profile?.hasImage,
               error == nil
         else {
-            print(error!.localizedDescription)
+            print(error?.localizedDescription ?? "")
             DispatchQueue.main.async {
                 spinner.dismiss(animated: true)
             }
             return
         }
-        print("Đã đăng nhập thành công user vói Google", email, displayName)
-        UserDefaults.standard.set(email, forKey: "email")
 
-        // Kiểm tra xem Google user đã đăng nhập Firebase đã đăng nhập thành công hay chưa
+        // Người dùng đã đăng nhập vô Google thành công
+        // Người dùng đăng nhập vào app từ credential của Google Auth Provider. Nếu email đã được sử dụng để đăng nhập qua phương thức email&password, thì người dùng sẽ không đăng nhập được
         let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: user.authentication.accessToken)
+
         FirebaseAuth.Auth.auth().signIn(with: credential) {
             authResult, error in
-            guard authResult != nil, error == nil else {
-                print("Đã thất bại đăng nhập Google user với Firebase.", error!.localizedDescription)
+            guard let authResult = authResult, error == nil else {
+                print("Người dùng thất bại đăng nhập vào app qua Google.", error?.localizedDescription ?? "")
                 DispatchQueue.main.async {
                     spinner.dismiss(animated: true)
                 }
                 return
             }
-            print("Đã đăng nhập thành công Google user với Firebase.")
-            vc.navigationController?.dismiss(animated: true)
+            print("Người dùng đăng nhập thành công vô apps")
+            /// Người dùng đăng nhập thành công vô app
+            /// Sau khi người dùng đăng nhập thành công vô app, thực hiện ghi người dùng database nếu người dùng lần đầu tiên đăng nhập vô app qua google, lúc này chưa có thông tin người dùng
+            let id = authResult.user.uid
+
+            // Kiểm tra đã có thông tin người dùng trên database chưa
+            DatabaseManager.shared.userDoesExist(withId: id) { _, userData in
+                /// Kiểm tra xong, thấy đã có thông tin người dùng,
+                /// lấy url hình ảnh hồ sơ cùng với các thông tin có sẵn khác từ hàm  như name, id để lấy vào bộ nhớ đệm.
+                if let userData = userData,
+                   let profilePictureUrl = userData["profile_picture_url"] as? String
+                {
+                    // Người dùng vô đc màn hình chính
+                    UserDefaults.standard.set(id, forKey: "id")
+                    UserDefaults.standard.set(name, forKey: "name")
+                    UserDefaults.standard.set(profilePictureUrl, forKey: "profile_picture_url")
+                    DispatchQueue.main.async {
+                        vc.navigationController?.dismiss(animated: true)
+                    }
+                }
+                // Kiểm tra xong, không thấy thông tin người dùng, thì thực hiện ghi người dùng vào database
+                else {
+                    // insert to database
+                    let newUser = User(id: id,
+                                       name: name,
+                                       email: email,
+                                       gender: "",
+                                       birthday: "",
+                                       profilePictureUrl: "",
+                                       isActive: true)
+                    DatabaseManager.shared.insertUser(with: newUser) { success in
+                        guard success else {
+                            print("failed to insert user \(id) into database")
+                            DispatchQueue.main.async {
+                                spinner.dismiss(animated: true)
+                            }
+                            return
+                        }
+                        // Ghi người dùng vào database thành công
+                        // Sau khi ghi người dùng thành công, thực hiện tải hình ảnh hồ sơ nếu người dùng có ảnh
+                        if userHasImage, let pictureURL = user.profile?.imageURL(withDimension: 200) {
+                            // Downloading data from Google image url
+                            URLSession.shared.dataTask(with: pictureURL) { data, _, error in
+                                guard let data = data, error == nil else {
+                                    print("Failed to get data from Google.")
+                                    DispatchQueue.main.async {
+                                        spinner.dismiss(animated: true)
+                                    }
+                                    return
+                                }
+                                // Got data from Google. Uploading...
+                                // thực hiện tải hình ảnh hồ sơ trong khi người dùng vô đc màn hình chính
+                                let fileName = newUser.profilePictureFilename
+                                StorageManager.shared.uploadProfilePicture(with: data, filename: fileName)
+                                    { result in
+                                        switch result {
+                                        case .success(let downloadURL):
+                                            DatabaseManager.shared.updateUserWithProfilePictureUrl(withId: id, downloadUrl: downloadURL)
+                                                { success in
+                                                    guard success else {
+                                                        print("failed to update profile picture url with user \(id)")
+                                                        UserDefaults.standard.set("", forKey: "profile_picture_url")
+                                                        return
+                                                    }
+                                                    UserDefaults.standard.set(downloadURL, forKey: "profile_picture_url")
+                                                }
+                                        case .failure(let error):
+                                            UserDefaults.standard.set("", forKey: "profile_picture_url")
+                                            print("\(error) ")
+                                        }
+                                    }
+                                UserDefaults.standard.set(id, forKey: "id")
+                                UserDefaults.standard.set(name, forKey: "name")
+                                DispatchQueue.main.async {
+                                    vc.navigationController?.dismiss(animated: true)
+                                }
+                            }.resume()
+                        }
+                        // Sau khi ghi người dùng thành công, bỏ qua bước tải hình ảnh hồ sơ vì người dùng kh có ảnh
+                        else {
+                            // Người dùng vô đc màn hình chính
+                            UserDefaults.standard.set(id, forKey: "id")
+                            UserDefaults.standard.set(name, forKey: "name")
+                            UserDefaults.standard.set("", forKey: "profile_picture_url")
+                            DispatchQueue.main.async {
+                                vc.navigationController?.dismiss(animated: true)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
