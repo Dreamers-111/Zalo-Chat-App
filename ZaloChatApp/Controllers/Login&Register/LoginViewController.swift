@@ -72,7 +72,6 @@ class LoginViewController: UIViewController {
         let button = UIButton(configuration: filled, primaryAction: nil)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Đăng nhập", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 22, weight: .bold)
         button.tintColor = .white
         button.backgroundColor = UIColor(red: 0.90, green: 0.00, blue: 0.21, alpha: 1.00)
         button.layer.cornerRadius = 15
@@ -85,11 +84,20 @@ class LoginViewController: UIViewController {
         return button
     }()
     
+    private let seperateText: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "hoặc"
+        label.textColor = .black
+        label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.sizeToFit()
+        return label
+    }()
+    
     private let googleSignInButton: GIDSignInButton = {
         let button = GIDSignInButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.tintColor = .white
-        button.layer.cornerRadius = 15
         return button
     }()
     
@@ -108,6 +116,7 @@ class LoginViewController: UIViewController {
         contentView.addSubview(passwordLabel)
         contentView.addSubview(passwordField)
         contentView.addSubview(loginButton)
+        contentView.addSubview(seperateText)
         contentView.addSubview(googleSignInButton)
         
         contentView.isUserInteractionEnabled = true
@@ -123,7 +132,7 @@ class LoginViewController: UIViewController {
               !email.isEmpty, !password.isEmpty,
               password.count >= 6
         else {
-            alertUserLoginError()
+            alertUserLoginError(title: "", message: "Vui lòng nhập thông tin đầy đủ")
             return
         }
         
@@ -134,12 +143,12 @@ class LoginViewController: UIViewController {
         LoginViewModel.shared.googleSignIn()
     }
     
-    func alertUserLoginError() {
-        let alert = UIAlertController(title: "",
-                                        message: "Vui lòng nhập đúng thông tin",
-                                        preferredStyle: .alert)
+    public func alertUserLoginError(title: String, message: String) {
+        let alert = UIAlertController(title: title,
+                                      message: message,
+                                      preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Đồng ý",
-                                        style: .cancel, handler: nil))
+                                      style: .cancel, handler: nil))
         present(alert, animated: true)
     }
     
@@ -162,7 +171,7 @@ class LoginViewController: UIViewController {
             imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor),
             imageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
             
-            emailLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: -40),
+            emailLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor),
             emailLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             emailLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
@@ -183,9 +192,12 @@ class LoginViewController: UIViewController {
             loginButton.topAnchor.constraint(equalTo: passwordField.bottomAnchor, constant: 30),
             loginButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 55),
             
+            seperateText.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 20),
+            seperateText.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            
             googleSignInButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 50),
             googleSignInButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -50),
-            googleSignInButton.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 30)
+            googleSignInButton.topAnchor.constraint(equalTo: seperateText.bottomAnchor, constant: 20)
         ]
         NSLayoutConstraint.activate(constraints)
     }

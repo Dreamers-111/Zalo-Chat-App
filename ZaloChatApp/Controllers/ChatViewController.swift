@@ -8,6 +8,10 @@
 import InputBarAccessoryView
 import MessageKit
 import UIKit
+import SDWebImage
+import AVFoundation
+import AVKit
+import CoreLocation
 
 class ChatViewController: MessagesViewController {
     static let dateFormatter: DateFormatter = {
@@ -19,7 +23,7 @@ class ChatViewController: MessagesViewController {
     }()
 
     // MARK: Parameters - Data
-
+    public let otherUserEmail: String
     private var isNewPrivateConversation = false
     private var conversation: Conversation?
     private var otherUserInPrivateConvo: User?
@@ -52,6 +56,7 @@ class ChatViewController: MessagesViewController {
         //
         self.displayName = otherUserInPrivateConvo.name
         self.displayPictureUrl = otherUserInPrivateConvo.profilePictureUrl
+        self.otherUserEmail = otherUserInPrivateConvo.id
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -63,6 +68,7 @@ class ChatViewController: MessagesViewController {
         //
         self.displayName = conversation.displayName
         self.displayPictureUrl = conversation.displayPictureUrl
+        self.otherUserEmail = conversation.id
         super.init(nibName: nil, bundle: nil)
 
         startListeningForChosenConveration(conversation.id)
@@ -86,6 +92,8 @@ class ChatViewController: MessagesViewController {
         messagesCollectionView.messagesLayoutDelegate = self
         messagesCollectionView.messagesDisplayDelegate = self
         messageInputBar.delegate = self
+        
+        setupInputButton()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -138,6 +146,135 @@ class ChatViewController: MessagesViewController {
         navigationItem.title = displayName
         messagesCollectionView.reloadData()
     }
+    
+    //MARK: SEND MEDIA MESSAGE
+    
+    private func setupInputButton() {
+        let button = InputBarButtonItem()
+        button.setSize(CGSize(width: 35, height: 35), animated: false)
+        button.setImage(UIImage(systemName: "paperclip"), for: .normal)
+        button.onTouchUpInside { [weak self] _ in
+            self?.presentInputActionSheet()
+        }
+        messageInputBar.setLeftStackViewWidthConstant(to: 36, animated: false)
+        messageInputBar.setStackViewItems([button], forStack: .left, animated: false)
+    }
+    
+    private func presentInputActionSheet() {
+        let actionSheet = UIAlertController(title: "Attach Media",
+                                            message: "What would you like to attach?",
+                                            preferredStyle: .actionSheet)
+        actionSheet.addAction(UIAlertAction(title: "Photo", style: .default, handler: { [weak self] _ in
+            self?.presentPhotoInputActionsheet()
+        }))
+        actionSheet.addAction(UIAlertAction(title: "Video", style: .default, handler: { [weak self]  _ in
+            self?.presentVideoInputActionsheet()
+        }))
+        actionSheet.addAction(UIAlertAction(title: "Location", style: .default, handler: { [weak self]  _ in
+            self?.presentLocationPicker()
+        }))
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+
+        present(actionSheet, animated: true)
+    }
+    
+    private func presentPhotoInputActionsheet() {
+        let actionSheet = UIAlertController(title: "Attach Photo",
+                                            message: "Where would you like to attach a photo from",
+                                            preferredStyle: .actionSheet)
+        
+        actionSheet.addAction(UIAlertAction(title: "Camera", style: .default, handler: { [weak self] _ in
+            let picker = UIImagePickerController()
+            picker.sourceType = .camera
+            picker.delegate = self
+            picker.allowsEditing = true
+            self?.present(picker, animated: true)
+        }))
+        
+        actionSheet.addAction(UIAlertAction(title: "Photo Library", style: .default, handler: { [weak self] _ in
+            let picker = UIImagePickerController()
+            picker.sourceType = .photoLibrary
+            picker.delegate = self
+            picker.allowsEditing = true
+            self?.present(picker, animated: true)
+        }))
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+
+        present(actionSheet, animated: true)
+    }
+    
+    private func presentVideoInputActionsheet() {
+        let actionSheet = UIAlertController(title: "Attach Video",
+                                            message: "Where would you like to attach a video from?",
+                                            preferredStyle: .actionSheet)
+        actionSheet.addAction(UIAlertAction(title: "Camera", style: .default, handler: { [weak self] _ in
+
+            let picker = UIImagePickerController()
+            picker.sourceType = .camera
+            picker.delegate = self
+            picker.mediaTypes = ["public.movie"]
+            picker.videoQuality = .typeMedium
+            picker.allowsEditing = true
+            self?.present(picker, animated: true)
+
+        }))
+        actionSheet.addAction(UIAlertAction(title: "Library", style: .default, handler: { [weak self] _ in
+
+            let picker = UIImagePickerController()
+            picker.sourceType = .photoLibrary
+            picker.delegate = self
+            picker.allowsEditing = true
+            picker.mediaTypes = ["public.movie"]
+            picker.videoQuality = .typeMedium
+            self?.present(picker, animated: true)
+
+        }))
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+
+        present(actionSheet, animated: true)
+    }
+    
+    private func presentLocationPicker() {
+        let vc = LocationPickerViewController(coordinates: nil)
+        vc.title = "Pick Location"
+        vc.navigationItem.largeTitleDisplayMode = .never
+        vc.completion = { selectedCoorindates in
+            guard let messageId = self.createMessageId(),
+                  let conversationId = self.conversation,
+                  let selfSender = self.selfSender
+            else {
+                return
+            }
+
+            let longitude: Double = selectedCoorindates.longitude
+            let latitude: Double = selectedCoorindates.latitude
+
+            print("long=\(longitude) | lat= \(latitude)")
+
+            let location = Location(location: CLLocation(latitude: latitude, longitude: longitude), size: .zero)
+            
+            let message = Message(messageId: messageId,
+                                  kind: .location(location),
+                                  sentDate: Date(),
+                                  sender: selfSender,
+                                  readBy: [""])
+            
+            DatabaseManager.shared.sendMessage(to: conversationId.id, message: message.kind) { error in
+                guard error == nil else {
+                    print("error send location", error as Any)
+                    return
+                }
+                print("sent location message")
+                /// Gửi tin nhắn đến cuộc hội thoại vừa tạo thành công
+                /// Thì bắt đầu lắng nghe tất cả các tin nhắn của cuộc hội thoại đó
+                self.startListeningForAllMessagesOfTheConversation(conversationId.id)
+            }
+            /// Bắt đầu lắng nghe cuộc hội thoại vừa tạo,
+            /// Xảy ra đồng thời với việc gửi tin nhắn đi
+            self.startListeningForChosenConveration(conversationId.id)
+        }
+        navigationController?.pushViewController(vc, animated: true)
+    }
 }
 
 // MARK: MessagesDataSource, MessagesLayoutDelegate, MessagesDisplayDelegate
@@ -153,6 +290,22 @@ extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, Messag
 
     func numberOfSections(in messagesCollectionView: MessageKit.MessagesCollectionView) -> Int {
         return messages.count
+    }
+    
+    func configureMediaMessageImageView(_ imageView: UIImageView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
+        guard let message = message as? Message else {
+            return
+        }
+
+        switch message.kind {
+        case .photo(let media):
+            guard let imageUrl = media.url else {
+                return
+            }
+            imageView.sd_setImage(with: imageUrl, completed: nil)
+        default:
+            break
+        }
     }
 }
 
@@ -196,6 +349,177 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
                     return
                 }
             }
+        }
+    }
+    
+    private func createMessageId() -> String? {
+        // date, otherUesrEmail, senderEmail, randomInt
+        guard let currentUserEmail = UserDefaults.standard.value(forKey: "id") as? String else {
+            return nil
+        }
+
+        let safeCurrentEmail = DatabaseManager.safeEmail(emailAddress: currentUserEmail)
+
+        let dateString = Self.dateFormatter.string(from: Date())
+        let newIdentifier = "\(otherUserEmail)_\(safeCurrentEmail)_\(dateString)"
+
+        print("created message id: \(newIdentifier)")
+
+        return newIdentifier
+    }
+}
+
+extension ChatViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
+    }
+
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true, completion: nil)
+        guard let messageId = createMessageId(),
+              let conversationId = conversation,
+              let selfSender = selfSender
+        else {
+            return
+        }
+
+        if let image = info[.editedImage] as? UIImage, let imageData =  image.pngData() {
+            let fileName = "photo_message_" + messageId.replacingOccurrences(of: " ", with: "-") + ".png"
+            // Upload image
+            StorageManager.shared.uploadMessagePhoto(with: imageData, fileName: fileName, completion: { result in
+                switch result {
+                case .success(let urlString):
+                    // Ready to send message
+                    print("Uploaded Message Photo: \(urlString)")
+
+                    guard let url = URL(string: urlString),
+                        let placeholder = UIImage(systemName: "plus") else {
+                            return
+                    }
+
+                    let media = Media(url: url,
+                                      image: nil,
+                                      placeholderImage: placeholder,
+                                      size: .zero)
+
+                    let message = Message(messageId: messageId,
+                                          kind: .photo(media),
+                                          sentDate: Date(),
+                                          sender: selfSender,
+                                          readBy: [""])
+                    
+                    DatabaseManager.shared.sendMessage(to: conversationId.id, message: message.kind) { error in
+                        guard error == nil else {
+                            print("error send photo", error as Any)
+                            return
+                        }
+                        print("sent message photo: \(urlString)")
+                        /// Gửi tin nhắn đến cuộc hội thoại vừa tạo thành công
+                        /// Thì bắt đầu lắng nghe tất cả các tin nhắn của cuộc hội thoại đó
+                        self.startListeningForAllMessagesOfTheConversation(conversationId.id)
+                    }
+                    /// Bắt đầu lắng nghe cuộc hội thoại vừa tạo,
+                    /// Xảy ra đồng thời với việc gửi tin nhắn đi
+                    self.startListeningForChosenConveration(conversationId.id)
+
+                case .failure(let error):
+                    print("message photo upload error: \(error)")
+                }
+            })
+        }
+        else if let videoUrl = info[.mediaURL] as? URL {
+            let fileName = "photo_message_" + messageId.replacingOccurrences(of: " ", with: "-") + ".MOV"
+            print("alo video URL: \(videoUrl)")
+            print("alo fileName: \(fileName)")
+            // Upload Video
+            StorageManager.shared.uploadMessageVideo(with: videoUrl, fileName: fileName, completion: { result in
+                switch result {
+                case .success(let urlString):
+                    // Ready to send message
+                    print("Uploaded Message Video: \(urlString)")
+
+                    guard let url = URL(string: urlString),
+                        let placeholder = UIImage(systemName: "plus") else {
+                            return
+                    }
+
+                    let media = Media(url: url,
+                                      image: nil,
+                                      placeholderImage: placeholder,
+                                      size: .zero)
+
+                    let message = Message(messageId: messageId,
+                                          kind: .video(media),
+                                          sentDate: Date(),
+                                          sender: selfSender, readBy: [""])
+
+                    DatabaseManager.shared.sendMessage(to: conversationId.id, message: message.kind) { error in
+                        guard error == nil else {
+                            print("error send video", error as Any)
+                            return
+                        }
+                        print("sent message video: \(urlString)")
+                        /// Gửi tin nhắn đến cuộc hội thoại vừa tạo thành công
+                        /// Thì bắt đầu lắng nghe tất cả các tin nhắn của cuộc hội thoại đó
+                        self.startListeningForAllMessagesOfTheConversation(conversationId.id)
+                    }
+                    /// Bắt đầu lắng nghe cuộc hội thoại vừa tạo,
+                    /// Xảy ra đồng thời với việc gửi tin nhắn đi
+                    self.startListeningForChosenConveration(conversationId.id)
+
+                case .failure(let error):
+                    print("message video upload error: \(error)")
+                }
+            })
+        }
+    }
+}
+
+extension ChatViewController: MessageCellDelegate {
+    func didTapMessage(in cell: MessageCollectionViewCell) {
+        guard let indexPath = messagesCollectionView.indexPath(for: cell) else {
+            return
+        }
+
+        let message = messages[indexPath.section]
+
+        switch message.kind {
+        case .location(let locationData):
+            let coordinates = locationData.location.coordinate
+            let vc = LocationPickerViewController(coordinates: coordinates)
+
+            vc.title = "Location"
+            navigationController?.pushViewController(vc, animated: true)
+        default:
+            break
+        }
+    }
+
+    func didTapImage(in cell: MessageCollectionViewCell) {
+        guard let indexPath = messagesCollectionView.indexPath(for: cell) else {
+            return
+        }
+
+        let message = messages[indexPath.section]
+
+        switch message.kind {
+        case .photo(let media):
+            guard let imageUrl = media.url else {
+                return
+            }
+            let vc = PhotoViewController(with: imageUrl)
+            navigationController?.pushViewController(vc, animated: true)
+        case .video(let media):
+            guard let videoUrl = media.url else {
+                return
+            }
+
+            let vc = AVPlayerViewController()
+            vc.player = AVPlayer(url: videoUrl)
+            present(vc, animated: true)
+        default:
+            break
         }
     }
 }
