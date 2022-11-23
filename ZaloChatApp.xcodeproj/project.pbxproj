@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		2AD82DD584A1D908812A8341 /* Pods_ZaloChatApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14002B1733CCB7736111DF3C /* Pods_ZaloChatApp.framework */; };
+		B61C0468292E371F003F1846 /* PhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61C0467292E371F003F1846 /* PhotoViewController.swift */; };
+		B61C046A292E3728003F1846 /* LocationPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61C0469292E3728003F1846 /* LocationPickerViewController.swift */; };
 		B6B89FB22906EEBA009CD1D7 /* ScanQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B89FB12906EEB9009CD1D7 /* ScanQRCodeViewController.swift */; };
 		C450041F28F5D26D001F37D7 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C450041E28F5D26D001F37D7 /* RegisterViewController.swift */; };
 		C450042328F5D2F0001F37D7 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C450042228F5D2F0001F37D7 /* LoginViewController.swift */; };
@@ -42,6 +44,8 @@
 		11172BB7910D2998ECE386FA /* Pods-ZaloChatApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZaloChatApp.debug.xcconfig"; path = "Target Support Files/Pods-ZaloChatApp/Pods-ZaloChatApp.debug.xcconfig"; sourceTree = "<group>"; };
 		14002B1733CCB7736111DF3C /* Pods_ZaloChatApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ZaloChatApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B167E43E163FD2DFB2AEE00 /* Pods-ZaloChatApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZaloChatApp.release.xcconfig"; path = "Target Support Files/Pods-ZaloChatApp/Pods-ZaloChatApp.release.xcconfig"; sourceTree = "<group>"; };
+		B61C0467292E371F003F1846 /* PhotoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewController.swift; sourceTree = "<group>"; };
+		B61C0469292E3728003F1846 /* LocationPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationPickerViewController.swift; sourceTree = "<group>"; };
 		B6B89FB12906EEB9009CD1D7 /* ScanQRCodeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanQRCodeViewController.swift; sourceTree = "<group>"; };
 		C450041E28F5D26D001F37D7 /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		C450042228F5D2F0001F37D7 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -177,6 +181,8 @@
 				E5719D7128F6C3C300AAF3E0 /* NewConversationViewController.swift */,
 				E5719D7328F6C3ED00AAF3E0 /* ProfileViewController.swift */,
 				E5719D7528F6C41200AAF3E0 /* ChatViewController.swift */,
+				B61C0467292E371F003F1846 /* PhotoViewController.swift */,
+				B61C0469292E3728003F1846 /* LocationPickerViewController.swift */,
 				E5856A3E28F6C58B00A6DE5A /* ContactsViewController.swift */,
 				E5856A4028F6C59F00A6DE5A /* TimelineViewController.swift */,
 				B6B89FB12906EEB9009CD1D7 /* ScanQRCodeViewController.swift */,
@@ -338,6 +344,7 @@
 				E5856A3F28F6C58B00A6DE5A /* ContactsViewController.swift in Sources */,
 				E597F44D2922978E000F8B12 /* Message.swift in Sources */,
 				E559280828E2EFF9006ADC72 /* AppDelegate.swift in Sources */,
+				B61C046A292E3728003F1846 /* LocationPickerViewController.swift in Sources */,
 				C49B973828F6A6AD0002AF5C /* RegisterViewModel.swift in Sources */,
 				C450041F28F5D26D001F37D7 /* RegisterViewController.swift in Sources */,
 				B6B89FB22906EEBA009CD1D7 /* ScanQRCodeViewController.swift in Sources */,
@@ -353,6 +360,7 @@
 				E5719D7628F6C41200AAF3E0 /* ChatViewController.swift in Sources */,
 				E559282B28E2F89F006ADC72 /* LoginViewModel.swift in Sources */,
 				E5856A4528F6D36300A6DE5A /* SwipingCollectionViewController.swift in Sources */,
+				B61C0468292E371F003F1846 /* PhotoViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

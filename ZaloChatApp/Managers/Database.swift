@@ -8,6 +8,7 @@
 import FirebaseFirestore
 import Foundation
 import MessageKit
+import CoreLocation
 
 /// Manager object to read and write data to Firebase Firestore Database
 final class DatabaseManager {
@@ -16,6 +17,12 @@ final class DatabaseManager {
     private let db = Firestore.firestore()
     /// Shared instance of class
     static let shared = DatabaseManager()
+    
+    static func safeEmail(emailAddress: String) -> String {
+        var safeEmail = emailAddress.replacingOccurrences(of: ".", with: "-")
+        safeEmail = safeEmail.replacingOccurrences(of: "@", with: "-")
+        return safeEmail
+    }
 
     private var userListener: ListenerRegistration?
     private var conversationListener: ListenerRegistration?
@@ -352,6 +359,7 @@ extension DatabaseManager {
                 completion(.failure(.MessageDocumentSerializationFailure))
                 return
             }
+            
             completion(.success(messages))
         }
         allMessagesListener = listener
@@ -375,11 +383,22 @@ extension DatabaseManager {
             contentType = "text"
         case .attributedText:
             break
-        case .photo:
+        case .photo(let mediaItem):
+            if let targetUrlString = mediaItem.url?.absoluteString {
+                content = targetUrlString
+                contentType = "photo"
+            }
             break
-        case .video:
+        case .video(let mediaItem):
+            if let targetUrlString = mediaItem.url?.absoluteString {
+                content = targetUrlString
+                contentType = "video"
+            }
             break
-        case .location:
+        case .location(let locationData):
+            let location = locationData.location
+            content = "\(location.coordinate.longitude),\(location.coordinate.latitude)"
+            contentType = "location"
             break
         case .emoji:
             break
