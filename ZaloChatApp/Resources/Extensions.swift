@@ -174,3 +174,12 @@ extension String {
     }
 }
 
+extension UITableView {
+    func removeSeparatorsOfEmptyCells() {
+        tableFooterView = UIView(frame: .zero)
+    }
+
+    func removeSeparatorsOfEmptyCellsAndLastCell() {
+        tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: 1)))
+    }
+}
