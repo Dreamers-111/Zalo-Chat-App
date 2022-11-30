@@ -20,7 +20,7 @@ enum ContactsSectionOptionType {
 class ContactsViewController: UIViewController {
     
     private var models = [ContactsSection]()
-    private var userList = [User(id: "", name: "Nam Nam", profilePictureUrl: "", isActive: true),User(id: "", name: "Dinh Long", profilePictureUrl: "", isActive: true),User(id: "", name: "Le Huan", profilePictureUrl: "", isActive: true),User(id: "", name: "Nguyen Dung", profilePictureUrl: "", isActive: true),User(id: "", name: "Tran Tuan", profilePictureUrl: "", isActive: true)]
+    private var userList = [User(id: "", name: "Tuyet Ngoc", profilePictureUrl: "user1", isActive: true),User(id: "", name: "Dinh Long", profilePictureUrl: "user2", isActive: true),User(id: "", name: "Le Huan", profilePictureUrl: "user3", isActive: true),User(id: "", name: "Nguyen Dung", profilePictureUrl: "user4", isActive: true),User(id: "", name: "Le Ngoc Mai", profilePictureUrl: "user5", isActive: true)]
 
 
 
@@ -40,7 +40,6 @@ class ContactsViewController: UIViewController {
         navigationItem.largeTitleDisplayMode = .never
         view.backgroundColor = .systemBackground
         
-        loadUserToModels()
         configure()
         
         contactsTableView.dataSource = self
@@ -49,10 +48,7 @@ class ContactsViewController: UIViewController {
         view.addSubview(contactsTableView)
     }
     
-    func loadUserToModels() {
 
-
-    }
     func configure() {
         
         var loadUser: [ContactsSectionOptionType] = []
@@ -69,7 +65,7 @@ class ContactsViewController: UIViewController {
         models.append(ContactsSection(title: "Nhóm", options: [
 
         ]))
-
+        contactsTableView.reloadData()
     }
     
     override func viewDidLayoutSubviews() {

@@ -71,7 +71,8 @@ class FriendsTableViewCell: UITableViewCell {
     
     public func configure(with model: User) {
         label.text = model.name
-        userProfileImageView.kf.setImage(with: URL(string: model.profilePictureUrl))
+        //userProfileImageView.kf.setImage(with: URL(string: model.profilePictureUrl))
+        userProfileImageView.image = UIImage(named: model.profilePictureFilename)
     }
 
 

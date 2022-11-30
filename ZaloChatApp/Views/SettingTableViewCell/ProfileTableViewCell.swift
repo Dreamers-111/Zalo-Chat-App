@@ -17,6 +17,8 @@ class ProfileTableViewCell: UITableViewCell {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.tintColor = .black
         imageView.contentMode = .scaleAspectFit
+        imageView.layer.cornerRadius = 40
+        imageView.layer.masksToBounds = true
         return imageView
     }()
     
@@ -37,6 +39,7 @@ class ProfileTableViewCell: UITableViewCell {
         
         contentView.clipsToBounds = true
         accessoryType = .disclosureIndicator
+
     }
 
     required init?(coder: NSCoder) {
@@ -46,14 +49,14 @@ class ProfileTableViewCell: UITableViewCell {
 
     private func configureContents() {
         let constraints = [
-            contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 80),
+            contentView.heightAnchor.constraint(equalToConstant: 80),
             
-            userProfileImageView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.6),
-            userProfileImageView.widthAnchor.constraint(equalTo: userProfileImageView.heightAnchor),
+            userProfileImageView.heightAnchor.constraint(equalTo: contentView.heightAnchor),
+            userProfileImageView.widthAnchor.constraint(equalTo: contentView.heightAnchor),
             userProfileImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
             userProfileImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
 
-            label.leadingAnchor.constraint(equalTo: userProfileImageView.trailingAnchor, constant: 10),
+            label.leadingAnchor.constraint(equalTo: userProfileImageView.trailingAnchor, constant: 15),
             label.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             
         ]
@@ -71,7 +74,12 @@ class ProfileTableViewCell: UITableViewCell {
     
     public func configure(with model: User) {
         label.text = model.name
-        userProfileImageView.kf.setImage(with: URL(string: model.profilePictureUrl))
+        if model.profilePictureUrl.isEmpty {
+            userProfileImageView.image = UIImage(named: "default_avatar")
+        } else {
+            userProfileImageView.kf.setImage(with: URL(string: model.profilePictureUrl))
+        }
+        
     }
 
 }

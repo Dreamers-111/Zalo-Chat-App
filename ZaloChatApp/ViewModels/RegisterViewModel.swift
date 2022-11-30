@@ -9,6 +9,7 @@ import FirebaseAuth
 import Foundation
 import JGProgressHUD
 
+
 /// Manager object to read and write data to real time firebase database
 final class RegisterViewModel {
     private init() {}
@@ -44,6 +45,12 @@ final class RegisterViewModel {
         FirebaseAuth.Auth.auth().createUser(withEmail: user.email, password: password) { authResult, error in
             guard let result = authResult, error == nil else {
                 print("Đã đăng ký thất bại, user với email \(user.email).", error?.localizedDescription ?? "")
+                let alert = UIAlertController(title: "Email đã sử dụng, xin mời sử dụng email khác",
+                                              message: "",
+                                              preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Đồng ý",
+                                              style: .cancel))
+                vc.present(alert, animated: true)
                 DispatchQueue.main.async {
                     spinner.dismiss(animated: true)
                 }

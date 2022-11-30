@@ -13,7 +13,7 @@ class Login_RegisterViewController: UIViewController {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Đăng nhập", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .medium)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         button.tintColor = .white
         button.backgroundColor = .lightGray
         button.layer.cornerRadius = 15
@@ -25,7 +25,7 @@ class Login_RegisterViewController: UIViewController {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Đăng ký", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .medium)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         button.tintColor = .white
         button.backgroundColor = UIColor.mainColor
         button.layer.cornerRadius = 15
@@ -87,7 +87,7 @@ class Login_RegisterViewController: UIViewController {
         super.viewDidLayoutSubviews()
           
         NSLayoutConstraint.activate([
-            buttonStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40),
+            buttonStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -140),
             buttonStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             buttonStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
             buttonStackView.heightAnchor.constraint(greaterThanOrEqualToConstant: 55)

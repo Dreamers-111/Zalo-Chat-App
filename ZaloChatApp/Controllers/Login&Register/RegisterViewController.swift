@@ -10,7 +10,7 @@ import UIKit
 
 class RegisterViewController: UIViewController {
     let gender = ["Nam", "Nữ"]
-    let ctlbnf: CGFloat = 20, ctleftright: CGFloat = 20, cttop: CGFloat = 10
+    let ctlbnf: CGFloat = 20, ctleftright: CGFloat = 30, cttop: CGFloat = 10
     
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -98,7 +98,7 @@ class RegisterViewController: UIViewController {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Đăng ký", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 22, weight: .bold)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         button.tintColor = .white
         button.backgroundColor = UIColor.mainColor
         button.layer.cornerRadius = 15
@@ -295,8 +295,8 @@ class RegisterViewController: UIViewController {
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
-            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
-            imageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1 / 4),
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
+            imageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1 / 4.5),
             imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor),
             imageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
             
@@ -321,12 +321,12 @@ class RegisterViewController: UIViewController {
             birthdayField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -ctleftright),
             
             registerButton.leadingAnchor.constraint(
-                equalTo: contentView.leadingAnchor, constant: 10),
+                equalTo: contentView.leadingAnchor, constant: 20),
             registerButton.trailingAnchor.constraint(
-                equalTo: contentView.trailingAnchor, constant: -10),
+                equalTo: contentView.trailingAnchor, constant: -20),
             registerButton.topAnchor.constraint(
                 equalTo: birthdayField.bottomAnchor, constant: 30),
-            registerButton.heightAnchor.constraint(equalTo: birthdayField.heightAnchor, multiplier: 1.1),
+            registerButton.heightAnchor.constraint(equalTo: birthdayField.heightAnchor, multiplier: 1),
             
             alertLabel.topAnchor.constraint(equalTo: registerButton.bottomAnchor, constant: 20),
             alertLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
@@ -443,7 +443,7 @@ extension RegisterViewController: UITextFieldDelegate {
     }
     
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
-        if textField == emailField, !(textField.text ?? "").isEmpty, !textField.text!.isEmail {
+        if textField == emailField, !textField.text!.isEmpty, !textField.text!.isEmail {
             let alert = UIAlertController(title: "Hãy nhập đúng email",
                                           message: "",
                                           preferredStyle: .alert)

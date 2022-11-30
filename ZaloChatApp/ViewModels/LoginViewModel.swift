@@ -40,6 +40,12 @@ final class LoginViewModel {
         FirebaseAuth.Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
             guard let authResult = authResult, error == nil else {
                 print("Thất bại đăng nhập người dùng với email: \(email)", error?.localizedDescription ?? "")
+                let alert = UIAlertController(title: "Bạn đã nhập sai tài khoản hoặc mật khẩu",
+                                              message: "",
+                                              preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Đồng ý",
+                                              style: .cancel))
+                vc.present(alert, animated: true)
                 DispatchQueue.main.async {
                     spinner.dismiss(animated: true)
                 }

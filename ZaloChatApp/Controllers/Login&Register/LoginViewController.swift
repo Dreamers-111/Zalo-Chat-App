@@ -24,7 +24,7 @@ class LoginViewController: UIViewController {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = UIImage(named: "login")
-        imageView.contentMode = .scaleToFill
+        imageView.contentMode = .scaleAspectFit
         imageView.layer.masksToBounds = true
         return imageView
     }()
@@ -46,58 +46,51 @@ class LoginViewController: UIViewController {
         return field
     }()
     
-    private let emailLabel: UILabel = {
+    private let guideLabel1: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Tài khoản:"
+        label.text = "Chào mừng bạn quay trở lại"
+        label.textAlignment = .center
         label.textColor = .black
-        label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.font = .systemFont(ofSize: 20, weight: .medium)
         label.sizeToFit()
         return label
     }()
     
-    private let passwordLabel: UILabel = {
+    private let guideLabel2: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Mật khẩu:"
+        label.text = "Hoặc"
         label.textColor = .black
         label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.textAlignment = .center
+        label.lineBreakMode = .byWordWrapping
         label.sizeToFit()
         return label
     }()
     
     private let loginButton: UIButton = {
-        var filled = UIButton.Configuration.borderless()
-        filled.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
-        let button = UIButton(configuration: filled, primaryAction: nil)
+        let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Đăng nhập", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         button.tintColor = .white
-        button.backgroundColor = UIColor(red: 0.90, green: 0.00, blue: 0.21, alpha: 1.00)
+        button.backgroundColor = UIColor.mainColor
         button.layer.cornerRadius = 15
         // Shadow Color
-        button.layer.shadowColor = UIColor(red: 1.00, green: 0.59, blue: 0.69, alpha: 1.00).cgColor
+        button.layer.shadowColor = UIColor.mainColor.cgColor
         button.layer.shadowOffset = CGSize(width: 0.0, height: 3.0)
-        button.layer.shadowOpacity = 1
+        button.layer.shadowOpacity = 0.7
         button.layer.shadowRadius = 1
         button.layer.masksToBounds = false
         return button
-    }()
-    
-    private let seperateText: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "hoặc"
-        label.textColor = .black
-        label.font = .systemFont(ofSize: 16, weight: .medium)
-        label.sizeToFit()
-        return label
     }()
     
     private let googleSignInButton: GIDSignInButton = {
         let button = GIDSignInButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.tintColor = .white
+        button.layer.cornerRadius = 15
         return button
     }()
     
@@ -111,13 +104,14 @@ class LoginViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(imageView)
-        contentView.addSubview(emailLabel)
+        contentView.addSubview(guideLabel1)
         contentView.addSubview(emailField)
-        contentView.addSubview(passwordLabel)
+        contentView.addSubview(guideLabel2)
         contentView.addSubview(passwordField)
         contentView.addSubview(loginButton)
-        contentView.addSubview(seperateText)
+        contentView.addSubview(guideLabel2)
         contentView.addSubview(googleSignInButton)
+
         
         contentView.isUserInteractionEnabled = true
         scrollView.isUserInteractionEnabled = true
@@ -164,40 +158,36 @@ class LoginViewController: UIViewController {
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            contentView.bottomAnchor.constraint(greaterThanOrEqualTo: googleSignInButton.bottomAnchor),
             
-            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: -30),
-            imageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1/3),
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 60),
+            imageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1 / 4),
             imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor),
-            imageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            imageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
-            emailLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor),
-            emailLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            emailLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            guideLabel1.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: -10),
+            guideLabel1.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
-            emailField.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 10),
-            emailField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            emailField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            emailField.topAnchor.constraint(equalTo: guideLabel1.bottomAnchor, constant: 20),
+            emailField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 30),
+            emailField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -30),
             
-            passwordLabel.topAnchor.constraint(equalTo: emailField.bottomAnchor, constant: 20),
-            passwordLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            passwordLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            passwordField.topAnchor.constraint(equalTo: emailField.bottomAnchor, constant: 10),
+            passwordField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 30),
+            passwordField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -30),
             
-            passwordField.topAnchor.constraint(equalTo: passwordLabel.bottomAnchor, constant: 10),
-            passwordField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            passwordField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            loginButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            loginButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            loginButton.topAnchor.constraint(equalTo: passwordField.bottomAnchor, constant: 28),
+            loginButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 50),
             
-            loginButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 50),
-            loginButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -50),
-            loginButton.topAnchor.constraint(equalTo: passwordField.bottomAnchor, constant: 30),
-            loginButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 55),
+            guideLabel2.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 10),
+            guideLabel2.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
-            seperateText.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 20),
-            seperateText.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            googleSignInButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
+            googleSignInButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
+            googleSignInButton.topAnchor.constraint(equalTo: guideLabel2.bottomAnchor, constant: 10),
             
-            googleSignInButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 50),
-            googleSignInButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -50),
-            googleSignInButton.topAnchor.constraint(equalTo: seperateText.bottomAnchor, constant: 20)
+            contentView.bottomAnchor.constraint(greaterThanOrEqualTo: googleSignInButton.bottomAnchor),
         ]
         NSLayoutConstraint.activate(constraints)
     }
@@ -218,6 +208,19 @@ extension LoginViewController: UITextFieldDelegate {
             loginButtonTapped()
         }
         
+        return true
+    }
+    
+    func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+        if textField == emailField, textField.text!.isEmpty, !textField.text!.isEmail {
+            let alert = UIAlertController(title: "Hãy nhập đúng email",
+                                          message: "",
+                                          preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Đồng ý",
+                                          style: .cancel))
+            present(alert, animated: true)
+            return false
+        }
         return true
     }
 }

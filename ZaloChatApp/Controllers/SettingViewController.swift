@@ -62,11 +62,6 @@ class SettingViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
 
         self.startListeningForCurrentUser()
-
-        print(currentUser.name)
-        print("1")
-        
-        configure()
         
         settingsTableView.dataSource = self
         settingsTableView.delegate = self
@@ -90,7 +85,7 @@ class SettingViewController: UIViewController {
             case .success(let user):
                 self?.currentUser = user
                 DispatchQueue.main.async {
-                    //
+                    self?.updateTableView()
                 }
             case .failure(let error):
                 print("Thất bại lắng nghe người dùng hiện tại từ csdl: \(error)")
@@ -99,7 +94,7 @@ class SettingViewController: UIViewController {
     }
     
     
-    func configure() {
+    func updateTableView () {
         let user = currentUser
         models.append(Section(title: "", options: [
             .userProfileCell(model: user)
@@ -170,7 +165,7 @@ class SettingViewController: UIViewController {
             ,
             .logoutButton
         ]))
-
+        self.settingsTableView.reloadData()
     }
     
     override func viewDidLayoutSubviews() {
@@ -255,8 +250,9 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
         let type = models[indexPath.section].options[indexPath.row]
 
         switch type.self {
-        case .userProfileCell(let model):
-            print(currentUser.name)
+        case .userProfileCell:
+            let vc = ProfileViewController(userdata: currentUser)
+            navigationController?.pushViewController(vc, animated: true)
             return
         case .staticCell(let model):
             // action khi bấm vào
@@ -265,7 +261,7 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
             model.handler()
         case .logoutButton:
             let actionSheet = UIAlertController(title: "", message: "Do you really want to log out?", preferredStyle: .actionSheet)
-    
+
             actionSheet.addAction(UIAlertAction(title: "Log Out", style: .destructive) { [weak self] _ in
                 GIDSignIn.sharedInstance.signOut()
                 do {
@@ -273,15 +269,19 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
                     let vc = Login_RegisterViewController()
                     let nav = UINavigationController(rootViewController: vc)
                     nav.modalPresentationStyle = .fullScreen
-                    self?.present(nav, animated: true)
-                }
-                catch {
-                    print("Failed to Log Out", error.localizedDescription)
+                    self?.present(nav, animated: true) {
+                        UserDefaults.standard.removeObject(forKey: "id")
+                        UserDefaults.standard.removeObject(forKey: "name")
+                        UserDefaults.standard.removeObject(forKey: "profile_picture_url")
+                        DatabaseManager.shared.removeAllListeners()
+                    }
+                } catch {
+                    print("Đăng xuất thất bại", error.localizedDescription)
                 }
             })
-    
+
             actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-    
+
             present(actionSheet, animated: true)
         }
 
