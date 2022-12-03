@@ -7,7 +7,6 @@
 
 import FirebaseStorage
 import Foundation
-import AVFoundation
 
 final class StorageManager {
     static let shared = StorageManager()
@@ -20,7 +19,6 @@ final class StorageManager {
 
     /// Upload picture to Firebase Storage and returns completion with url string to download
     typealias UploadPictureCompletion = (Result<String, StorageErrors>) -> Void
-    typealias UploadVideoCompletion = (Result<String, StorageErrors>) -> Void
 
     func uploadProfilePicture(with data: Data, filename: String, completion: @escaping UploadPictureCompletion) {
         storage.child("images/\(filename)").putData(data) { [weak self] metadata, error in
@@ -80,11 +78,11 @@ final class StorageManager {
     }
     
     /// Upload video that will be sent in a conversation message
-    public func uploadMessageVideo(with fileUrl: URL, fileName: String, completion: @escaping UploadVideoCompletion) {
+    public func uploadMessageVideo(with fileUrl: URL, fileName: String, completion: @escaping UploadPictureCompletion) {
         storage.child("message_videos/\(fileName)").putFile(from: fileUrl, metadata: nil, completion: { [weak self] metadata, error in
             guard error == nil else {
                 // failed
-                print("failed to upload video file to firebase for video: \(String(describing: error?.localizedDescription))")
+                print("failed to upload video file to firebase for video")
                 completion(.failure(StorageErrors.failedToUpload))
                 return
             }
@@ -102,7 +100,7 @@ final class StorageManager {
             })
         })
     }
-    
+
     enum StorageErrors: Error {
         case failedToUpload
         case failedToGetDownloadURL

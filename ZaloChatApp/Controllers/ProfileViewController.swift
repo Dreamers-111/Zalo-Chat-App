@@ -14,7 +14,16 @@ class ProfileViewController: UIViewController {
     // MARK: Parameters - Data
 
     private var currentUser = User()
-
+    private var item: [String] = []
+    init(userdata: User) {
+        self.currentUser = userdata
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented.")
+    }
     // MARK: Parameters - UIKit
 
     private let profileTableView: UITableView = {
@@ -26,7 +35,7 @@ class ProfileViewController: UIViewController {
 
     private let profileTableHeaderView: UIView = {
         let headerView = UIView(frame: .zero)
-        headerView.backgroundColor = .link
+        headerView.backgroundColor = .systemBackground
         return headerView
     }()
 
@@ -46,14 +55,16 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        title = "Profile"
+        title = "Hồ sơ"
         navigationItem.largeTitleDisplayMode = .always
         navigationController?.navigationBar.prefersLargeTitles = true
-
+        
+        print(currentUser)
+        
         profileTableView.dataSource = self
         profileTableView.delegate = self
         profileTableView.tableHeaderView = profileTableHeaderView
-
+        profileTableView.reloadData()
         view.addSubview(profileTableView)
         profileTableHeaderView.addSubview(profileTableHeaderImageView)
     }
@@ -68,41 +79,46 @@ class ProfileViewController: UIViewController {
         ]
         NSLayoutConstraint.activate(constraints)
         //
-        profileTableHeaderView.frame = CGRect(x: 0, y: 0, width: view.width, height: 300)
-        profileTableHeaderImageView.frame = CGRect(x: (profileTableHeaderView.width - 150) / 2, y: 75, width: 150, height: 150)
+        profileTableHeaderView.frame = CGRect(x: 0, y: 0, width: view.width, height: 185)
+        profileTableHeaderImageView.frame = CGRect(x: (profileTableHeaderView.width - 150) / 2, y: 15, width: 150, height: 150)
         profileTableHeaderImageView.layer.cornerRadius = profileTableHeaderImageView.width / 2
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        startListeningForCurrentUser()
+        //startListeningForCurrentUser()
+        DispatchQueue.main.async {
+            self.updateUI()
+            self.item = ["Họ và tên: " + self.currentUser.name, "Email: " + self.currentUser.email,"Giới tính: " +  self.currentUser.gender,"Ngày sinh: " + self.currentUser.birthday]
+            self.profileTableView.reloadData()
+        }
     }
 
     // MARK: Methods - Data
 
-    private func startListeningForCurrentUser() {
-        guard let currentUserId = UserDefaults.standard.value(forKey: "id") as? String else {
-            print("Thất bại lấy thông tin người dùng hiện tại, được lưu trong bộ nhớ đệm")
-            return
-        }
-
-        guard !DatabaseManager.shared.isListeningForUser else {
-            print("Đang lắng nghe người dùng hiện tại từ csdl")
-            return
-        }
-
-        DatabaseManager.shared.listenForUser(with: currentUserId) { [weak self] result in
-            switch result {
-            case .success(let user):
-                self?.currentUser = user
-                DispatchQueue.main.async {
-                    self?.updateUI()
-                }
-            case .failure(let error):
-                print("Thất bại lắng nghe người dùng hiện tại từ csdl: \(error)")
-            }
-        }
-    }
+//    private func startListeningForCurrentUser() {
+//        guard let currentUserId = UserDefaults.standard.value(forKey: "id") as? String else {
+//            print("Thất bại lấy thông tin người dùng hiện tại, được lưu trong bộ nhớ đệm")
+//            return
+//        }
+//
+//        guard !DatabaseManager.shared.isListeningForUser else {
+//            print("Đang lắng nghe người dùng hiện tại từ csdl")
+//            return
+//        }
+//
+//        DatabaseManager.shared.listenForUser(with: currentUserId) { [weak self] result in
+//            switch result {
+//            case .success(let user):
+//                self?.currentUser = user
+//                DispatchQueue.main.async {
+//                    self?.updateUI()
+//                }
+//            case .failure(let error):
+//                print("Thất bại lắng nghe người dùng hiện tại từ csdl: \(error)")
+//            }
+//        }
+//    }
 
     // MARK: Methods - UI
 
@@ -118,43 +134,20 @@ class ProfileViewController: UIViewController {
 // MARK: UITableViewDataSource, UITableViewDelegate
 
 extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        1
+        item.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellID", for: indexPath)
-        cell.textLabel?.text = "Log out"
-        cell.textLabel?.textAlignment = .center
-        cell.textLabel?.textColor = .red
+        
+        cell.textLabel?.text = item[indexPath.row]
         return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        let actionSheet = UIAlertController(title: "", message: "Do you really want to log out?", preferredStyle: .actionSheet)
-
-        actionSheet.addAction(UIAlertAction(title: "Log Out", style: .destructive) { [weak self] _ in
-            GIDSignIn.sharedInstance.signOut()
-            do {
-                try FirebaseAuth.Auth.auth().signOut()
-                let vc = Login_RegisterViewController()
-                let nav = UINavigationController(rootViewController: vc)
-                nav.modalPresentationStyle = .fullScreen
-                self?.present(nav, animated: true) {
-                    UserDefaults.standard.removeObject(forKey: "id")
-                    UserDefaults.standard.removeObject(forKey: "name")
-                    UserDefaults.standard.removeObject(forKey: "profile_picture_url")
-                    DatabaseManager.shared.removeAllListeners()
-                }
-            } catch {
-                print("Đăng xuất thất bại", error.localizedDescription)
-            }
-        })
-
-        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-
-        present(actionSheet, animated: true)
     }
 }

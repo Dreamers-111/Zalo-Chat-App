@@ -15,15 +15,17 @@ extension UITextField {
         autocorrectionType = .no
         returnKeyType = .continue
         clearButtonMode = .whileEditing
-        layer.cornerRadius = 15
-        backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.00)
+        layer.cornerRadius = 10
+        backgroundColor = UIColor(red: 1.00, green: 1.00, blue: 1.00, alpha: 1.00)
+        layer.borderWidth = 1
+        layer.borderColor = UIColor(red: 0.67, green: 0.67, blue: 0.67, alpha: 1.00).cgColor
         font = .systemFont(ofSize: 16, weight: .medium)
 
         // Thêm padding left cho textfiled
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: self.frame.size.height))
         leftView = paddingView
         leftViewMode = .always
-        heightAnchor.constraint(greaterThanOrEqualToConstant: 55).isActive = true
+        heightAnchor.constraint(greaterThanOrEqualToConstant: 52).isActive = true
 
         // màu placeholder
         if let placeholder = placeholder {
@@ -31,12 +33,12 @@ extension UITextField {
                                                        attributes: [NSAttributedString.Key.foregroundColor: UIColor(red: 0.40, green: 0.38, blue: 0.38, alpha: 1.00)])
         }
 
-        // Shadow Color
-        layer.shadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.25).cgColor
-        layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
-        layer.shadowOpacity = 0.6
-        layer.shadowRadius = 1
-        layer.masksToBounds = false
+//        // Shadow Color
+//        layer.shadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.25).cgColor
+//        layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
+//        layer.shadowOpacity = 0.6
+//        layer.shadowRadius = 1
+//        layer.masksToBounds = false
     }
 }
 
@@ -174,3 +176,12 @@ extension String {
     }
 }
 
+extension UITableView {
+    func removeSeparatorsOfEmptyCells() {
+        tableFooterView = UIView(frame: .zero)
+    }
+
+    func removeSeparatorsOfEmptyCellsAndLastCell() {
+        tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: 1)))
+    }
+}

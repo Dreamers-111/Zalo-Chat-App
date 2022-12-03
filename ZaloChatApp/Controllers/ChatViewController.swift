@@ -392,17 +392,17 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
                 case .success(let urlString):
                     // Ready to send message
                     print("Uploaded Message Photo: \(urlString)")
-                    
+
                     guard let url = URL(string: urlString),
-                          let placeholder = UIImage(systemName: "plus") else {
-                        return
+                        let placeholder = UIImage(systemName: "plus") else {
+                            return
                     }
-                    
+
                     let media = Media(url: url,
                                       image: nil,
                                       placeholderImage: placeholder,
                                       size: .zero)
-                    
+
                     let message = Message(messageId: messageId,
                                           kind: .photo(media),
                                           sentDate: Date(),
@@ -422,15 +422,16 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
                     /// Bắt đầu lắng nghe cuộc hội thoại vừa tạo,
                     /// Xảy ra đồng thời với việc gửi tin nhắn đi
                     self.startListeningForChosenConveration(conversationId.id)
-                    
+
                 case .failure(let error):
                     print("message photo upload error: \(error)")
                 }
             })
         }
-        
-        if let videoUrl = info[.mediaURL] as? URL {
-            let fileName = "video_message_" + messageId.replacingOccurrences(of: " ", with: "-") + ".mov"
+        else if let videoUrl = info[.mediaURL] as? URL {
+            let fileName = "photo_message_" + messageId.replacingOccurrences(of: " ", with: "-") + ".MOV"
+            print("alo video URL: \(videoUrl)")
+            print("alo fileName: \(fileName)")
             // Upload Video
             StorageManager.shared.uploadMessageVideo(with: videoUrl, fileName: fileName, completion: { result in
                 switch result {
@@ -471,9 +472,6 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
                     print("message video upload error: \(error)")
                 }
             })
-        }
-        else {
-            print("lỗi rồi")
         }
     }
 }
