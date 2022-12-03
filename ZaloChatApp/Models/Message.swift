@@ -161,7 +161,7 @@ extension Message: MessageDocumentSerializable {
         }
 
         else if contentType == "video" {
-            // photo
+            // video
             guard let videoUrl = URL(string: content),
                   let placeHolder = UIImage(named: "video_placeholder")
             else {
