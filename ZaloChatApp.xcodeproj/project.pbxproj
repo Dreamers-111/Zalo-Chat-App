@@ -23,6 +23,7 @@
 		C49B973828F6A6AD0002AF5C /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C49B973728F6A6AD0002AF5C /* RegisterViewModel.swift */; };
 		C4F2A9D52902CDCC000D094F /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4F2A9D42902CDCC000D094F /* Storage.swift */; };
 		E51B628628F6DD0800CECE92 /* HuyExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51B628528F6DD0800CECE92 /* HuyExtension.swift */; };
+		E54879A729375FE40072A661 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = E54879A629375FE40072A661 /* Defaults.swift */; };
 		E559280828E2EFF9006ADC72 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E559280728E2EFF9006ADC72 /* AppDelegate.swift */; };
 		E559280A28E2EFF9006ADC72 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E559280928E2EFF9006ADC72 /* SceneDelegate.swift */; };
 		E559281128E2EFFA006ADC72 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E559281028E2EFFA006ADC72 /* Assets.xcassets */; };
@@ -37,6 +38,7 @@
 		E5719D7428F6C3ED00AAF3E0 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5719D7328F6C3ED00AAF3E0 /* ProfileViewController.swift */; };
 		E5719D7628F6C41200AAF3E0 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5719D7528F6C41200AAF3E0 /* ChatViewController.swift */; };
 		E5719D7828F6C43F00AAF3E0 /* MainTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5719D7728F6C43F00AAF3E0 /* MainTabBarViewController.swift */; };
+		E57BF6222934A60600051F6C /* BasicAudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E57BF6212934A60600051F6C /* BasicAudioController.swift */; };
 		E5856A3F28F6C58B00A6DE5A /* ContactsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5856A3E28F6C58B00A6DE5A /* ContactsViewController.swift */; };
 		E5856A4128F6C59F00A6DE5A /* TimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5856A4028F6C59F00A6DE5A /* TimelineViewController.swift */; };
 		E5856A4328F6D20000A6DE5A /* Login&RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5856A4228F6D20000A6DE5A /* Login&RegisterViewController.swift */; };
@@ -65,6 +67,7 @@
 		C49B973728F6A6AD0002AF5C /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
 		C4F2A9D42902CDCC000D094F /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		E51B628528F6DD0800CECE92 /* HuyExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuyExtension.swift; sourceTree = "<group>"; };
+		E54879A629375FE40072A661 /* Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
 		E559280428E2EFF9006ADC72 /* ZaloChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZaloChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E559280728E2EFF9006ADC72 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E559280928E2EFF9006ADC72 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -81,6 +84,7 @@
 		E5719D7328F6C3ED00AAF3E0 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		E5719D7528F6C41200AAF3E0 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		E5719D7728F6C43F00AAF3E0 /* MainTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarViewController.swift; sourceTree = "<group>"; };
+		E57BF6212934A60600051F6C /* BasicAudioController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicAudioController.swift; sourceTree = "<group>"; };
 		E5856A3E28F6C58B00A6DE5A /* ContactsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsViewController.swift; sourceTree = "<group>"; };
 		E5856A4028F6C59F00A6DE5A /* TimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineViewController.swift; sourceTree = "<group>"; };
 		E5856A4228F6D20000A6DE5A /* Login&RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Login&RegisterViewController.swift"; sourceTree = "<group>"; };
@@ -170,6 +174,7 @@
 		E559280628E2EFF9006ADC72 /* ZaloChatApp */ = {
 			isa = PBXGroup;
 			children = (
+				E57BF6202934A5EE00051F6C /* AudioController */,
 				E559282328E2F7F3006ADC72 /* Models */,
 				E559282228E2F7ED006ADC72 /* Views */,
 				E559282128E2F7DD006ADC72 /* ViewModels */,
@@ -190,6 +195,7 @@
 				E559281028E2EFFA006ADC72 /* Assets.xcassets */,
 				C450042428F5D338001F37D7 /* Extensions.swift */,
 				E51B628528F6DD0800CECE92 /* HuyExtension.swift */,
+				E54879A629375FE40072A661 /* Defaults.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -207,17 +213,16 @@
 			isa = PBXGroup;
 			children = (
 				E5719D7728F6C43F00AAF3E0 /* MainTabBarViewController.swift */,
+				E56B5CEB2940ACA70016D482 /* Setting */,
 				C450042128F5D2DF001F37D7 /* Login&Register */,
 				E5719D6F28F6C39800AAF3E0 /* ConversationsViewController.swift */,
 				E5719D7128F6C3C300AAF3E0 /* NewConversationViewController.swift */,
-				E5719D7328F6C3ED00AAF3E0 /* ProfileViewController.swift */,
 				E5719D7528F6C41200AAF3E0 /* ChatViewController.swift */,
 				B61C0467292E371F003F1846 /* PhotoViewController.swift */,
 				B61C0469292E3728003F1846 /* LocationPickerViewController.swift */,
 				E5856A3E28F6C58B00A6DE5A /* ContactsViewController.swift */,
 				E5856A4028F6C59F00A6DE5A /* TimelineViewController.swift */,
 				B6B89FB12906EEB9009CD1D7 /* ScanQRCodeViewController.swift */,
-				C480BC802927AC9E00EFBC44 /* SettingViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -251,6 +256,23 @@
 				E597F44C2922978E000F8B12 /* Message.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		E56B5CEB2940ACA70016D482 /* Setting */ = {
+			isa = PBXGroup;
+			children = (
+				E5719D7328F6C3ED00AAF3E0 /* ProfileViewController.swift */,
+				C480BC802927AC9E00EFBC44 /* SettingViewController.swift */,
+			);
+			path = Setting;
+			sourceTree = "<group>";
+		};
+		E57BF6202934A5EE00051F6C /* AudioController */ = {
+			isa = PBXGroup;
+			children = (
+				E57BF6212934A60600051F6C /* BasicAudioController.swift */,
+			);
+			path = AudioController;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -368,6 +390,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E54879A729375FE40072A661 /* Defaults.swift in Sources */,
 				C450042328F5D2F0001F37D7 /* LoginViewController.swift in Sources */,
 				C480BC7C2927AC1300EFBC44 /* ProfileTableViewCell.swift in Sources */,
 				E559282928E2F88B006ADC72 /* ConversationsTableViewCell.swift in Sources */,
@@ -392,6 +415,7 @@
 				C450042528F5D338001F37D7 /* Extensions.swift in Sources */,
 				E5856A4128F6C59F00A6DE5A /* TimelineViewController.swift in Sources */,
 				C4F2A9D52902CDCC000D094F /* Storage.swift in Sources */,
+				E57BF6222934A60600051F6C /* BasicAudioController.swift in Sources */,
 				E559282528E2F826006ADC72 /* Database.swift in Sources */,
 				C4951044292B8894004CB787 /* FriendsTableViewCell.swift in Sources */,
 				E559282728E2F840006ADC72 /* User.swift in Sources */,

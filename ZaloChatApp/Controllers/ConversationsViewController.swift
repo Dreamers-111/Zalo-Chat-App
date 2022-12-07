@@ -5,11 +5,21 @@
 //  Created by huy on 22/09/2022.
 //
 
-import FirebaseAuth
+import FirebaseFirestore
 import JGProgressHUD
 import UIKit
 
 class ConversationsViewController: UIViewController {
+    private let db = DatabaseManager.shared
+
+    // MARK: Listeners
+
+    private var conversationsListener: ListenerRegistration?
+
+    // MARK: Observers
+
+    private var didSignOutObserver: NSObjectProtocol?
+
     // MARK: Parameters - Data
 
     private var conversations = [Conversation]()
@@ -36,23 +46,26 @@ class ConversationsViewController: UIViewController {
         return lbl
     }()
 
+    // MARK: Deinit
+
+    deinit {
+        if let didSignOutObserver = didSignOutObserver {
+            NotificationCenter.default.removeObserver(didSignOutObserver)
+        }
+    }
+
     // MARK: Methods - Override
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.title = "Chats"
-        navigationItem.largeTitleDisplayMode = .never
         view.backgroundColor = .systemBackground
 
-        // setup navigation item
-        let composeBtn = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(didTapComposeNavBarButton))
-        let scanBtn = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(didTapScanNavBarButton))
-        navigationItem.rightBarButtonItems = [composeBtn, scanBtn]
+        didSignOutObserver = NotificationCenter.default.addObserver(forName: .didSignOut, object: nil, queue: .main) { [weak self] _ in
+            self?.resetConversationstTableView()
+        }
 
-        // setup conversationstTableView
-        conversationstTableView.delegate = self
-        conversationstTableView.dataSource = self
+        configureNavigationView()
+        configureConversationstTableView()
 
         view.addSubview(conversationstTableView)
         view.addSubview(noConversationsLabel)
@@ -69,48 +82,39 @@ class ConversationsViewController: UIViewController {
         NSLayoutConstraint.activate(constraints)
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        validateAuth()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         startListeningForAllConversations()
     }
 
-    // MARK: Methods - Data
-
-    private func startListeningForAllConversations() {
-        guard let currentUserId = UserDefaults.standard.value(forKey: "id") as? String else {
-            print("Thất bại lấy thông tin người dùng hiện tại, được lưu trong bộ nhớ đệm")
-            return
-        }
-
-        guard !DatabaseManager.shared.isListeningForAllConversations else {
-            print("Đang lắng nghe các cuộc hội thoại của người dùng hiện tại từ csdl")
-            return
-        }
-
-        DatabaseManager.shared.listenForAllConversations(ofUserWithId: currentUserId) { [weak self] result in
-            switch result {
-            case .success(let conversations):
-                self?.conversations = conversations
-                DispatchQueue.main.async {
-                    self?.updateUI()
-                }
-            case .failure(let error):
-                print("Thất bại lắng nghe các cuộc hội thoại của người dùng hiện tại từ csdl: \(error)")
-            }
-        }
-    }
-
-    private func validateAuth() {
-        if FirebaseAuth.Auth.auth().currentUser == nil {
-            let vc = Login_RegisterViewController()
-            let nav = UINavigationController(rootViewController: vc)
-            nav.modalPresentationStyle = .fullScreen
-            present(nav, animated: false)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if conversationsListener?.remove() != nil {
+            conversationsListener = nil
         }
     }
 
     // MARK: Methods - UI
+
+    private func configureNavigationView() {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.title = "Chats"
+        navigationItem.largeTitleDisplayMode = .never
+
+        let composeBtn = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(didTapComposeNavBarButton))
+        let scanBtn = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(didTapScanNavBarButton))
+        navigationItem.rightBarButtonItems = [composeBtn, scanBtn]
+    }
+
+    private func configureConversationstTableView() {
+        conversationstTableView.delegate = self
+        conversationstTableView.dataSource = self
+    }
+
+    private func resetConversationstTableView() {
+        conversations.removeAll()
+        conversationstTableView.reloadData()
+    }
 
     private func updateUI() {
         conversationstTableView.reloadData()
@@ -124,6 +128,27 @@ class ConversationsViewController: UIViewController {
         }
     }
 
+    // MARK: Methods - Data
+
+    private func startListeningForAllConversations() {
+        guard let currentUserId = Defaults.currentUser[.id] else {
+            print("Thất bại lắng nghe các cuộc hội thoại của người dùng hiện tại")
+            return
+        }
+
+        conversationsListener = db.listenForAllConversations(ofUserWithId: currentUserId) { [weak self] result in
+            switch result {
+            case .success(let conversations):
+                self?.conversations = conversations
+                DispatchQueue.main.async {
+                    self?.updateUI()
+                }
+            case .failure(let error):
+                print("Thất bại lắng nghe các cuộc hội thoại của người dùng hiện tại: \(error)")
+            }
+        }
+    }
+
     // MARK: Methods - Objective-C
 
     @objc private func didTapComposeNavBarButton() {
@@ -131,7 +156,6 @@ class ConversationsViewController: UIViewController {
         vc.completion = { [weak self] targetUser in
             self?.pushChosenPrivateConversation(withTargetUser: targetUser)
         }
-
         let nav = UINavigationController(rootViewController: vc)
         present(nav, animated: true)
     }
@@ -158,10 +182,10 @@ class ConversationsViewController: UIViewController {
         if chosenPrivateConversation.count > 1 {
             print("Error!, có nhiều hơn một cuộc hội thoại riêng tư được chọn, \(chosenPrivateConversation)")
         } else if chosenPrivateConversation.count == 1 {
-            let vc = ChatViewController(conversation: chosenPrivateConversation[0])
+            let vc = ChatViewController(state: .isExistingConversation(chosenPrivateConversation[0]))
             navigationController?.pushViewController(vc, animated: true)
         } else if chosenPrivateConversation.count == 0 {
-            let vc = ChatViewController(otherUserInPrivateConvo: otherUser)
+            let vc = ChatViewController(state: .isNewPrivateConversation(otherUser))
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -175,7 +199,8 @@ extension ConversationsViewController: UITableViewDelegate, UITableViewDataSourc
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ConversationsTableViewCell.identifier, for: indexPath) as! ConversationsTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: ConversationsTableViewCell.identifier,
+                                                 for: indexPath) as! ConversationsTableViewCell
         cell.configure(with: conversations[indexPath.row])
         return cell
     }
@@ -183,7 +208,7 @@ extension ConversationsViewController: UITableViewDelegate, UITableViewDataSourc
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let conversation = conversations[indexPath.row]
-        let vc = ChatViewController(conversation: conversation)
+        let vc = ChatViewController(state: .isExistingConversation(conversation))
         navigationController?.pushViewController(vc, animated: true)
     }
 

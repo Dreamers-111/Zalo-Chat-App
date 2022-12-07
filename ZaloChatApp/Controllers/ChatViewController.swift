@@ -5,74 +5,82 @@
 //  Created by huy on 12/10/2022.
 //
 
-import InputBarAccessoryView
-import MessageKit
-import UIKit
-import SDWebImage
-import AVFoundation
 import AVKit
 import CoreLocation
+import FirebaseFirestore
+import InputBarAccessoryView
+import Kingfisher
+import MessageKit
+import UIKit
+
+/// Dùng để mô tả đơn giản người gửi hiện tại trong ChatViewController
+private struct Sender: SenderType {
+    var senderId: String
+    var displayName: String
+}
 
 class ChatViewController: MessagesViewController {
-    static let dateFormatter: DateFormatter = {
+    private let db = DatabaseManager.shared
+
+    private let formatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
-        formatter.timeStyle = .long
-        formatter.timeZone = .current
         return formatter
     }()
 
+    enum State {
+        case isNewPrivateConversation(User)
+        case isExistingConversation(Conversation)
+    }
+
+    // MARK: Listeners
+
+    private var otherUserListener: ListenerRegistration?
+    private var currentConversationListener: ListenerRegistration?
+    private var allMessagesListener: ListenerRegistration?
+
+    // MARK: Parameters - UiKit
+
+    private(set) lazy var refreshControl: UIRefreshControl = {
+        let control = UIRefreshControl()
+        control.addTarget(self, action: #selector(loadMoreMessages), for: .valueChanged)
+        return control
+    }()
+
+    /// The `BasicAudioController` control the AVAudioPlayer state (play, pause, stop) and update audio cell UI accordingly.
+    private lazy var audioController = BasicAudioController(messageCollectionView: messagesCollectionView)
+
     // MARK: Parameters - Data
-    public let otherUserEmail: String
-    private var isNewPrivateConversation = false
-    private var conversation: Conversation?
-    private var otherUserInPrivateConvo: User?
-    private var displayName: String
-    private var displayPictureUrl: String
+
+    private var state: State
+
     private var messages = [Message]()
 
-    private let dummySelfSender = User(id: "dummyId169", name: "dummy", profilePictureUrl: "dummy", isActive: true)
-
-    private let selfSender: User? = {
-        guard let currentUserId = UserDefaults.standard.value(forKey: "id") as? String,
-              let currentUserName = UserDefaults.standard.value(forKey: "name") as? String,
-              let currentUserPictureUrl = UserDefaults.standard.value(forKey: "profile_picture_url") as? String
+    private var selfSender: SenderType {
+        guard let currentUserId = Defaults.currentUser[.id],
+              let currentUserName = Defaults.currentUser[.name]
         else {
-            print("Thất bại lấy thông tin người dùng hiện tại, được lưu trong bộ nhớ đệm")
-            return nil
+            return Sender(senderId: "", displayName: "")
         }
-        return User(id: currentUserId, name: currentUserName, profilePictureUrl: currentUserPictureUrl, isActive: true)
-    }()
+        return Sender(senderId: currentUserId, displayName: currentUserName)
+    }
 
     // MARK: Init
 
     /// Hàm khởi tạo được dùng khi cuộc hội thoại chưa có
     /// Là bước chuẩn bị để tạo cuộc hội thoại trên csdl nếu người dùng hiện tại nhắn tin nhắn đầu tiên
-    init(otherUserInPrivateConvo: User) {
-        self.isNewPrivateConversation = true
-        //
-        self.conversation = nil
-        self.otherUserInPrivateConvo = otherUserInPrivateConvo
-        //
-        self.displayName = otherUserInPrivateConvo.name
-        self.displayPictureUrl = otherUserInPrivateConvo.profilePictureUrl
-        self.otherUserEmail = otherUserInPrivateConvo.id
+    init(state: State) {
+        self.state = state
         super.init(nibName: nil, bundle: nil)
-    }
-
-    init(conversation: Conversation) {
-        self.isNewPrivateConversation = false
         //
-        self.conversation = conversation
-        self.otherUserInPrivateConvo = nil
+        switch state {
+        case .isNewPrivateConversation(let otherUser):
+            startListeningForOtherUser(otherUser.id)
+        case .isExistingConversation(let conversation):
+            startListeningForCurrentConveration(conversation.id)
+            startListeningForAllMessagesOfTheConversation(conversation.id)
+        }
         //
-        self.displayName = conversation.displayName
-        self.displayPictureUrl = conversation.displayPictureUrl
-        self.otherUserEmail = conversation.id
-        super.init(nibName: nil, bundle: nil)
-
-        startListeningForChosenConveration(conversation.id)
-        startListeningForAllMessagesOfTheConversation(conversation.id)
     }
 
     @available(*, unavailable)
@@ -80,20 +88,33 @@ class ChatViewController: MessagesViewController {
         fatalError("init(coder:) has not been implemented.")
     }
 
+    // MARK: Deinit
+
+    deinit {
+        audioController.stopAnyOngoingPlaying()
+
+        if currentConversationListener?.remove() != nil {
+            currentConversationListener = nil
+        }
+
+        if otherUserListener?.remove() != nil {
+            otherUserListener = nil
+        }
+
+        if allMessagesListener?.remove() != nil {
+            allMessagesListener = nil
+        }
+    }
+
     // MARK: Methods - Override
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = displayName
-        navigationItem.largeTitleDisplayMode = .never
         view.backgroundColor = .systemBackground
 
-        messagesCollectionView.messagesDataSource = self
-        messagesCollectionView.messagesLayoutDelegate = self
-        messagesCollectionView.messagesDisplayDelegate = self
-        messageInputBar.delegate = self
-        
-        setupInputButton()
+        configureNavigationView()
+        configureMessageCollectionView()
+        configureMessageInputBar()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -101,55 +122,94 @@ class ChatViewController: MessagesViewController {
         messageInputBar.inputTextView.becomeFirstResponder()
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        DatabaseManager.shared.removeListenersForChatViewController()
-    }
+    @objc
+    func loadMoreMessages() {}
 
     // MARK: Methods - Data
 
-    private func startListeningForChosenConveration(_ conversationId: String) {
-        DatabaseManager.shared.listenForConversation(with: conversationId) { [weak self] result in
+    private func startListeningForOtherUser(_ otherUserId: String) {
+        if currentConversationListener?.remove() != nil {
+            currentConversationListener = nil
+        }
+
+        otherUserListener = db.listenForUser(with: otherUserId) { [weak self] result in
             switch result {
-            case .success(let conversation):
-                self?.isNewPrivateConversation = false
-                self?.otherUserInPrivateConvo = nil
-                self?.conversation = conversation
-                self?.displayName = conversation.displayName
-                self?.displayPictureUrl = conversation.displayPictureUrl
+            case .success(let otherUser):
+                self?.state = .isNewPrivateConversation(otherUser)
                 DispatchQueue.main.async {
-                    self?.updateUI()
+                    self?.updateTitle()
                 }
             case .failure(let error):
-                print("failed to listen for specific conversation", error)
+                print("failed to listen for other user", error)
+            }
+        }
+    }
+
+    private func startListeningForCurrentConveration(_ conversationId: String) {
+        if otherUserListener?.remove() != nil {
+            otherUserListener = nil
+        }
+
+        currentConversationListener = db.listenForConversation(with: conversationId) { [weak self] result in
+            switch result {
+            case .success(let conversation):
+                self?.state = .isExistingConversation(conversation)
+                DispatchQueue.main.async {
+                    self?.updateTitle()
+                }
+            case .failure(let error):
+                print("failed to listen for current conversation", error)
             }
         }
     }
 
     private func startListeningForAllMessagesOfTheConversation(_ conversationId: String) {
-        DatabaseManager.shared.listenForAllMessages(ofConvoWithId: conversationId) { [weak self] result in
+        allMessagesListener = db.listenForAllMessages(ofConvoWithId: conversationId) { [weak self] result in
             switch result {
             case .success(let messages):
                 self?.messages = messages
                 DispatchQueue.main.async {
-                    self?.updateUI()
+                    self?.updateMessagesCollectionView()
                 }
             case .failure(let error):
-                print("failed to listen for all messages of conversation", error)
+                print("failed to listen for all messages of current conversation", error)
             }
         }
     }
 
     // MARK: Methods - UI
 
-    private func updateUI() {
-        navigationItem.title = displayName
-        messagesCollectionView.reloadData()
+    private func configureNavigationView() {
+        switch state {
+        case .isNewPrivateConversation(let otherUser):
+            navigationItem.title = otherUser.displayName
+        case .isExistingConversation(let conversation):
+            navigationItem.title = conversation.displayName
+        }
+        navigationItem.largeTitleDisplayMode = .never
     }
-    
-    //MARK: SEND MEDIA MESSAGE
-    
-    private func setupInputButton() {
+
+    private func configureMessageCollectionView() {
+        messagesCollectionView.messagesDataSource = self
+        messagesCollectionView.messagesLayoutDelegate = self
+        messagesCollectionView.messagesDisplayDelegate = self
+        messagesCollectionView.messageCellDelegate = self
+
+        scrollsToLastItemOnKeyboardBeginsEditing = true // default false
+        showMessageTimestampOnSwipeLeft = true // default false
+
+        messagesCollectionView.refreshControl = refreshControl
+    }
+
+    private func configureMessageInputBar() {
+        messageInputBar.delegate = self
+        messageInputBar.inputTextView.tintColor = .mainColor
+        messageInputBar.sendButton.setTitleColor(.mainColor, for: .normal)
+        messageInputBar.sendButton.setTitleColor(.mainColor.withAlphaComponent(0.3), for: .highlighted)
+        setupMessageInputButton()
+    }
+
+    private func setupMessageInputButton() {
         let button = InputBarButtonItem()
         button.setSize(CGSize(width: 35, height: 35), animated: false)
         button.setImage(UIImage(systemName: "paperclip"), for: .normal)
@@ -159,7 +219,74 @@ class ChatViewController: MessagesViewController {
         messageInputBar.setLeftStackViewWidthConstant(to: 36, animated: false)
         messageInputBar.setStackViewItems([button], forStack: .left, animated: false)
     }
-    
+
+    private func updateMessagesCollectionView() {
+        messagesCollectionView.reloadData()
+        messagesCollectionView.scrollToLastItem(animated: false)
+    }
+
+    private func updateTitle() {
+        switch state {
+        case .isNewPrivateConversation(let otherUser):
+            navigationItem.title = otherUser.displayName
+        case .isExistingConversation(let conversation):
+            navigationItem.title = conversation.displayName
+        }
+    }
+
+    // MARK: Methods - Helper
+
+    private func sendMessage(ofKind messageKind: MessageKind) {
+        func sendMessage(to conversationId: String, errorHandlerMessage message: String) {
+            let errorHandler: (DatabaseManager.DatabaseError?) -> Void = {
+                [weak self] error in
+                guard error == nil else {
+                    print(message, error!)
+                    return
+                }
+            }
+            switch messageKind {
+            case .text(let text):
+                db.sendTextMessage(to: conversationId,
+                                   text: text,
+                                   completion: errorHandler)
+            case .photo(let photoItem):
+                db.sendPhotoMessage(to: conversationId,
+                                    photoItem: photoItem,
+                                    completion: errorHandler)
+            case .video(let videoItem):
+                db.sendVideoMessage(to: conversationId,
+                                    videoItem: videoItem,
+                                    completion: errorHandler)
+            case .location(let locationItem):
+                db.sendLocationMessage(to: conversationId,
+                                       locationItem: locationItem,
+                                       completion: errorHandler)
+            default:
+                print("unsupported message kind!")
+            }
+        }
+        switch state {
+        case .isNewPrivateConversation(let otherUser):
+            db.createNewPrivateConversation(with: otherUser) { [weak self] result in
+                switch result {
+                case .success(let conversationId):
+                    self?.startListeningForCurrentConveration(conversationId)
+                    self?.startListeningForAllMessagesOfTheConversation(conversationId)
+                    sendMessage(to: conversationId,
+                                errorHandlerMessage: "Thất bại gửi tin nhắn đến cuộc hội thoại vừa mới tạo.")
+                case .failure(let error):
+                    print("Thất bại tạo một cuộc hội thoại riêng tư mới", error)
+                }
+            }
+        case .isExistingConversation(let conversation):
+            sendMessage(to: conversation.id,
+                        errorHandlerMessage: "Thất bại gửi tin nhắn đến cuộc hội thoại đã tồn tại.")
+        }
+    }
+
+    // MARK: SEND MEDIA MESSAGE
+
     private func presentInputActionSheet() {
         let actionSheet = UIAlertController(title: "Attach Media",
                                             message: "What would you like to attach?",
@@ -167,22 +294,22 @@ class ChatViewController: MessagesViewController {
         actionSheet.addAction(UIAlertAction(title: "Photo", style: .default, handler: { [weak self] _ in
             self?.presentPhotoInputActionsheet()
         }))
-        actionSheet.addAction(UIAlertAction(title: "Video", style: .default, handler: { [weak self]  _ in
+        actionSheet.addAction(UIAlertAction(title: "Video", style: .default, handler: { [weak self] _ in
             self?.presentVideoInputActionsheet()
         }))
-        actionSheet.addAction(UIAlertAction(title: "Location", style: .default, handler: { [weak self]  _ in
+        actionSheet.addAction(UIAlertAction(title: "Location", style: .default, handler: { [weak self] _ in
             self?.presentLocationPicker()
         }))
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
 
         present(actionSheet, animated: true)
     }
-    
+
     private func presentPhotoInputActionsheet() {
         let actionSheet = UIAlertController(title: "Attach Photo",
                                             message: "Where would you like to attach a photo from",
                                             preferredStyle: .actionSheet)
-        
+
         actionSheet.addAction(UIAlertAction(title: "Camera", style: .default, handler: { [weak self] _ in
             let picker = UIImagePickerController()
             picker.sourceType = .camera
@@ -190,7 +317,7 @@ class ChatViewController: MessagesViewController {
             picker.allowsEditing = true
             self?.present(picker, animated: true)
         }))
-        
+
         actionSheet.addAction(UIAlertAction(title: "Photo Library", style: .default, handler: { [weak self] _ in
             let picker = UIImagePickerController()
             picker.sourceType = .photoLibrary
@@ -202,7 +329,7 @@ class ChatViewController: MessagesViewController {
 
         present(actionSheet, animated: true)
     }
-    
+
     private func presentVideoInputActionsheet() {
         let actionSheet = UIAlertController(title: "Attach Video",
                                             message: "Where would you like to attach a video from?",
@@ -233,45 +360,15 @@ class ChatViewController: MessagesViewController {
 
         present(actionSheet, animated: true)
     }
-    
+
     private func presentLocationPicker() {
         let vc = LocationPickerViewController(coordinates: nil)
-        vc.title = "Pick Location"
-        vc.navigationItem.largeTitleDisplayMode = .never
-        vc.completion = { selectedCoorindates in
-            guard let messageId = self.createMessageId(),
-                  let conversationId = self.conversation,
-                  let selfSender = self.selfSender
-            else {
-                return
-            }
-
-            let longitude: Double = selectedCoorindates.longitude
-            let latitude: Double = selectedCoorindates.latitude
-
-            print("long=\(longitude) | lat= \(latitude)")
-
-            let location = Location(location: CLLocation(latitude: latitude, longitude: longitude), size: .zero)
-            
-            let message = Message(messageId: messageId,
-                                  kind: .location(location),
-                                  sentDate: Date(),
-                                  sender: selfSender,
-                                  readBy: [""])
-            
-            DatabaseManager.shared.sendMessage(to: conversationId.id, message: message.kind) { error in
-                guard error == nil else {
-                    print("error send location", error as Any)
-                    return
-                }
-                print("sent location message")
-                /// Gửi tin nhắn đến cuộc hội thoại vừa tạo thành công
-                /// Thì bắt đầu lắng nghe tất cả các tin nhắn của cuộc hội thoại đó
-                self.startListeningForAllMessagesOfTheConversation(conversationId.id)
-            }
-            /// Bắt đầu lắng nghe cuộc hội thoại vừa tạo,
-            /// Xảy ra đồng thời với việc gửi tin nhắn đi
-            self.startListeningForChosenConveration(conversationId.id)
+        vc.completion = { [weak self] selectedCoorindates in
+            let longitude = selectedCoorindates.longitude
+            let latitude = selectedCoorindates.latitude
+            let location = CLLocation(latitude: latitude, longitude: longitude)
+            let coordinateItem = MessageCoordinateItem(location: location)
+            self?.sendMessage(ofKind: .location(coordinateItem))
         }
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -281,7 +378,7 @@ class ChatViewController: MessagesViewController {
 
 extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, MessagesDisplayDelegate {
     func currentSender() -> MessageKit.SenderType {
-        return selfSender ?? dummySelfSender
+        return selfSender
     }
 
     func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessageKit.MessagesCollectionView) -> MessageKit.MessageType {
@@ -291,21 +388,51 @@ extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, Messag
     func numberOfSections(in messagesCollectionView: MessageKit.MessagesCollectionView) -> Int {
         return messages.count
     }
-    
-    func configureMediaMessageImageView(_ imageView: UIImageView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
-        guard let message = message as? Message else {
-            return
-        }
 
+    func configureMediaMessageImageView(_ imageView: UIImageView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
         switch message.kind {
-        case .photo(let media):
-            guard let imageUrl = media.url else {
+        case .photo(let photoItem):
+            guard let photoUrl = photoItem.url else {
+                imageView.image = photoItem.placeholderImage
                 return
             }
-            imageView.sd_setImage(with: imageUrl, completed: nil)
+            imageView.kf.setImage(with: photoUrl, placeholder: photoItem.placeholderImage)
         default:
             break
         }
+    }
+
+    func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
+        let userProfilePictureUrl = messages[indexPath.section].user.profilePictureUrl
+        avatarView.kf.setImage(with: URL(string: userProfilePictureUrl),
+                               placeholder: UIImage(named: "default_avatar"))
+    }
+
+    func cellBottomLabelAttributedText(for _: MessageType, at _: IndexPath) -> NSAttributedString? {
+        NSAttributedString(
+            string: "Read",
+            attributes: [
+                NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 10),
+                NSAttributedString.Key.foregroundColor: UIColor.darkGray,
+            ])
+    }
+
+    func messageTopLabelAttributedText(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString? {
+        let name = messages[indexPath.section].user.name
+        return NSAttributedString(
+            string: name,
+            attributes: [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption1)])
+    }
+
+    func messageBottomLabelAttributedText(for message: MessageType, at _: IndexPath) -> NSAttributedString? {
+        let dateString = formatter.string(from: message.sentDate)
+        return NSAttributedString(
+            string: dateString,
+            attributes: [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption2)])
+    }
+
+    func textCellSizeCalculator(for _: MessageType, at _: IndexPath, in _: MessagesCollectionView) -> CellSizeCalculator? {
+        nil
     }
 }
 
@@ -314,164 +441,24 @@ extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, Messag
 extension ChatViewController: InputBarAccessoryViewDelegate {
     func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
         guard !text.replacingOccurrences(of: " ", with: "").isEmpty else { return }
-
-        /// Nếu đây là cuộc hội thoại mới,
-        /// và có thông tin người dùng còn lại trong cuộc hội thoại riêng tư được truyền vào
-        if isNewPrivateConversation, let otherUserInPrivateConvo = otherUserInPrivateConvo {
-            DatabaseManager.shared.createNewPrivateConversation(with: otherUserInPrivateConvo)
-                { [weak self] result in
-                    switch result {
-                    /// Nếu tạo cuộc hội thoại mới thành công thì
-                    case .success(let conversationId):
-                        /// Gửi tin nhắn đến cuộc hội thoại vừa tạo
-                        DatabaseManager.shared.sendMessage(to: conversationId, message: .text(text)) { error in
-                            guard error == nil else {
-                                print("Thất bại gửi tin nhắn đến cuộc hội thoại riêng tư mới vừa tạo", error as Any)
-                                return
-                            }
-                            /// Gửi tin nhắn đến cuộc hội thoại vừa tạo thành công
-                            /// Thì bắt đầu lắng nghe tất cả các tin nhắn của cuộc hội thoại đó
-                            self?.startListeningForAllMessagesOfTheConversation(conversationId)
-                        }
-                        /// Bắt đầu lắng nghe cuộc hội thoại vừa tạo,
-                        /// Xảy ra đồng thời với việc gửi tin nhắn đi
-                        self?.startListeningForChosenConveration(conversationId)
-                    case .failure(let error):
-                        print("Thất bại tạo một cuộc hội thoại riêng tư mới", error)
-                    }
-                }
-        }
-        else if !isNewPrivateConversation, let conversation = conversation {
-            // send message to existing conversation
-            DatabaseManager.shared.sendMessage(to: conversation.id, message: .text(text)) { error in
-                guard error == nil else {
-                    print("Thất bại gửi tin nhắn đến cuộc hội thoại riêng đã tồn tại", error as Any)
-                    return
-                }
-            }
-        }
-    }
-    
-    private func createMessageId() -> String? {
-        // date, otherUesrEmail, senderEmail, randomInt
-        guard let currentUserEmail = UserDefaults.standard.value(forKey: "id") as? String else {
-            return nil
-        }
-
-        let safeCurrentEmail = DatabaseManager.safeEmail(emailAddress: currentUserEmail)
-
-        let dateString = Self.dateFormatter.string(from: Date())
-        let newIdentifier = "\(otherUserEmail)_\(safeCurrentEmail)_\(dateString)"
-
-        print("created message id: \(newIdentifier)")
-
-        return newIdentifier
+        sendMessage(ofKind: .text(text))
     }
 }
 
 extension ChatViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
     }
 
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         picker.dismiss(animated: true, completion: nil)
-        guard let messageId = createMessageId(),
-              let conversationId = conversation,
-              let selfSender = selfSender
-        else {
-            return
-        }
-
-        if let image = info[.editedImage] as? UIImage, let imageData =  image.pngData() {
-            let fileName = "photo_message_" + messageId.replacingOccurrences(of: " ", with: "-") + ".png"
-            // Upload image
-            StorageManager.shared.uploadMessagePhoto(with: imageData, fileName: fileName, completion: { result in
-                switch result {
-                case .success(let urlString):
-                    // Ready to send message
-                    print("Uploaded Message Photo: \(urlString)")
-
-                    guard let url = URL(string: urlString),
-                        let placeholder = UIImage(systemName: "plus") else {
-                            return
-                    }
-
-                    let media = Media(url: url,
-                                      image: nil,
-                                      placeholderImage: placeholder,
-                                      size: .zero)
-
-                    let message = Message(messageId: messageId,
-                                          kind: .photo(media),
-                                          sentDate: Date(),
-                                          sender: selfSender,
-                                          readBy: [""])
-                    
-                    DatabaseManager.shared.sendMessage(to: conversationId.id, message: message.kind) { error in
-                        guard error == nil else {
-                            print("error send photo", error as Any)
-                            return
-                        }
-                        print("sent message photo: \(urlString)")
-                        /// Gửi tin nhắn đến cuộc hội thoại vừa tạo thành công
-                        /// Thì bắt đầu lắng nghe tất cả các tin nhắn của cuộc hội thoại đó
-                        self.startListeningForAllMessagesOfTheConversation(conversationId.id)
-                    }
-                    /// Bắt đầu lắng nghe cuộc hội thoại vừa tạo,
-                    /// Xảy ra đồng thời với việc gửi tin nhắn đi
-                    self.startListeningForChosenConveration(conversationId.id)
-
-                case .failure(let error):
-                    print("message photo upload error: \(error)")
-                }
-            })
+        if let image = info[.editedImage] as? UIImage {
+            let photoItem = MessageImageMediaItem(image: image)
+            sendMessage(ofKind: .photo(photoItem))
         }
         else if let videoUrl = info[.mediaURL] as? URL {
-            let fileName = "photo_message_" + messageId.replacingOccurrences(of: " ", with: "-") + ".MOV"
-            print("alo video URL: \(videoUrl)")
-            print("alo fileName: \(fileName)")
-            // Upload Video
-            StorageManager.shared.uploadMessageVideo(with: videoUrl, fileName: fileName, completion: { result in
-                switch result {
-                case .success(let urlString):
-                    // Ready to send message
-                    print("Uploaded Message Video: \(urlString)")
-
-                    guard let url = URL(string: urlString),
-                        let placeholder = UIImage(systemName: "plus") else {
-                            return
-                    }
-
-                    let media = Media(url: url,
-                                      image: nil,
-                                      placeholderImage: placeholder,
-                                      size: .zero)
-
-                    let message = Message(messageId: messageId,
-                                          kind: .video(media),
-                                          sentDate: Date(),
-                                          sender: selfSender, readBy: [""])
-
-                    DatabaseManager.shared.sendMessage(to: conversationId.id, message: message.kind) { error in
-                        guard error == nil else {
-                            print("error send video", error as Any)
-                            return
-                        }
-                        print("sent message video: \(urlString)")
-                        /// Gửi tin nhắn đến cuộc hội thoại vừa tạo thành công
-                        /// Thì bắt đầu lắng nghe tất cả các tin nhắn của cuộc hội thoại đó
-                        self.startListeningForAllMessagesOfTheConversation(conversationId.id)
-                    }
-                    /// Bắt đầu lắng nghe cuộc hội thoại vừa tạo,
-                    /// Xảy ra đồng thời với việc gửi tin nhắn đi
-                    self.startListeningForChosenConveration(conversationId.id)
-
-                case .failure(let error):
-                    print("message video upload error: \(error)")
-                }
-            })
+            let videoItem = MessageImageMediaItem(imageURL: videoUrl)
+            sendMessage(ofKind: .video(videoItem))
         }
     }
 }

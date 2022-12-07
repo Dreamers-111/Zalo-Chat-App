@@ -32,8 +32,13 @@ struct User: SenderType {
     var profilePictureUrl: String
     var isActive: Bool
 
-    var senderId: String
-    var displayName: String
+    var senderId: String {
+        return id
+    }
+
+    var displayName: String {
+        return name
+    }
 
     var profilePictureFilename: String {
         return "\(email)_profile_picture.png"
@@ -46,8 +51,6 @@ struct User: SenderType {
         birthday = ""
         profilePictureUrl = ""
         isActive = false
-        senderId = ""
-        displayName = ""
         name = ""
     }
 
@@ -65,13 +68,7 @@ struct User: SenderType {
         self.birthday = birthday
         self.profilePictureUrl = profilePictureUrl
         self.isActive = isActive
-        senderId = ""
-        displayName = ""
         self.name = name
-
-        // tuân theo protocol SenderType
-        senderId = self.id
-        displayName = self.name
     }
 
     init(id: String, name: String, profilePictureUrl: String, isActive: Bool) {
@@ -81,13 +78,7 @@ struct User: SenderType {
         birthday = ""
         self.profilePictureUrl = profilePictureUrl
         self.isActive = isActive
-        senderId = ""
-        displayName = ""
         self.name = name
-
-        // tuân theo protocol SenderType
-        senderId = self.id
-        displayName = self.name
     }
 }
 
@@ -96,14 +87,14 @@ protocol UserDocumentSerializable {
 }
 
 extension User: UserDocumentSerializable {
-    init?(dictionary: [String: Any]) {
-        guard let id = dictionary["id"] as? String,
-              let name = dictionary["name"] as? String,
-              let email = dictionary["email"] as? String,
-              let gender = dictionary["gender"] as? String,
-              let birthday = dictionary["birthday"] as? String,
-              let profilePictureUrl = dictionary["profile_picture_url"] as? String,
-              let isActive = dictionary["is_active"] as? Int
+    init?(dictionary dict: [String: Any]) {
+        guard let id = dict["id"] as? String,
+              let name = dict["name"] as? String,
+              let email = dict["email"] as? String,
+              let gender = dict["gender"] as? String,
+              let birthday = dict["birthday"] as? String,
+              let profilePictureUrl = dict["profile_picture_url"] as? String,
+              let isActive = dict["is_active"] as? Int
         else { return nil }
 
         self.init(id: id,

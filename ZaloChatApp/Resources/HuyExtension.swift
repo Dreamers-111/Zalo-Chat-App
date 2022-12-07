@@ -8,7 +8,7 @@
 import Foundation
 import JGProgressHUD
 
-public extension UIView {
+extension UIView {
     var width: CGFloat {
         return frame.size.width
     }
@@ -38,6 +38,10 @@ extension UIImage {
     func isEqualToImage(_ image: UIImage) -> Bool {
         return self.pngData() == image.pngData()
     }
+}
+
+extension Notification.Name {
+    static let didSignOut = Notification.Name("didSignOut")
 }
 
 extension String {

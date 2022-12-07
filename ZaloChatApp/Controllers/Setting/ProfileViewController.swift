@@ -6,24 +6,24 @@
 //
 
 import FirebaseAuth
+import FirebaseFirestore
 import GoogleSignIn
 import Kingfisher
 import UIKit
 
 class ProfileViewController: UIViewController {
+    private let db = DatabaseManager.shared
+
+    // MARK: Listeners
+
+    private var currentUserListeners: ListenerRegistration?
+
     // MARK: Parameters - Data
 
     private var currentUser = User()
-    private var item: [String] = []
-    init(userdata: User) {
-        self.currentUser = userdata
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented.")
-    }
+
+    private var item = [String]()
+
     // MARK: Parameters - UIKit
 
     private let profileTableView: UITableView = {
@@ -50,23 +50,25 @@ class ProfileViewController: UIViewController {
         return imageView
     }()
 
+    // MARK: Deinit
+
+    deinit {
+        if currentUserListeners?.remove() != nil {
+            currentUserListeners = nil
+        }
+    }
+
     // MARK: Methods - Override
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        title = "Hồ sơ"
-        navigationItem.largeTitleDisplayMode = .always
-        navigationController?.navigationBar.prefersLargeTitles = true
-        
-        print(currentUser)
-        
-        profileTableView.dataSource = self
-        profileTableView.delegate = self
-        profileTableView.tableHeaderView = profileTableHeaderView
-        profileTableView.reloadData()
+
+        startListeningForCurrentUser()
+        configureNavigationView()
+        configureProfileTableView()
+
         view.addSubview(profileTableView)
-        profileTableHeaderView.addSubview(profileTableHeaderImageView)
     }
 
     override func viewDidLayoutSubviews() {
@@ -84,49 +86,55 @@ class ProfileViewController: UIViewController {
         profileTableHeaderImageView.layer.cornerRadius = profileTableHeaderImageView.width / 2
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        //startListeningForCurrentUser()
-        DispatchQueue.main.async {
-            self.updateUI()
-            self.item = ["Họ và tên: " + self.currentUser.name, "Email: " + self.currentUser.email,"Giới tính: " +  self.currentUser.gender,"Ngày sinh: " + self.currentUser.birthday]
-            self.profileTableView.reloadData()
-        }
-    }
-
-    // MARK: Methods - Data
-
-//    private func startListeningForCurrentUser() {
-//        guard let currentUserId = UserDefaults.standard.value(forKey: "id") as? String else {
-//            print("Thất bại lấy thông tin người dùng hiện tại, được lưu trong bộ nhớ đệm")
-//            return
-//        }
-//
-//        guard !DatabaseManager.shared.isListeningForUser else {
-//            print("Đang lắng nghe người dùng hiện tại từ csdl")
-//            return
-//        }
-//
-//        DatabaseManager.shared.listenForUser(with: currentUserId) { [weak self] result in
-//            switch result {
-//            case .success(let user):
-//                self?.currentUser = user
-//                DispatchQueue.main.async {
-//                    self?.updateUI()
-//                }
-//            case .failure(let error):
-//                print("Thất bại lắng nghe người dùng hiện tại từ csdl: \(error)")
-//            }
-//        }
-//    }
-
     // MARK: Methods - UI
 
-    private func updateUI() {
-        if currentUser.profilePictureUrl.isEmpty {
-            profileTableHeaderImageView.image = UIImage(named: "default_avatar")
-        } else {
-            profileTableHeaderImageView.kf.setImage(with: URL(string: currentUser.profilePictureUrl))
+    private func configureNavigationView() {
+        navigationItem.title = "Thông tin cá nhân"
+        navigationItem.largeTitleDisplayMode = .always
+        navigationController?.navigationBar.prefersLargeTitles = true
+    }
+
+    private func configureProfileTableView() {
+        profileTableView.dataSource = self
+        profileTableView.delegate = self
+        profileTableView.tableHeaderView = profileTableHeaderView
+        profileTableHeaderView.addSubview(profileTableHeaderImageView)
+    }
+
+    private func updateProfileTableView() {
+        item = ["Họ và tên: " + currentUser.name,
+                "Email: " + currentUser.email,
+                "Giới tính: " + currentUser.gender,
+                "Ngày sinh: " + currentUser.birthday]
+        profileTableView.reloadData()
+    }
+
+    private func updateProfileImage() {
+        profileTableHeaderImageView.kf.setImage(with: URL(string: currentUser.profilePictureUrl),
+                                                placeholder: UIImage(named: "default_avatar"))
+    }
+
+    private func resetProfileImage() {
+        profileTableHeaderImageView.image = UIImage(named: "default_avatar")
+    }
+
+    private func startListeningForCurrentUser() {
+        guard let currentUserId = Defaults.currentUser[.id] else {
+            print("Thất bại lắng nghe người dùng hiện tại")
+            return
+        }
+
+        currentUserListeners = db.listenForUser(with: currentUserId) { [weak self] result in
+            switch result {
+            case .success(let user):
+                self?.currentUser = user
+                DispatchQueue.main.async {
+                    self?.updateProfileImage()
+                    self?.updateProfileTableView()
+                }
+            case .failure(let error):
+                print("Thất bại lắng nghe người dùng hiện tại: \(error)")
+            }
         }
     }
 }
@@ -134,20 +142,17 @@ class ProfileViewController: UIViewController {
 // MARK: UITableViewDataSource, UITableViewDelegate
 
 extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         item.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellID", for: indexPath)
-        
         cell.textLabel?.text = item[indexPath.row]
         return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-
     }
 }

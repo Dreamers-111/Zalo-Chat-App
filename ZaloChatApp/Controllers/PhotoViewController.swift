@@ -5,11 +5,10 @@
 //  Created by geotech on 17/11/2022.
 //
 
+import Kingfisher
 import UIKit
-import SDWebImage
 
 class PhotoViewController: UIViewController {
-
     private let url: URL
 
     init(with url: URL) {
@@ -17,6 +16,7 @@ class PhotoViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -33,7 +33,8 @@ class PhotoViewController: UIViewController {
         navigationItem.largeTitleDisplayMode = .never
         view.backgroundColor = .black
         view.addSubview(imageView)
-        imageView.sd_setImage(with: url, completed: nil)
+        imageView.kf.setImage(with: url,
+                              placeholder: UIImage(imageLiteralResourceName: "image_message_placeholder"))
     }
 
     override func viewDidLayoutSubviews() {

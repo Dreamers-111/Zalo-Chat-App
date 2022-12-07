@@ -62,9 +62,9 @@ final class LoginViewModel {
                     return
                 }
 
-                UserDefaults.standard.set(id, forKey: "id")
-                UserDefaults.standard.set(name, forKey: "name")
-                UserDefaults.standard.set(profilePictureUrl, forKey: "profile_picture_url")
+                Defaults.currentUser[.id] = id
+                Defaults.currentUser[.name] = name
+                Defaults.currentUser[.profilePictureUrl] = profilePictureUrl
                 DispatchQueue.main.async {
                     vc.navigationController?.dismiss(animated: true)
                 }
@@ -158,14 +158,14 @@ final class LoginViewModel {
                    let profilePictureUrl = userData["profile_picture_url"] as? String
                 {
                     // Người dùng vô đc màn hình chính
-                    UserDefaults.standard.set(id, forKey: "id")
-                    UserDefaults.standard.set(name, forKey: "name")
-                    UserDefaults.standard.set(profilePictureUrl, forKey: "profile_picture_url")
+                    Defaults.currentUser[.id] = id
+                    Defaults.currentUser[.name] = name
+                    Defaults.currentUser[.profilePictureUrl] = profilePictureUrl
                     DispatchQueue.main.async {
                         vc.navigationController?.dismiss(animated: true)
                     }
                 }
-                // Kiểm tra xong, không thấy thông tin người dùng, thì thực hiện ghi người dùng vào database
+                // Kiểm tra xong, không thấy thông tin người dùng, th thực hiện ghi người dùng vào database
                 else {
                     // insert to database
                     let newUser = User(id: id,
@@ -198,26 +198,26 @@ final class LoginViewModel {
                                 // Got data from Google. Uploading...
                                 // thực hiện tải hình ảnh hồ sơ trong khi người dùng vô đc màn hình chính
                                 let fileName = newUser.profilePictureFilename
-                                StorageManager.shared.uploadProfilePicture(with: data, filename: fileName)
-                                    { result in
-                                        switch result {
-                                        case .success(let downloadURL):
-                                            DatabaseManager.shared.updateUserWithProfilePictureUrl(withId: id, downloadUrl: downloadURL)
-                                                { success in
-                                                    guard success else {
-                                                        print("failed to update profile picture url with user \(id)")
-                                                        UserDefaults.standard.set("", forKey: "profile_picture_url")
-                                                        return
-                                                    }
-                                                    UserDefaults.standard.set(downloadURL, forKey: "profile_picture_url")
-                                                }
-                                        case .failure(let error):
-                                            UserDefaults.standard.set("", forKey: "profile_picture_url")
-                                            print("\(error) ")
+                                StorageManager.shared.uploadMediaItem(withData: data,
+                                                                      fileName: fileName,
+                                                                      location: .users_pictures)
+                                { result in
+                                    switch result {
+                                    case .success(let downloadURL):
+                                        DatabaseManager.shared.updateUser(withId: id, data: ["profile_picture_url": downloadURL]) { success in
+                                            guard success else {
+                                                print("failed to update user \(id) with profile picture url.")
+                                                return
+                                            }
+                                            Defaults.currentUser[.profilePictureUrl] = downloadURL
                                         }
+                                    case .failure(let error):
+                                        print("\(error)")
                                     }
-                                UserDefaults.standard.set(id, forKey: "id")
-                                UserDefaults.standard.set(name, forKey: "name")
+                                }
+                                Defaults.currentUser[.id] = id
+                                Defaults.currentUser[.name] = name
+                                Defaults.currentUser[.profilePictureUrl] = ""
                                 DispatchQueue.main.async {
                                     vc.navigationController?.dismiss(animated: true)
                                 }
@@ -226,9 +226,9 @@ final class LoginViewModel {
                         // Sau khi ghi người dùng thành công, bỏ qua bước tải hình ảnh hồ sơ vì người dùng kh có ảnh
                         else {
                             // Người dùng vô đc màn hình chính
-                            UserDefaults.standard.set(id, forKey: "id")
-                            UserDefaults.standard.set(name, forKey: "name")
-                            UserDefaults.standard.set("", forKey: "profile_picture_url")
+                            Defaults.currentUser[.id] = id
+                            Defaults.currentUser[.name] = name
+                            Defaults.currentUser[.profilePictureUrl] = ""
                             DispatchQueue.main.async {
                                 vc.navigationController?.dismiss(animated: true)
                             }

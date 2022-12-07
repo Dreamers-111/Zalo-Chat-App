@@ -4,7 +4,7 @@
 //
 //  Created by huy on 05/10/2022.
 //
-
+import FirebaseAuth
 import UIKit
 
 class MainTabBarViewController: UITabBarController {
@@ -28,10 +28,20 @@ class MainTabBarViewController: UITabBarController {
 
         tabBar.tintColor = .tintColor
         setViewControllers([nav1, nav2, nav3, nav4], animated: true)
+        validateAuth()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         selectedIndex = 0
+    }
+
+    private func validateAuth() {
+        if FirebaseAuth.Auth.auth().currentUser == nil {
+            let vc = Login_RegisterViewController()
+            let nav = UINavigationController(rootViewController: vc)
+            nav.modalPresentationStyle = .fullScreen
+            present(nav, animated: false)
+        }
     }
 }

@@ -9,7 +9,6 @@ import FirebaseAuth
 import Foundation
 import JGProgressHUD
 
-
 /// Manager object to read and write data to real time firebase database
 final class RegisterViewModel {
     private init() {}
@@ -75,24 +74,24 @@ final class RegisterViewModel {
                 {
                     // thực hiện tải hình ảnh hồ sơ trong khi người dùng vô đc màn hình chính
                     let fileName = user.profilePictureFilename
-                    StorageManager.shared.uploadProfilePicture(with: data, filename: fileName) { result in
+                    StorageManager.shared.uploadMediaItem(withData: data, fileName: fileName,
+                                                          location: .users_pictures) { result in
                         switch result {
                         case .success(let downloadURL):
-                            DatabaseManager.shared.updateUserWithProfilePictureUrl(withId: user.id, downloadUrl: downloadURL) { success in
+                            DatabaseManager.shared.updateUser(withId: user.id, data: ["profile_picture_url": downloadURL]) { success in
                                 guard success else {
-                                    print("failed to update profile picture url with user \(user.id)")
-                                    UserDefaults.standard.set("", forKey: "profile_picture_url")
+                                    print("failed to update user \(user.id) with profile picture url.")
                                     return
                                 }
-                                UserDefaults.standard.set(downloadURL, forKey: "profile_picture_url")
+                                Defaults.currentUser[.profilePictureUrl] = downloadURL
                             }
                         case .failure(let error):
-                            UserDefaults.standard.set("", forKey: "profile_picture_url")
                             print("\(error)")
                         }
                     }
-                    UserDefaults.standard.set(user.id, forKey: "id")
-                    UserDefaults.standard.set(user.name, forKey: "name")
+                    Defaults.currentUser[.id] = user.id
+                    Defaults.currentUser[.name] = user.name
+                    Defaults.currentUser[.profilePictureUrl] = ""
                     DispatchQueue.main.async {
                         vc.navigationController?.dismiss(animated: true)
                     }
@@ -100,9 +99,9 @@ final class RegisterViewModel {
                 // Sau khi ghi người dùng thành công, bỏ qua bước tải hình ảnh hồ sơ vì người dùng kh chọn ảnh
                 else {
                     // Người dùng vô đc màn hình chính
-                    UserDefaults.standard.set(user.id, forKey: "id")
-                    UserDefaults.standard.set(user.name, forKey: "name")
-                    UserDefaults.standard.set("", forKey: "profile_picture_url")
+                    Defaults.currentUser[.id] = user.id
+                    Defaults.currentUser[.name] = user.name
+                    Defaults.currentUser[.profilePictureUrl] = ""
                     DispatchQueue.main.async {
                         vc.navigationController?.dismiss(animated: true)
                     }

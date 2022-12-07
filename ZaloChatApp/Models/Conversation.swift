@@ -13,7 +13,6 @@ struct Conversation {
     var pictureUrl: String
     var type: Int
     var createAt: Date
-    var createBy: String
     var modifiedAt: Date
     var latestMessage: Message
     var members: [User]
@@ -51,50 +50,49 @@ struct Conversation {
         }
 
         // Xử lý thành phần đầu tiên là tên của người nhắn
-        var nameComponent = ""
-        if latestMessage.sender.senderId == currentUserId {
-            nameComponent = "Bạn"
+        var nameStr = ""
+        if latestMessage.user.id == currentUserId {
+            nameStr = "Bạn"
         }
         else {
-            nameComponent = latestMessage.sender.displayName.components(separatedBy: .whitespaces).last ?? ""
+            nameStr = latestMessage.user.name.components(separatedBy: .whitespaces).last ?? ""
         }
 
         // Xử lý thành phần thứ hai là nội dung tin nhắn
-        var messageContentComponent = ""
+        var messageContentStr = ""
         switch latestMessage.kind {
         case .text(let text):
-            messageContentComponent = ": \(text)"
+            messageContentStr = ": \(text)"
         case .attributedText:
-            messageContentComponent = " attributedText"
+            messageContentStr = " attributedText"
         case .photo:
-            messageContentComponent = " đã gửi một hình ảnh"
+            messageContentStr = " đã gửi một hình ảnh"
         case .video:
-            messageContentComponent = " đã gửi một video"
+            messageContentStr = " đã gửi một video"
         case .location:
-            messageContentComponent = " đã chia sẻ một vị trí"
+            messageContentStr = " đã chia sẻ một vị trí"
         case .emoji:
-            messageContentComponent = ": 😍😍😍😍"
+            messageContentStr = ": 😍😍😍😍"
         case .audio:
-            messageContentComponent = " đã gửi một đoạn ghi âm"
+            messageContentStr = " đã gửi một đoạn ghi âm"
         case .contact:
-            messageContentComponent = " đã chia sẻ một liên hệ"
+            messageContentStr = " đã chia sẻ một liên hệ"
         case .linkPreview:
-            messageContentComponent = " đã chia sẻ một liên kết"
+            messageContentStr = " đã chia sẻ một liên kết"
         case .custom:
-            messageContentComponent = " đã chia sẻ một tập tin"
+            messageContentStr = " đã chia sẻ một tập tin"
         }
 
         // Gộp lại ra kết quả
-        return nameComponent + messageContentComponent
+        return nameStr + messageContentStr
     }
 
-    init(id: String, name: String, pictureUrl: String, type: Int, createAt: Date, createBy: String, modifiedAt: Date, latestMessage: Message, members: [User]) {
+    init(id: String, name: String, pictureUrl: String, type: Int, createAt: Date, modifiedAt: Date, latestMessage: Message, members: [User]) {
         self.id = id
         self.name = name
         self.pictureUrl = pictureUrl
         self.type = type
         self.createAt = createAt
-        self.createBy = createBy
         self.modifiedAt = modifiedAt
         self.latestMessage = latestMessage
         self.members = members
@@ -106,32 +104,49 @@ protocol ConversationDocumentSerializable {
 }
 
 extension Conversation: ConversationDocumentSerializable {
-    init?(dictionary: [String: Any]) {
-        guard let id = dictionary["id"] as? String,
-              let name = dictionary["name"] as? String,
-              let pictureUrl = dictionary["picture_url"] as? String,
-              let type = dictionary["type"] as? Int,
-              let createAt = dictionary["create_at"] as? Timestamp,
-              let createBy = dictionary["create_by"] as? String,
-              let modifiedAt = dictionary["modified_at"] as? Timestamp,
-              let latestMessageDict = dictionary["latest_message"] as? [String: Any],
-              let membersDict = dictionary["members"] as? [String: Any]
+    init?(dictionary dict: [String: Any]) {
+        guard let id = dict["id"] as? String,
+              let name = dict["name"] as? String,
+              let pictureUrl = dict["picture_url"] as? String,
+              let type = dict["type"] as? Int,
+              let createAt = dict["create_at"] as? Timestamp,
+              let modifiedAt = dict["modified_at"] as? Timestamp,
+              let latestMessageDict = dict["latest_message"] as? [String: Any],
+              let membersDict = dict["members"] as? [String: Any]
         else { return nil }
 
-        var latestMessage = Message()
-
-        if !latestMessageDict.isEmpty,
-           let latestMessageId = latestMessageDict.keys.first,
-           var latestMessageData = latestMessageDict.values.first as? [String: Any]
-        {
-            latestMessageData["id"] = latestMessageId
-            latestMessage = Message(dictionary: latestMessageData) ?? Message()
+        guard let latestMessage = Conversation.latestMessageDocumentSerialize(latestMessageDict)
+        else {
+            return nil
         }
 
-        let idOfMembers = membersDict.keys
-        let dataOfMembers = idOfMembers.compactMap { memberId in
-            if var memberData = membersDict[memberId] as? [String: Any] {
-                memberData["id"] = memberId
+        let members = Conversation.membersDocumentSerialize(membersDict)
+        guard !members.isEmpty else { return nil }
+
+        self.init(id: id,
+                  name: name,
+                  pictureUrl: pictureUrl,
+                  type: type,
+                  createAt: createAt.dateValue(),
+                  modifiedAt: modifiedAt.dateValue(),
+                  latestMessage: latestMessage,
+                  members: members)
+    }
+
+    private static func latestMessageDocumentSerialize(_ dict: [String: Any]) -> Message? {
+        guard let latestMessageId = dict.keys.first,
+              var latestMessageData = dict[latestMessageId] as? [String: Any]
+        else {
+            return nil
+        }
+        latestMessageData["id"] = latestMessageId
+        return Message(dictionary: latestMessageData)
+    }
+
+    private static func membersDocumentSerialize(_ dict: [String: Any]) -> [User] {
+        let dataOfMembers = dict.compactMap { key, value in
+            if var memberData = value as? [String: Any] {
+                memberData["id"] = key
                 return memberData
             }
             return nil
@@ -150,19 +165,6 @@ extension Conversation: ConversationDocumentSerializable {
             }
             return nil
         }
-
-        guard !members.isEmpty else {
-            return nil
-        }
-
-        self.init(id: id,
-                  name: name,
-                  pictureUrl: pictureUrl,
-                  type: type,
-                  createAt: createAt.dateValue(),
-                  createBy: createBy,
-                  modifiedAt: modifiedAt.dateValue(),
-                  latestMessage: latestMessage,
-                  members: members)
+        return members
     }
 }

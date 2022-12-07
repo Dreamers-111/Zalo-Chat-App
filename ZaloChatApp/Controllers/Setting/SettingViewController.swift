@@ -19,7 +19,7 @@ enum SettingsOptionType {
     case staticCell(model: SettingsOption)
     case switchCell(model: SettingsSwitchOption)
     case logoutButton
-    case userProfileCell(model: User)
+    case userProfileCell(model: SettingViewController.CurrentUser)
 }
 
 struct SettingsSwitchOption {
@@ -27,22 +27,39 @@ struct SettingsSwitchOption {
     let icon: UIImage?
     let iconBackgroundColor: UIColor
     var isOn: Bool
-    let handler: (() -> Void)
+    let handler: () -> Void
 }
 
 struct SettingsOption {
     let title: String
     let icon: UIImage?
     let iconBackgroundColor: UIColor
-    let handler: (() -> Void)
+    let handler: () -> Void
 }
 
 class SettingViewController: UIViewController {
-    
-    private var currentUser = User()
-    
+    struct CurrentUser {
+        var id: String
+        var name: String
+        var profilePictureUrl: String
+    }
+
+    private let db = DatabaseManager.shared
+
+    private let currentUser: CurrentUser = {
+        guard let currentUserId = Defaults.currentUser[.id],
+              let currentUserName = Defaults.currentUser[.name],
+              let currentUserPictureUrl = Defaults.currentUser[.profilePictureUrl]
+        else {
+            return CurrentUser(id: "", name: "", profilePictureUrl: "")
+        }
+        return CurrentUser(id: currentUserId,
+                           name: currentUserName,
+                           profilePictureUrl: currentUserPictureUrl)
+    }()
+
     private var models = [Section]()
-    
+
     private let settingsTableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -53,121 +70,17 @@ class SettingViewController: UIViewController {
         tableView.backgroundColor = .systemBackground
         return tableView
     }()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        title = "Cài đặt"
-        navigationItem.largeTitleDisplayMode = .always
-        navigationController?.navigationBar.prefersLargeTitles = true
 
-        self.startListeningForCurrentUser()
-        
-        settingsTableView.dataSource = self
-        settingsTableView.delegate = self
+        configureNavigationView()
+        configureSettingsTableView()
 
         view.addSubview(settingsTableView)
     }
-    
-    private func startListeningForCurrentUser() {
-        guard let currentUserId = UserDefaults.standard.value(forKey: "id") as? String else {
-            print("Thất bại lấy thông tin người dùng hiện tại, được lưu trong bộ nhớ đệm")
-            return
-        }
 
-        guard !DatabaseManager.shared.isListeningForUser else {
-            print("Đang lắng nghe người dùng hiện tại từ csdl")
-            return
-        }
-
-        DatabaseManager.shared.listenForUser(with: currentUserId) { [weak self] result in
-            switch result {
-            case .success(let user):
-                self?.currentUser = user
-                DispatchQueue.main.async {
-                    self?.updateTableView()
-                }
-            case .failure(let error):
-                print("Thất bại lắng nghe người dùng hiện tại từ csdl: \(error)")
-            }
-        }
-    }
-    
-    
-    func updateTableView () {
-        let user = currentUser
-        models.append(Section(title: "", options: [
-            .userProfileCell(model: user)
-        ]))
-        
-        models.append(Section(title: "Kết nối", options: [
-            .switchCell(model: SettingsSwitchOption(
-                title: "Chế độ máy bay", icon: UIImage(systemName: "airplane"),
-                iconBackgroundColor: .systemOrange,
-                isOn: false) {
-                    print("Tapped 1 cell")
-                }),
-            
-            .staticCell(model: SettingsOption(
-                title: "Wi-fi", icon: UIImage(systemName: "wifi"),
-                iconBackgroundColor: .systemBlue) {
-                    print("Tapped 2 cell")
-                }),
-            
-            .staticCell(model: SettingsOption(
-                title: "Bluetooh", icon: UIImage(systemName: "b.circle"),
-                iconBackgroundColor: .systemBlue) {
-                    print("Tapped 3 cell")
-                }),
-            .staticCell(model: SettingsOption(
-                title: "Di động", icon: UIImage(systemName: "antenna.radiowaves.left.and.right"),
-                iconBackgroundColor: .systemGreen) {
-                    print("Tapped 4 cell")
-                }),
-            .switchCell(model: SettingsSwitchOption(
-                title: "VPN", icon: UIImage(systemName: "v.circle"),
-                iconBackgroundColor: .systemBlue,
-                isOn: false) {
-                    print("Tapped 5 cell")
-                }),
-        ]))
-        
-        models.append(Section(title: "Ứng dụng", options: [
-            .switchCell(model: SettingsSwitchOption(
-                title: "Chế độ máy bay", icon: UIImage(systemName: "airplane"),
-                iconBackgroundColor: .systemOrange,
-                isOn: false) {
-                    print("Tapped 1 cell")
-                }),
-            
-            .staticCell(model: SettingsOption(
-                title: "Wi-fi", icon: UIImage(systemName: "wifi"),
-                iconBackgroundColor: .systemBlue) {
-                    print("Tapped 2 cell")
-                }),
-            
-            .staticCell(model: SettingsOption(
-                title: "Bluetooh", icon: UIImage(systemName: "b.circle"),
-                iconBackgroundColor: .systemBlue) {
-                    print("Tapped 3 cell")
-                }),
-            .staticCell(model: SettingsOption(
-                title: "Di động", icon: UIImage(systemName: "antenna.radiowaves.left.and.right"),
-                iconBackgroundColor: .systemGreen) {
-                    print("Tapped 4 cell")
-                }),
-            .switchCell(model: SettingsSwitchOption(
-                title: "VPN", icon: UIImage(systemName: "v.circle"),
-                iconBackgroundColor: .systemBlue,
-                isOn: false) {
-                    print("Tapped 5 cell")
-                })
-            ,
-            .logoutButton
-        ]))
-        self.settingsTableView.reloadData()
-    }
-    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         let constraints = [
@@ -179,7 +92,40 @@ class SettingViewController: UIViewController {
 
         NSLayoutConstraint.activate(constraints)
     }
-    
+
+    private func configureNavigationView() {
+        navigationItem.title = "Cài đặt"
+        navigationItem.largeTitleDisplayMode = .always
+        navigationController?.navigationBar.prefersLargeTitles = true
+    }
+
+    private func configureSettingsTableView() {
+        models.append(Section(title: "", options: [
+            .userProfileCell(model: currentUser)
+        ]))
+
+        models.append(Section(title: "", options: [
+            .staticCell(model: SettingsOption(
+                title: "Tài khoản và bảo mật", icon: UIImage(systemName: "person.badge.shield.checkmark.fill"),
+                iconBackgroundColor: .systemBlue)
+            {
+                print("'Tài khoản và bảo mật' cell tapped")
+            }),
+
+            .staticCell(model: SettingsOption(
+                title: "Quyền riêng tư", icon: UIImage(systemName: "lock.fill"),
+                iconBackgroundColor: .systemBlue)
+            {
+                print("'Quyền riêng tư' cell tapped")
+            })
+        ]))
+
+        models.append(Section(title: "", options: [
+            .logoutButton]))
+
+        settingsTableView.dataSource = self
+        settingsTableView.delegate = self
+    }
 }
 
 extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
@@ -187,71 +133,69 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
         let section = models[section]
         return section.title
     }
-    
+
     func numberOfSections(in tableView: UITableView) -> Int {
         return models.count
     }
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return models[section].options.count
-         
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let model = models[indexPath.section].options[indexPath.row]
-        
         switch model.self {
         case .userProfileCell(let model):
             guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: ProfileTableViewCell.identifier,
-                for: indexPath
-            ) as? ProfileTableViewCell else {
+                for: indexPath) as? ProfileTableViewCell
+            else {
                 return UITableViewCell()
             }
-            
+
             cell.configure(with: model)
             return cell
-            
+
         case .staticCell(let model):
             guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: StaticTableViewCell.identifier,
-                for: indexPath
-            ) as? StaticTableViewCell else {
+                for: indexPath) as? StaticTableViewCell
+            else {
                 return UITableViewCell()
             }
-            
+
             cell.configure(with: model)
             return cell
         case .switchCell(let model):
             guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: SwitchTableViewCell.identifier,
-                for: indexPath
-            ) as? SwitchTableViewCell else {
+                for: indexPath) as? SwitchTableViewCell
+            else {
                 return UITableViewCell()
             }
-            
+
             cell.configure(with: model)
             return cell
         case .logoutButton:
             guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: LogoutTableViewCell.identifier,
-                for: indexPath
-            ) as? LogoutTableViewCell else {
+                for: indexPath) as? LogoutTableViewCell
+            else {
                 return UITableViewCell()
             }
-            
+
             return cell
         }
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
+
         let type = models[indexPath.section].options[indexPath.row]
 
         switch type.self {
         case .userProfileCell:
-            let vc = ProfileViewController(userdata: currentUser)
+            let vc = ProfileViewController()
             navigationController?.pushViewController(vc, animated: true)
             return
         case .staticCell(let model):
@@ -270,10 +214,10 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
                     let nav = UINavigationController(rootViewController: vc)
                     nav.modalPresentationStyle = .fullScreen
                     self?.present(nav, animated: true) {
-                        UserDefaults.standard.removeObject(forKey: "id")
-                        UserDefaults.standard.removeObject(forKey: "name")
-                        UserDefaults.standard.removeObject(forKey: "profile_picture_url")
-                        DatabaseManager.shared.removeAllListeners()
+                        Defaults.currentUser.removeValue(forKey: .id)
+                        Defaults.currentUser.removeValue(forKey: .name)
+                        Defaults.currentUser.removeValue(forKey: .profilePictureUrl)
+                        NotificationCenter.default.post(name: .didSignOut, object: nil)
                     }
                 } catch {
                     print("Đăng xuất thất bại", error.localizedDescription)
@@ -284,7 +228,5 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
 
             present(actionSheet, animated: true)
         }
-
-
     }
 }

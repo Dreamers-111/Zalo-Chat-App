@@ -31,6 +31,8 @@ final class LocationPickerViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.title = "Pick Location"
+        navigationItem.largeTitleDisplayMode = .never
         view.backgroundColor = .systemBackground
         if isPickable {
             navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Send",
