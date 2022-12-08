@@ -26,7 +26,7 @@ class MainTabBarViewController: UITabBarController {
         nav3.tabBarItem = UITabBarItem(title: "Dòng thời gian", image: UIImage(systemName: "clock"), selectedImage: UIImage(systemName: "clock.fill"))
         nav4.tabBarItem = UITabBarItem(title: "Cài đặt", image: UIImage(systemName: "gearshape"), selectedImage: UIImage(systemName: "gearshape.fill"))
 
-        tabBar.tintColor = .tintColor
+        tabBar.tintColor = UIColor.mainColor
         setViewControllers([nav1, nav2, nav3, nav4], animated: true)
         validateAuth()
     }

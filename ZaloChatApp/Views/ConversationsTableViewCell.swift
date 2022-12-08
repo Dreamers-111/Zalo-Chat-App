@@ -13,20 +13,20 @@ class ConversationsTableViewCell: UITableViewCell {
     private let conversationImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-        imageView.layer.cornerRadius = 50
+        imageView.layer.cornerRadius = 35
         imageView.layer.masksToBounds = true
         return imageView
     }()
     
     private let conversationNameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 21, weight: .semibold)
+        label.font = .systemFont(ofSize: 19, weight: .semibold)
         return label
     }()
     
     private let conversationMessageLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 19, weight: .regular)
+        label.font = .systemFont(ofSize: 16, weight: .regular)
         label.numberOfLines = 0
         return label
     }()
@@ -45,17 +45,20 @@ class ConversationsTableViewCell: UITableViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        conversationImageView.frame = CGRect(x: 10, y: 10, width: 100, height: 100)
+        contentView.backgroundColor = UIColor(red: 0.82, green: 0.89, blue: 0.86, alpha: 1.00)
+        conversationImageView.frame = CGRect(x: 10, y: 25, width: 70, height: 70)
         
         conversationNameLabel.frame = CGRect(x: conversationImageView.right + 10,
-                                             y: 10,
+                                             y: 25,
                                              width: contentView.width - 20 - conversationImageView.width,
-                                             height: (contentView.height - 20)/2)
+                                             height: (contentView.height - 60)/2)
         
         conversationMessageLabel.frame = CGRect(x: conversationImageView.right + 10,
-                                                y: conversationNameLabel.bottom + 10,
-                                                width: contentView.width - 20 - conversationImageView.width,
-                                                height: (contentView.height - 20)/2)
+                                                y: conversationNameLabel.bottom,
+                                                width: contentView.width - 40 - conversationImageView.width,
+                                                height: (contentView.height - 60)/2)
+
+        
     }
     
     func configure(with convo: Conversation) {

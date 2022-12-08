@@ -33,6 +33,9 @@ class ConversationsViewController: UIViewController {
         table.register(ConversationsTableViewCell.self, forCellReuseIdentifier: ConversationsTableViewCell.identifier)
         table.translatesAutoresizingMaskIntoConstraints = false
         table.isHidden = true
+        table.rowHeight = 80
+        // cách 1 đoạn
+        table.contentInset.top = 5
         return table
     }()
 
@@ -74,8 +77,8 @@ class ConversationsViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         let constraints = [
-            conversationstTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            conversationstTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            conversationstTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
+            conversationstTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
             conversationstTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             conversationstTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ]
@@ -98,7 +101,7 @@ class ConversationsViewController: UIViewController {
 
     private func configureNavigationView() {
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.title = "Chats"
+        navigationItem.title = "Trò chuyện"
         navigationItem.largeTitleDisplayMode = .never
 
         let composeBtn = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(didTapComposeNavBarButton))
@@ -214,5 +217,16 @@ extension ConversationsViewController: UITableViewDelegate, UITableViewDataSourc
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         120
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
+    {
+        let verticalPadding: CGFloat = 10
+
+        let maskLayer = CALayer()
+        maskLayer.cornerRadius = 55   //if you want round edges
+        maskLayer.backgroundColor = UIColor.black.cgColor
+        maskLayer.frame = CGRect(x: cell.bounds.origin.x, y: cell.bounds.origin.y, width: cell.bounds.width, height: cell.bounds.height).insetBy(dx: 0, dy: verticalPadding/2)
+        cell.layer.mask = maskLayer
     }
 }

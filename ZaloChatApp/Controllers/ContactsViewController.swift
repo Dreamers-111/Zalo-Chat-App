@@ -22,6 +22,7 @@ class ContactsViewController: UIViewController {
     private var models = [ContactsSection]()
     private var userList = [User(id: "", name: "Tuyet Ngoc", profilePictureUrl: "user1", isActive: true),User(id: "", name: "Dinh Long", profilePictureUrl: "user2", isActive: true),User(id: "", name: "Le Huan", profilePictureUrl: "user3", isActive: true),User(id: "", name: "Nguyen Dung", profilePictureUrl: "user4", isActive: true),User(id: "", name: "Le Ngoc Mai", profilePictureUrl: "user5", isActive: true)]
 
+    private var groupList = [User(id: "", name: "Gia Đình", profilePictureUrl: "gr1", isActive: true),User(id: "", name: "Ăn Uống", profilePictureUrl: "gr2", isActive: true),User(id: "", name: "Du Lịch", profilePictureUrl: "gr3", isActive: true)]
 
 
     private let contactsTableView: UITableView = {
@@ -58,13 +59,21 @@ class ContactsViewController: UIViewController {
             loadUser.append(.friendsProfileCell(model: user))
 
         }
+        
+        var groupListGR: [ContactsSectionOptionType] = []
+        
+        for gr in groupList
+        {
+            groupListGR.append(.friendsProfileCell(model: gr))
+
+        }
 
         models.append(ContactsSection(title: "Bạn bè", options: loadUser
          ))
         
-        models.append(ContactsSection(title: "Nhóm", options: [
-
-        ]))
+        models.append(ContactsSection(title: "Nhóm", options: groupListGR
+         ))
+        
         contactsTableView.reloadData()
     }
     

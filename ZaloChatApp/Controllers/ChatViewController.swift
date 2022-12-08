@@ -265,6 +265,7 @@ class ChatViewController: MessagesViewController {
             default:
                 print("unsupported message kind!")
             }
+            
         }
         switch state {
         case .isNewPrivateConversation(let otherUser):

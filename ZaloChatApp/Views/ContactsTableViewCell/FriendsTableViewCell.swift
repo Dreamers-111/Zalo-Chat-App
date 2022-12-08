@@ -14,7 +14,9 @@ class FriendsTableViewCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.tintColor = .black
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleToFill
+        imageView.layer.cornerRadius = 25
+        imageView.layer.masksToBounds = true
         return imageView
     }()
 
@@ -45,7 +47,7 @@ class FriendsTableViewCell: UITableViewCell {
 
     private func configureContents() {
         let constraints = [
-            contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 80),
+            contentView.heightAnchor.constraint(equalToConstant: 80),
 
             userProfileImageView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.6),
             userProfileImageView.widthAnchor.constraint(equalTo: userProfileImageView.heightAnchor),
@@ -57,6 +59,7 @@ class FriendsTableViewCell: UITableViewCell {
         ]
 
         NSLayoutConstraint.activate(constraints)
+
     }
 
     override func prepareForReuse() {
@@ -67,6 +70,6 @@ class FriendsTableViewCell: UITableViewCell {
 
     public func configure(with model: User) {
         label.text = model.name
-        userProfileImageView.kf.setImage(with: URL(string: model.profilePictureUrl))
+        userProfileImageView.image = UIImage(named: model.profilePictureUrl)!
     }
 }

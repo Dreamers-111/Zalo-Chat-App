@@ -220,7 +220,7 @@ class RegisterViewController: UIViewController {
             alertUserLoginError()
             return
         }
-        /// Nếu imageView.image là hình ảnh mặc địch, thì profileImage là nil, còn không thì là imageView.image
+        /// Nếu imageView.image là hình ảnh mặc định, thì profileImage là nil, còn không thì là imageView.image
         ///  imageView.image luôn khác nil nên có thể sử dụng !
         let profileImage = imageView.image!.isEqualToImage(UIImage(named: "addAvt")!) ? nil : imageView.image
         

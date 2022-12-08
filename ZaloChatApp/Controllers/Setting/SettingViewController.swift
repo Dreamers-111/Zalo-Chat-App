@@ -129,6 +129,7 @@ class SettingViewController: UIViewController {
 }
 
 extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
+
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let section = models[section]
         return section.title
@@ -144,6 +145,7 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let model = models[indexPath.section].options[indexPath.row]
+        
         switch model.self {
         case .userProfileCell(let model):
             guard let cell = tableView.dequeueReusableCell(

@@ -15,7 +15,7 @@ class ProfileTableViewCell: UITableViewCell {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.tintColor = .black
         imageView.contentMode = .scaleAspectFit
-        imageView.layer.cornerRadius = 40
+        imageView.layer.cornerRadius = 32
         imageView.layer.masksToBounds = true
         return imageView
     }()
@@ -49,7 +49,7 @@ class ProfileTableViewCell: UITableViewCell {
         let constraints = [
             contentView.heightAnchor.constraint(equalToConstant: 80),
 
-            userProfileImageView.heightAnchor.constraint(equalTo: contentView.heightAnchor),
+            userProfileImageView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.8),
             userProfileImageView.widthAnchor.constraint(equalTo: contentView.heightAnchor),
             userProfileImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
             userProfileImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),

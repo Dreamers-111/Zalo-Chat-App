@@ -64,7 +64,7 @@ class StaticTableViewCell: UITableViewCell {
             iconImageView.centerXAnchor.constraint(equalTo: iconContainer.centerXAnchor),
             iconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
 
-            label.leadingAnchor.constraint(equalTo: iconContainer.trailingAnchor, constant: 5),
+            label.leadingAnchor.constraint(equalTo: iconContainer.trailingAnchor, constant: 10),
             label.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             
         ]

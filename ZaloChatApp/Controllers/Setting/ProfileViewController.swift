@@ -35,7 +35,8 @@ class ProfileViewController: UIViewController {
 
     private let profileTableHeaderView: UIView = {
         let headerView = UIView(frame: .zero)
-        headerView.backgroundColor = .systemBackground
+        headerView.backgroundColor = .white
+        headerView.layer.cornerRadius = 10
         return headerView
     }()
 
