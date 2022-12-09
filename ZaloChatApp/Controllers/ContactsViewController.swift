@@ -20,7 +20,7 @@ enum ContactsSectionOptionType {
 class ContactsViewController: UIViewController {
     
     private var models = [ContactsSection]()
-    private var userList = [User(id: "", name: "Tuyet Ngoc", profilePictureUrl: "user1", isActive: true),User(id: "", name: "Dinh Long", profilePictureUrl: "user2", isActive: true),User(id: "", name: "Le Huan", profilePictureUrl: "user3", isActive: true),User(id: "", name: "Nguyen Dung", profilePictureUrl: "user4", isActive: true),User(id: "", name: "Le Ngoc Mai", profilePictureUrl: "user5", isActive: true)]
+    private var userList = [User(id: "", name: "Tuyết Ngọc", profilePictureUrl: "user1", isActive: true),User(id: "", name: "Đình Long", profilePictureUrl: "user2", isActive: true),User(id: "", name: "Lê Huấn", profilePictureUrl: "user3", isActive: true),User(id: "", name: "Nguyễn Dũng", profilePictureUrl: "user4", isActive: true),User(id: "", name: "Lê Ngọc Mai", profilePictureUrl: "user5", isActive: true)]
 
     private var groupList = [User(id: "", name: "Gia Đình", profilePictureUrl: "gr1", isActive: true),User(id: "", name: "Ăn Uống", profilePictureUrl: "gr2", isActive: true),User(id: "", name: "Du Lịch", profilePictureUrl: "gr3", isActive: true)]
 
@@ -80,10 +80,10 @@ class ContactsViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         let constraints = [
-            contactsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            contactsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            contactsTableView.topAnchor.constraint(equalTo: view.topAnchor),
-            contactsTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            contactsTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            contactsTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            contactsTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            contactsTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ]
 
         NSLayoutConstraint.activate(constraints)

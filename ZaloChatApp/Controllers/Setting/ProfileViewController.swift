@@ -50,6 +50,18 @@ class ProfileViewController: UIViewController {
         imageView.layer.masksToBounds = true
         return imageView
     }()
+    
+    private let changeProfileButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Chỉnh sửa hồ sơ", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        button.tintColor = .white
+        button.backgroundColor = UIColor.mainColor
+        button.layer.cornerRadius = 15
+        
+        return button
+    }()
 
     // MARK: Deinit
 
@@ -64,21 +76,30 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-
+        
+        changeProfileButton.addTarget(self, action: #selector(changeProfileButtonTapped), for: .touchUpInside)
+        
         startListeningForCurrentUser()
         configureNavigationView()
         configureProfileTableView()
 
         view.addSubview(profileTableView)
+        view.addSubview(changeProfileButton)
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         let constraints = [
-            profileTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            profileTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            profileTableView.topAnchor.constraint(equalTo: view.topAnchor),
-            profileTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            profileTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            profileTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            profileTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            profileTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            profileTableView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.5),
+            
+            changeProfileButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            changeProfileButton.topAnchor.constraint(equalTo: profileTableView.bottomAnchor, constant: -10),
+            changeProfileButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7),
+            changeProfileButton.heightAnchor.constraint(equalToConstant: 40)
         ]
         NSLayoutConstraint.activate(constraints)
         //
@@ -119,6 +140,10 @@ class ProfileViewController: UIViewController {
         profileTableHeaderImageView.image = UIImage(named: "default_avatar")
     }
 
+    @objc private func changeProfileButtonTapped() {
+        let vc = ChangeProfileViewController()
+        navigationController?.pushViewController(vc, animated: true)
+    }
     private func startListeningForCurrentUser() {
         guard let currentUserId = Defaults.currentUser[.id] else {
             print("Thất bại lắng nghe người dùng hiện tại")
