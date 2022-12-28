@@ -122,7 +122,28 @@ extension DatabaseManager {
             completion(true)
         }
     }
-
+    
+    func updateConservation(withId id: String, newName: String, url: String, completion: @escaping (Bool) -> Void) {
+        db.collection("conversations").whereField("members.\(id).name", isNotEqualTo: "")
+            .getDocuments() { (querySnapshot, err) in
+                if let err = err {
+                    print("Error getting documents: \(err)")
+                } else {
+                    for document in querySnapshot!.documents {
+                        self.db.collection("conversations").document(document.documentID).updateData(["members.\(id).name": newName, "members.\(id).profile_picture_url": url]) {
+                            error in
+                            guard error == nil else {
+                                completion(false)
+                                return
+                            }
+                            completion(true)
+                        }
+                    
+                    }
+                }
+        }
+    }
+    
     func listenForUser(with userId: String, completion: @escaping (Result<User, DatabaseError>) -> Void) -> ListenerRegistration {
         let userRef = db.collection("users").document(userId)
         let listener = userRef.addSnapshotListener { docSnapshot, error in

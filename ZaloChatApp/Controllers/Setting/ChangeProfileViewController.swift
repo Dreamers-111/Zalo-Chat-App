@@ -10,6 +10,8 @@ import FirebaseFirestore
 import GoogleSignIn
 import Kingfisher
 import UIKit
+import JGProgressHUD
+
 
 class ChangeProfileViewController: UIViewController {
     
@@ -171,7 +173,6 @@ class ChangeProfileViewController: UIViewController {
         setupProfileImageTapGesture()
         setupGenderField()
         setupBirthdatField()
-        setupButtonTarget()
         
         //button action
         
@@ -217,10 +218,7 @@ class ChangeProfileViewController: UIViewController {
         imageView.addGestureRecognizer(gesture)
     }
     
-    private func setupButtonTarget() {
-       print("lưu")
-    }
-    
+
     @objc private func registerButtonTapped() {
         userNameField.resignFirstResponder()
         birthdayField.resignFirstResponder()
@@ -240,8 +238,78 @@ class ChangeProfileViewController: UIViewController {
         let alert = UIAlertController(title: "Xác nhận sử dụng thay đổi", message: "", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Đồng ý", style: .default, handler: { _ in
             
-            /// CODE
-            print("haha")
+            // Lấy RegisterViewController hiện tại hiển thị
+            let vc = self
+            
+            // hiển thị spinner đang tải lên vc
+            let spinner = JGProgressHUD(style: .dark)
+            spinner.show(in: vc.view)
+            
+            let data = self.imageView.image!.pngData()
+            let fileName = self.currentUser.profilePictureFilename
+            StorageManager.shared.uploadMediaItem(withData: data!, fileName: fileName,
+                                                  location: .users_pictures) { result in
+                switch result {
+                    case .success(let downloadURL):
+                        DatabaseManager.shared.updateUser(withId: self.currentUser.id,
+                                                          data: [
+                                                                    "name": self.userNameField.text!,
+                                                                      "gender": self.genderField.text!,
+                                                                      "birthday": self.birthdayField.text!,
+                                                                      "profile_picture_url": downloadURL]) { success in
+                            guard success else {
+                                print("failed to update user \(self.currentUser.id) with profile picture url.")
+                                let alert = UIAlertController(title: "Không thể lưu thay đổi",
+                                                              message: "",
+                                                              preferredStyle: .alert)
+                                alert.addAction(UIAlertAction(title: "Đồng ý",
+                                                              style: .cancel))
+                                vc.present(alert, animated: true)
+                                DispatchQueue.main.async {
+                                    spinner.dismiss(animated: true)
+                                }
+                                return
+                            }
+                              DatabaseManager.shared.updateConservation(withId: self.currentUser.id, newName: self.userNameField.text!, url:  downloadURL) { success in
+                              guard success else {
+                                  print("lỗi update conversations")
+                                  return
+                                }
+                              }
+
+                              Defaults.currentUser[.profilePictureUrl] = downloadURL
+                              Defaults.currentUser[.name] = self.userNameField.text!
+                              let alert = UIAlertController(title: "Lưu thay đổi thành công",
+                                                            message: "",
+                                                            preferredStyle: .alert)
+                              alert.addAction(UIAlertAction(title: "Đồng ý",
+                                                            style: .cancel))
+                              vc.present(alert, animated: true)
+                              DispatchQueue.main.async {
+                                  spinner.dismiss(animated: true)
+                              }
+                        }
+                    
+                    case .failure(let error):
+                        print("\(error)")
+                        let alert = UIAlertController(title: "Không thể lưu sự thay đổi",
+                                                      message: "",
+                                                      preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "Đồng ý",
+                                                      style: .cancel))
+                        vc.present(alert, animated: true)
+                        DispatchQueue.main.async {
+                            spinner.dismiss(animated: true)
+                        }
+                    }
+                    Defaults.currentUser[.name] = self.userNameField.text!
+                    
+                    let alert = UIAlertController(title: "Chỉnh sửa hồ sơ thành công",
+                                                  message: "",
+                                                  preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "Đồng ý",
+                                                  style: .cancel))
+            }
                 
         }))
         alert.addAction(UIAlertAction(title: "Huỷ bỏ",

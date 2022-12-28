@@ -208,7 +208,7 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
         case .logoutButton:
             let actionSheet = UIAlertController(title: "", message: "Do you really want to log out?", preferredStyle: .actionSheet)
 
-            actionSheet.addAction(UIAlertAction(title: "Log Out", style: .destructive) { [weak self] _ in
+            actionSheet.addAction(UIAlertAction(title: "Xác nhận đăng xuất", style: .destructive) { [weak self] _ in
                 GIDSignIn.sharedInstance.signOut()
                 do {
                     try FirebaseAuth.Auth.auth().signOut()

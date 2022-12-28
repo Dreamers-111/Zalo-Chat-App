@@ -50,7 +50,7 @@ class ProfileTableViewCell: UITableViewCell {
             contentView.heightAnchor.constraint(equalToConstant: 80),
 
             userProfileImageView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.8),
-            userProfileImageView.widthAnchor.constraint(equalTo: contentView.heightAnchor),
+            userProfileImageView.widthAnchor.constraint(equalTo: userProfileImageView.heightAnchor),
             userProfileImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
             userProfileImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
 
