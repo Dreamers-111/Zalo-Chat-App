@@ -10,15 +10,30 @@ import JGProgressHUD
 
 extension UIView {
     var width: CGFloat {
-        return frame.size.width
+        get {
+            return frame.size.width
+        }
+        set {
+            frame.size.width = newValue
+        }
     }
 
     var height: CGFloat {
-        return frame.size.height
+        get {
+            return frame.size.height
+        }
+        set {
+            frame.size.height = newValue
+        }
     }
 
     var top: CGFloat {
-        return frame.origin.y
+        get {
+            return frame.origin.y
+        }
+        set {
+            frame.origin.y = newValue
+        }
     }
 
     var bottom: CGFloat {
@@ -26,7 +41,12 @@ extension UIView {
     }
 
     var left: CGFloat {
-        return frame.origin.x
+        get {
+            return frame.origin.x
+        }
+        set {
+            frame.origin.x = newValue
+        }
     }
 
     var right: CGFloat {
@@ -215,5 +235,17 @@ extension String {
          "Duong1 Xuan2 Huy3 1609" -> ["Duong1", "Xuan2", "Huy3", "1609"]
          #"~!@#$%^&*()_+{}|:"<>?`-=[]\;',./       ~!@#$%^&*()_+',./Dương1{}|:"<>?`-=[]\;            ~!@#$%^&*()_+{}|:"<>?`-=[]\;',./    ~!@#$%^&*()_+',./Xuân2{}|:"<>?`-=[]\;    ~!@#$%^&*()_+{}|:"<>?`-=[]\;',./     ~!@#$%^&*()_+',./Huy3{}|:"<>?`-=[]\;           ~!@#$%^&*()_+',./Xuân1{}|:"<>?`-=[]\;16092002~!@#$%^&*()_+',./Xuân1{}|:"<>?`-=[]\;           ~!@#$%^&*()_+',./Xuân1{}|:"<>?`-=[]\;"# -> ["Duong1", "Xuan2", "Huy3", "Xuan116092002Xuan1", "Xuan1"]
          */
+    }
+}
+
+extension TimeInterval {
+    func stringFromTimeInterval() -> String {
+        let time = NSInteger(self)
+
+        let seconds = time % 60
+        let minutes = (time / 60) % 60
+        let hours = (time / 3600)
+
+        return String(format: "%0.2d:%0.2d:%0.2d", hours, minutes, seconds)
     }
 }

@@ -30,5 +30,17 @@
 			</array>
 		</dict>
 	</dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string></string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string></string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string></string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string></string>
+	<key>NSFileProviderDomainUsageDescription</key>
+	<string></string>
+	<key>NSCameraUsageDescription</key>
+	<string></string>
 </dict>
 </plist>

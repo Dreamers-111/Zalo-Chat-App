@@ -27,7 +27,7 @@ extension DatabaseManager {
         case FailtedToGetCurrentUserCache
         case UserDocumentSerializationFailure
         case ConversationDocumentSerializationFailure
-        case MessageDocumentSerializationFailure
+        case FailedtoSerializeMessageDocuments
 
         // User
         case FailedToInsertUser
@@ -42,29 +42,33 @@ extension DatabaseManager {
         case FailedToUpdateLatestMessageAfterUploading
 
         // Message
-        case FailedToGetCurrentUserCacheToSendTextMessage
+
         case FailedToInsertTextMessage
         case FailedToUpdateConversationAfterInsertingTextMessage
 
-        case FailedToGetCurrentUserCacheToSendLocationMessage
         case FailedToInsertLocationMessage
         case FailedToUpdateConversationAfterInsertingLocationMessage
 
-        case FailedToGetCurrentUserCacheToSendPhotoMessage
         case FailedToInsertPhotoMessage
         case FailedToUpdateConversationAfterInsertingPhotoMessage
         case FailedToGetImageDataToUploadMessagePhoto
         case FailedToUploadMessagePhoto
         case FailedToUpdatePhotoMessageAfterUploadingPhoto
 
-        case FailedToGetCurrentUserCacheToSendVideoMessage
         case FailedToInsertVideoMessage
         case FailedToUpdateConversationAfterInsertingVideoMessage
-        case FailedToGetVideoUrlToUploadMessageVideo
+        case FailedToGetVideoDataToUploadMessageVideo
         case FailedToUploadMessageVideo
         case FailedToUpdateVideoMessageAfterUploadingVideo
 
-        case FailedToListenForAllMessages
+        case FailedToInsertAudioMessage
+        case FailedToUpdateConversationAfterInsertingAudioMessage
+        case FailedToGetAudioDataToUploadMessageAudio
+        case FailedToUploadMessageAudio
+        case FailedToUpdateAudioMessageAfterUploadingAudio
+
+        case FailedToListenForMessages
+        case FailedToGetMessages
 
         // Search
         case InvalidSearchText
@@ -298,6 +302,7 @@ extension DatabaseManager {
 
     func listenForConversation(with conversationId: String, completion: @escaping (Result<Conversation, DatabaseError>) -> Void) -> ListenerRegistration {
         let conversationRef = db.collection("conversations").document(conversationId)
+
         let listener = conversationRef.addSnapshotListener { docSnapshot, error in
             guard var data = docSnapshot?.data(),
                   error == nil
@@ -349,19 +354,21 @@ extension DatabaseManager {
 // MARK: - Message Management
 
 extension DatabaseManager {
-    /// Gets and listens to all messages for a specific conversation
-    func listenForAllMessages(ofConvoWithId conversationId: String, completion: @escaping (Result<[Message], DatabaseError>) -> Void) -> ListenerRegistration
+    /// Gets messages of a specific conversation
+    func getMessages(ofConversation conversationId: String,
+                     limitedToLast limit: Int,
+                     completion: @escaping (Result<[Message], DatabaseError>) -> Void)
     {
         let conversationRef = db.collection("conversations").document(conversationId)
         let messagesRef = conversationRef.collection("messages")
-        let query = messagesRef.order(by: "sent_date", descending: false)
-        let listener = query.addSnapshotListener { querySnapshot, error in
+        let query = messagesRef.order(by: "sent_date", descending: false).limit(toLast: limit)
+        query.getDocuments { querySnapshot, error in
             guard let documents = querySnapshot?.documents,
                   !documents.isEmpty,
                   error == nil
             else {
                 print(error?.localizedDescription ?? "")
-                completion(.failure(.FailedToListenForAllMessages))
+                completion(.failure(.FailedToGetMessages))
                 return
             }
             let messages = documents.compactMap { document in
@@ -370,7 +377,38 @@ extension DatabaseManager {
                 return Message(dictionary: messageData)
             }
             guard messages.count > 0 else {
-                completion(.failure(.MessageDocumentSerializationFailure))
+                completion(.failure(.FailedtoSerializeMessageDocuments))
+                return
+            }
+
+            completion(.success(messages))
+        }
+    }
+
+    /// Gets and listens for messages of a specific conversation
+    func listenForMessages(ofConversation conversationId: String,
+                           limitedToLast limit: Int,
+                           completion: @escaping (Result<[Message], DatabaseError>) -> Void) -> ListenerRegistration
+    {
+        let conversationRef = db.collection("conversations").document(conversationId)
+        let messagesRef = conversationRef.collection("messages")
+        let query = messagesRef.order(by: "sent_date", descending: false).limit(toLast: limit)
+        let listener = query.addSnapshotListener { querySnapshot, error in
+            guard let documents = querySnapshot?.documents,
+                  !documents.isEmpty,
+                  error == nil
+            else {
+                print(error?.localizedDescription ?? "")
+                completion(.failure(.FailedToListenForMessages))
+                return
+            }
+            let messages = documents.compactMap { document in
+                var messageData = document.data()
+                messageData["id"] = document.documentID
+                return Message(dictionary: messageData)
+            }
+            guard messages.count > 0 else {
+                completion(.failure(.FailedtoSerializeMessageDocuments))
                 return
             }
 
@@ -411,8 +449,8 @@ extension DatabaseManager {
         }
     }
 
-    private func uploadMessageVideo(withUrl url: URL, fileName: String, completion: @escaping (String?) -> Void) {
-        StorageManager.shared.uploadMediaItem(withUrl: url, fileName: fileName,
+    private func uploadMessageVideo(withData data: Data, fileName: String, completion: @escaping (String?) -> Void) {
+        StorageManager.shared.uploadMediaItem(withData: data, fileName: fileName,
                                               location: .messages_videos) { result in
             switch result {
             case .success(let urlString):
@@ -436,20 +474,101 @@ extension DatabaseManager {
             }
         }
     }
+
+    private func uploadMessageAudio(withData data: Data, fileName: String, completion: @escaping (String?) -> Void) {
+        StorageManager.shared.uploadMediaItem(withData: data, fileName: fileName,
+                                              location: .messages_audios) { result in
+            switch result {
+            case .success(let urlString):
+                completion(urlString)
+            case .failure(let error):
+                print(error)
+                completion(nil)
+            }
+        }
+    }
 }
 
 // MARK: - Sending Message Methods
 
 extension DatabaseManager {
-    /// send a video message to a specific conversation
-    func sendVideoMessage(to conversationId: String, videoItem: MediaItem, completion: @escaping (DatabaseError?) -> Void) {
-        guard let currentUserId = Defaults.currentUser[.id],
-              let currentUserName = Defaults.currentUser[.name],
-              let currentUserPictureUrl = Defaults.currentUser[.profilePictureUrl]
-        else {
-            completion(.FailedToGetCurrentUserCacheToSendVideoMessage)
-            return
+    /// send a audio message to a specific conversation
+    func sendAudioMessage(to conversationId: String, sender: User, audioItem: AudioItem, completion: @escaping (DatabaseError?) -> Void) {
+        let conversationRef = db.collection("conversations").document(conversationId)
+        let messageRef = conversationRef.collection("messages").document()
+        let messageId = messageRef.documentID
+        let content = ",\(audioItem.duration)"
+        let contentType = "audio"
+        let currentDate = Date()
+        let senderData = [
+            sender.id: [
+                "name": sender.name,
+                "profile_picture_url": sender.profilePictureUrl,
+                "is_active": true,
+                "self": true
+            ]
+        ]
+        let messageData: [String: Any] = [
+            "content": content,
+            "content_type": contentType,
+            "sent_date": currentDate,
+            "sender": senderData
+        ]
+
+        insertMessage(messageRef, withData: messageData) { [weak self] success in
+            guard success else {
+                completion(.FailedToInsertAudioMessage)
+                return
+            }
+            completion(nil)
+
+            let dataForUpdatingConversation = [
+                "latest_message": [
+                    messageId:
+                        [
+                            "content": content,
+                            "content_type": contentType,
+                            "sent_date": currentDate,
+                            "sender": senderData,
+                            "self": true
+                        ]
+                ],
+                "modified_at": currentDate
+            ]
+            self?.updateConversation(conversationRef, withData: dataForUpdatingConversation) { success in
+                guard success else {
+                    completion(.FailedToUpdateConversationAfterInsertingAudioMessage)
+                    return
+                }
+
+                guard let audioData = try? Data(contentsOf: audioItem.url)
+                else {
+                    completion(.FailedToGetAudioDataToUploadMessageAudio)
+                    return
+                }
+                let fileName = "\(conversationId)_\(messageId)_message_audio.mp4"
+
+                self?.uploadMessageAudio(withData: audioData,
+                                         fileName: fileName) { downloadUrlString in
+                    guard let downloadUrlString = downloadUrlString else {
+                        completion(.FailedToUploadMessageAudio)
+                        return
+                    }
+                    let newContentMessageData = ["content": "\(downloadUrlString),\(audioItem.duration)"]
+                    self?.updateMessage(messageRef, withData: newContentMessageData) { success in
+                        guard success else {
+                            completion(.FailedToUpdateAudioMessageAfterUploadingAudio)
+                            return
+                        }
+                        // Không cần update conversation, mạng chậm mắc công gây ra lỗi
+                    }
+                }
+            }
         }
+    }
+
+    /// send a video message to a specific conversation
+    func sendVideoMessage(to conversationId: String, sender: User, videoItem: MediaItem, completion: @escaping (DatabaseError?) -> Void) {
         let conversationRef = db.collection("conversations").document(conversationId)
         let messageRef = conversationRef.collection("messages").document()
         let messageId = messageRef.documentID
@@ -457,9 +576,9 @@ extension DatabaseManager {
         let contentType = "video"
         let currentDate = Date()
         let senderData = [
-            currentUserId: [
-                "name": currentUserName,
-                "profile_picture_url": currentUserPictureUrl,
+            sender.id: [
+                "name": sender.name,
+                "profile_picture_url": sender.profilePictureUrl,
                 "is_active": true,
                 "self": true
             ]
@@ -476,6 +595,8 @@ extension DatabaseManager {
                 completion(.FailedToInsertVideoMessage)
                 return
             }
+            completion(nil)
+
             let dataForUpdatingConversation = [
                 "latest_message": [
                     messageId:
@@ -494,35 +615,28 @@ extension DatabaseManager {
                     completion(.FailedToUpdateConversationAfterInsertingVideoMessage)
                     return
                 }
-                guard let videoUrl = videoItem.url else {
-                    completion(.FailedToGetVideoUrlToUploadMessageVideo)
+
+                guard let videoUrl = videoItem.url,
+                      let videoData = try? Data(contentsOf: videoUrl)
+                else {
+                    completion(.FailedToGetVideoDataToUploadMessageVideo)
                     return
                 }
                 let fileName = "\(conversationId)_\(messageId)_message_video.MOV"
 
-                self?.uploadMessageVideo(withUrl: videoUrl,
+                self?.uploadMessageVideo(withData: videoData,
                                          fileName: fileName) { downloadUrlString in
                     guard let downloadUrlString = downloadUrlString else {
                         completion(.FailedToUploadMessageVideo)
                         return
                     }
                     let newContentMessageData = ["content": downloadUrlString]
-
                     self?.updateMessage(messageRef, withData: newContentMessageData) { success in
                         guard success else {
                             completion(.FailedToUpdateVideoMessageAfterUploadingVideo)
                             return
                         }
-                        let dataForUpdatingConversation = [
-                            "latest_message.\(messageId).content": downloadUrlString
-                        ]
-                        self?.updateConversation(conversationRef, withData: dataForUpdatingConversation) { _ in
-                            /// Thất bại bước này không được tính là 1 lỗi không thể gửi tin nhắn:
-                            /// Vì trong lúc đăng tải video có thể có một tin nhắn văn bản khác đc gửi và thay thế latest_message trong document conversation
-                            /// Khi đó việc cập nhật latest_message ở đây tuy sẽ thất bại,
-                            /// Nhưng video trong khung chat vẫn đc hiện lên vì đã đăng tải video thành công, suy ra tin nhắn đã đc gửi thành công.
-                            completion(nil)
-                        }
+                        // Không cần update conversation, mạng chậm mắc công gây ra lỗi
                     }
                 }
             }
@@ -530,14 +644,7 @@ extension DatabaseManager {
     }
 
     /// send a photo message to a specific conversation
-    func sendPhotoMessage(to conversationId: String, photoItem: MediaItem, completion: @escaping (DatabaseError?) -> Void) {
-        guard let currentUserId = Defaults.currentUser[.id],
-              let currentUserName = Defaults.currentUser[.name],
-              let currentUserPictureUrl = Defaults.currentUser[.profilePictureUrl]
-        else {
-            completion(.FailedToGetCurrentUserCacheToSendPhotoMessage)
-            return
-        }
+    func sendPhotoMessage(to conversationId: String, sender: User, photoItem: MediaItem, completion: @escaping (DatabaseError?) -> Void) {
         let conversationRef = db.collection("conversations").document(conversationId)
         let messageRef = conversationRef.collection("messages").document()
         let messageId = messageRef.documentID
@@ -545,9 +652,9 @@ extension DatabaseManager {
         let contentType = "photo"
         let currentDate = Date()
         let senderData = [
-            currentUserId: [
-                "name": currentUserName,
-                "profile_picture_url": currentUserPictureUrl,
+            sender.id: [
+                "name": sender.name,
+                "profile_picture_url": sender.profilePictureUrl,
                 "is_active": true,
                 "self": true
             ]
@@ -564,6 +671,8 @@ extension DatabaseManager {
                 completion(.FailedToInsertPhotoMessage)
                 return
             }
+            completion(nil)
+
             let dataForUpdatingConversation = [
                 "latest_message": [
                     messageId:
@@ -582,6 +691,7 @@ extension DatabaseManager {
                     completion(.FailedToUpdateConversationAfterInsertingPhotoMessage)
                     return
                 }
+
                 guard let imageData = photoItem.image?.pngData() else {
                     completion(.FailedToGetImageDataToUploadMessagePhoto)
                     return
@@ -594,22 +704,12 @@ extension DatabaseManager {
                         return
                     }
                     let newContentMessageData = ["content": downloadUrlString]
-
                     self?.updateMessage(messageRef, withData: newContentMessageData) { success in
                         guard success else {
                             completion(.FailedToUpdatePhotoMessageAfterUploadingPhoto)
                             return
                         }
-                        let dataForUpdatingConversation = [
-                            "latest_message.\(messageId).content": downloadUrlString
-                        ]
-                        self?.updateConversation(conversationRef, withData: dataForUpdatingConversation) { _ in
-                            /// Thất bại bước này không được tính là 1 lỗi không thể gửi tin nhắn:
-                            /// Vì trong lúc đăng tải hình ảnh có một tin nhắn văn bản khác đc gửi và thay thế latest_message trong document conversation
-                            /// Khi đó việc cập nhật latest_message ở đây tuy sẽ thất bại,
-                            /// Nhưng hình ảnh trong khung chat vẫn đc hiện lên vì đã đăng tải hình ảnh thành công, suy ra tin nhắn đã đc gửi thành công.
-                            completion(nil)
-                        }
+                        // Không cần update conversation, mạng chậm mắc công gây ra lỗi
                     }
                 }
             }
@@ -617,14 +717,7 @@ extension DatabaseManager {
     }
 
     /// send a location message to a specifice conversation
-    func sendLocationMessage(to conversationId: String, locationItem: LocationItem, completion: @escaping (DatabaseError?) -> Void) {
-        guard let currentUserId = Defaults.currentUser[.id],
-              let currentUserName = Defaults.currentUser[.name],
-              let currentUserPictureUrl = Defaults.currentUser[.profilePictureUrl]
-        else {
-            completion(.FailedToGetCurrentUserCacheToSendLocationMessage)
-            return
-        }
+    func sendLocationMessage(to conversationId: String, sender: User, locationItem: LocationItem, completion: @escaping (DatabaseError?) -> Void) {
         let conversationRef = db.collection("conversations").document(conversationId)
         let messageRef = conversationRef.collection("messages").document()
         let messageId = messageRef.documentID
@@ -633,9 +726,9 @@ extension DatabaseManager {
         let contentType = "location"
         let currentDate = Date()
         let senderData: [String: Any] = [
-            currentUserId: [
-                "name": currentUserName,
-                "profile_picture_url": currentUserPictureUrl,
+            sender.id: [
+                "name": sender.name,
+                "profile_picture_url": sender.profilePictureUrl,
                 "is_active": true,
                 "self": true
             ]
@@ -652,6 +745,8 @@ extension DatabaseManager {
                 completion(.FailedToInsertLocationMessage)
                 return
             }
+            completion(nil)
+
             let dataForUpdatingConversation = [
                 "latest_message": [
                     messageId:
@@ -670,20 +765,12 @@ extension DatabaseManager {
                     completion(.FailedToUpdateConversationAfterInsertingLocationMessage)
                     return
                 }
-                completion(nil)
             }
         }
     }
 
     /// send a text message to a specific conversation
-    func sendTextMessage(to conversationId: String, text: String, completion: @escaping (DatabaseError?) -> Void) {
-        guard let currentUserId = Defaults.currentUser[.id],
-              let currentUserName = Defaults.currentUser[.name],
-              let currentUserPictureUrl = Defaults.currentUser[.profilePictureUrl]
-        else {
-            completion(.FailedToGetCurrentUserCacheToSendTextMessage)
-            return
-        }
+    func sendTextMessage(to conversationId: String, sender: User, text: String, completion: @escaping (DatabaseError?) -> Void) {
         let conversationRef = db.collection("conversations").document(conversationId)
         let messageRef = conversationRef.collection("messages").document()
         let messageId = messageRef.documentID
@@ -691,9 +778,9 @@ extension DatabaseManager {
         let contentType = "text"
         let currentDate = Date()
         let senderData: [String: Any] = [
-            currentUserId: [
-                "name": currentUserName,
-                "profile_picture_url": currentUserPictureUrl,
+            sender.id: [
+                "name": sender.name,
+                "profile_picture_url": sender.profilePictureUrl,
                 "is_active": true,
                 "self": true
             ]
@@ -710,6 +797,8 @@ extension DatabaseManager {
                 completion(.FailedToInsertTextMessage)
                 return
             }
+            completion(nil)
+
             let dataForUpdatingConversation = [
                 "latest_message": [
                     messageId:
@@ -728,7 +817,6 @@ extension DatabaseManager {
                     completion(.FailedToUpdateConversationAfterInsertingTextMessage)
                     return
                 }
-                completion(nil)
             }
         }
     }

@@ -24,40 +24,54 @@ struct MessageCoordinateItem: LocationItem {
     }
 }
 
-// MARK: - MessageImageMediaItem
+// MARK: - MessageMediaItem
 
-struct MessageImageMediaItem: MediaItem {
+struct MessageMediaItem: MediaItem {
     var url: URL?
     var image: UIImage?
-    var placeholderImage: UIImage
-    var size: CGSize
+    let placeholderImage = UIImage(imageLiteralResourceName: "image_message_placeholder")
+    var size = CGSize(width: 240, height: 240)
 
-    init(image: UIImage) {
+    init(image: UIImage?) {
         self.image = image
-        size = CGSize(width: 240, height: 240)
-        placeholderImage = UIImage()
     }
 
     init(imageURL: URL?) {
         url = imageURL
-        size = CGSize(width: 240, height: 240)
-        placeholderImage = UIImage(imageLiteralResourceName: "image_message_placeholder")
+    }
+
+    init(thumbnail: UIImage?) {
+        image = thumbnail
+    }
+
+    init(videoURL: URL?) {
+        url = videoURL
     }
 }
 
 // MARK: - MessageAudioItem
 
 struct MessageAudioItem: AudioItem {
-    var url: URL
+    var audioURL: URL?
+    var url: URL {
+        if let url = audioURL {
+            return url
+        }
+        else {
+            return URL(fileURLWithPath: "")
+        }
+    }
+
     var size: CGSize
     var duration: Float
 
-    init(url: URL) {
-        self.url = url
-        size = CGSize(width: 160, height: 35)
-        // compute duration
-        let audioAsset = AVURLAsset(url: url)
-        duration = Float(CMTimeGetSeconds(audioAsset.duration))
+    init(audioURL: URL?,
+         size: CGSize = .init(width: 160, height: 35),
+         duration: Float)
+    {
+        self.audioURL = audioURL
+        self.size = size
+        self.duration = duration
     }
 }
 
@@ -88,7 +102,11 @@ struct MessageLinkItem: LinkItem {
     let thumbnailImage: UIImage
 }
 
-struct Message: MessageType {
+struct Message: MessageType, Equatable {
+    static func == (lhs: Message, rhs: Message) -> Bool {
+        lhs.id == rhs.id
+    }
+
     // MARK: - Property
 
     var id: String
@@ -130,23 +148,23 @@ struct Message: MessageType {
         self.init(id: id, kind: .attributedText(attributedText), sentDate: sentDate, user: user)
     }
 
-    init(id: String, image: UIImage, sentDate: Date, user: User) {
-        let mediaItem = MessageImageMediaItem(image: image)
+    init(id: String, image: UIImage?, sentDate: Date, user: User) {
+        let mediaItem = MessageMediaItem(image: image)
         self.init(id: id, kind: .photo(mediaItem), sentDate: sentDate, user: user)
     }
 
     init(id: String, imageURL: URL?, sentDate: Date, user: User) {
-        let mediaItem = MessageImageMediaItem(imageURL: imageURL)
+        let mediaItem = MessageMediaItem(imageURL: imageURL)
         self.init(id: id, kind: .photo(mediaItem), sentDate: sentDate, user: user)
     }
 
-    init(id: String, videoURL: URL, sentDate: Date, user: User) {
-        let mediaItem = MessageImageMediaItem(imageURL: videoURL)
+    init(id: String, videoURL: URL?, sentDate: Date, user: User) {
+        let mediaItem = MessageMediaItem(videoURL: videoURL)
         self.init(id: id, kind: .video(mediaItem), sentDate: sentDate, user: user)
     }
 
-    init(id: String, videoThumbnail: UIImage, sentDate: Date, user: User) {
-        let mediaItem = MessageImageMediaItem(image: videoThumbnail)
+    init(id: String, videoThumbnail: UIImage?, sentDate: Date, user: User) {
+        let mediaItem = MessageMediaItem(thumbnail: videoThumbnail)
         self.init(id: id, kind: .video(mediaItem), sentDate: sentDate, user: user)
     }
 
@@ -159,8 +177,8 @@ struct Message: MessageType {
         self.init(id: id, kind: .emoji(emoji), sentDate: sentDate, user: user)
     }
 
-    init(id: String, audioURL: URL, sentDate: Date, user: User) {
-        let audioItem = MessageAudioItem(url: audioURL)
+    init(id: String, audioURL: URL?, duration: Float, sentDate: Date, user: User) {
+        let audioItem = MessageAudioItem(audioURL: audioURL, duration: duration)
         self.init(id: id, kind: .audio(audioItem), sentDate: sentDate, user: user)
     }
 
@@ -208,16 +226,21 @@ extension Message: MessageDocumentSerializable {
         case "photo":
             self.init(id: id, imageURL: URL(string: content), sentDate: sentDate.dateValue(), user: user)
         case "video":
-            fallthrough
+            self.init(id: id, videoURL: URL(string: content), sentDate: sentDate.dateValue(), user: user)
         case "location":
             let locationComponents = content.components(separatedBy: ",")
             guard let longitude = Double(locationComponents[0]),
                   let latitude = Double(locationComponents[1])
-            else {
-                return nil
-            }
+            else { return nil }
             let location = CLLocation(latitude: latitude, longitude: longitude)
             self.init(id: id, location: location, sentDate: sentDate.dateValue(), user: user)
+        case "audio":
+            let audioItemComponents = content.components(separatedBy: ",")
+            let urlString = audioItemComponents[0]
+            let duration = Float(audioItemComponents[1]) ?? 0.0
+            self.init(id: id, audioURL: URL(string: urlString), duration: duration, sentDate: sentDate.dateValue(), user: user)
+        case "":
+            self.init(id: id, custom: nil, sentDate: sentDate.dateValue(), user: user)
         default:
             return nil
         }

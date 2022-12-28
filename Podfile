@@ -16,13 +16,16 @@ pod 'FirebaseStorage'
 pod 'JGProgressHUD'
 
 # giao diện chat
-pod 'MessageKit'
+# pod 'MessageKit'
+# Thêm qua Swift Package Manager 
+# Vì thêm qua CocoaPod không hỗ trợ phiên bản mới nhất
 
 # giúp chuyển đổi dữ liệu JSON sang đối tượng thuộc lớp, struct
 pod 'ObjectMapper'
 
 # đăng nhập google
-pod 'GoogleSignIn'
+# Lên 7.0.0 sẽ bị lỗi
+pod 'GoogleSignIn', '~> 6.2.4'
 
 # thao tác api
 pod 'Alamofire'

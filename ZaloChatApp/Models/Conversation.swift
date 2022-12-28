@@ -7,7 +7,11 @@
 import FirebaseFirestore
 import Foundation
 
-struct Conversation {
+struct Conversation: Equatable {
+    static func == (lhs: Conversation, rhs: Conversation) -> Bool {
+        lhs.id == rhs.id
+    }
+
     var id: String
     var name: String
     var pictureUrl: String
@@ -117,6 +121,7 @@ extension Conversation: ConversationDocumentSerializable {
 
         guard let latestMessage = Conversation.latestMessageDocumentSerialize(latestMessageDict)
         else {
+            print("latest message")
             return nil
         }
 

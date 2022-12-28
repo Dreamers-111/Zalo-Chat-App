@@ -23,7 +23,11 @@ struct NSC_UCD_RWR_Formatted {
     }
 }
 
-struct User: SenderType {
+struct User: SenderType, Equatable {
+    static func == (lhs: User, rhs: User) -> Bool {
+        lhs.id == rhs.id
+    }
+
     var id: String
     @NSC_UCD_RWR_Formatted var name: String
     var email: String

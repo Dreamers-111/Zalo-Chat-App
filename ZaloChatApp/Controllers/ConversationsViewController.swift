@@ -143,11 +143,12 @@ class ConversationsViewController: UIViewController {
             switch result {
             case .success(let conversations):
                 self?.conversations = conversations
-                DispatchQueue.main.async {
-                    self?.updateUI()
-                }
             case .failure(let error):
+                self?.conversations = []
                 print("Thất bại lắng nghe các cuộc hội thoại của người dùng hiện tại: \(error)")
+            }
+            DispatchQueue.main.async {
+                self?.updateUI()
             }
         }
     }
@@ -186,10 +187,11 @@ class ConversationsViewController: UIViewController {
             print("Error!, có nhiều hơn một cuộc hội thoại riêng tư được chọn, \(chosenPrivateConversation)")
         } else if chosenPrivateConversation.count == 1 {
             let vc = ChatViewController(state: .isExistingConversation(chosenPrivateConversation[0]))
-            navigationController?.pushViewController(vc, animated: true)
+            navigationController?.tabBarController?.navigationController?.pushViewController(vc, animated: true)
+
         } else if chosenPrivateConversation.count == 0 {
             let vc = ChatViewController(state: .isNewPrivateConversation(otherUser))
-            navigationController?.pushViewController(vc, animated: true)
+            navigationController?.tabBarController?.navigationController?.pushViewController(vc, animated: true)
         }
     }
 }
@@ -212,21 +214,21 @@ extension ConversationsViewController: UITableViewDelegate, UITableViewDataSourc
         tableView.deselectRow(at: indexPath, animated: true)
         let conversation = conversations[indexPath.row]
         let vc = ChatViewController(state: .isExistingConversation(conversation))
-        navigationController?.pushViewController(vc, animated: true)
+        navigationController?.tabBarController?.navigationController?.pushViewController(vc, animated: true)
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         120
     }
-    
+
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
     {
         let verticalPadding: CGFloat = 10
 
         let maskLayer = CALayer()
-        maskLayer.cornerRadius = 55   //if you want round edges
+        maskLayer.cornerRadius = 55 // if you want round edges
         maskLayer.backgroundColor = UIColor.black.cgColor
-        maskLayer.frame = CGRect(x: cell.bounds.origin.x, y: cell.bounds.origin.y, width: cell.bounds.width, height: cell.bounds.height).insetBy(dx: 0, dy: verticalPadding/2)
+        maskLayer.frame = CGRect(x: cell.bounds.origin.x, y: cell.bounds.origin.y, width: cell.bounds.width, height: cell.bounds.height).insetBy(dx: 0, dy: verticalPadding / 2)
         cell.layer.mask = maskLayer
     }
 }

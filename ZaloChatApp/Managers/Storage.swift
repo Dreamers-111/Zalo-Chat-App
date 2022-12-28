@@ -22,11 +22,12 @@ final class StorageManager {
     }
 
     enum Location: String {
-        case users
+        case users = "users"
         case users_pictures = "users/pictures"
-        case messages
+        case messages = "messages"
         case messages_pictures = "messages/pictures"
         case messages_videos = "messages/videos"
+        case messages_audios = "messages/audios"
     }
     
     typealias downloadURLCompletion = (Result<URL, StorageErrors>) -> Void
@@ -51,14 +52,11 @@ final class StorageManager {
                 completion(.failure(.failedToUpload))
                 return
             }
-            
             self?.storage.child("\(location.rawValue)/\(fileName)").downloadURL { url, error in
-                
                 guard let url = url, error == nil else {
                     completion(.failure(.failedToGetDownloadURL))
                     return
                 }
-                
                 let urlString = url.absoluteString
                 completion(.success(urlString))
             }
@@ -72,14 +70,11 @@ final class StorageManager {
                 completion(.failure(.failedToUpload))
                 return
             }
-            
             self?.storage.child("\(location.rawValue)/\(fileName)").downloadURL { url, error in
-                
                 guard let url = url, error == nil else {
                     completion(.failure(.failedToGetDownloadURL))
                     return
                 }
-                
                 let urlString = url.absoluteString
                 completion(.success(urlString))
             }

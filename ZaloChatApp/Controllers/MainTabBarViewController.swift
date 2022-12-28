@@ -10,6 +10,17 @@ import UIKit
 class MainTabBarViewController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
+        let documentsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        do {
+            let fileURLs = try FileManager.default.contentsOfDirectory(at: documentsUrl,
+                                                                       includingPropertiesForKeys: nil,
+                                                                       options: .skipsHiddenFiles)
+            for fileURL in fileURLs where fileURL.pathExtension == "mp4" {
+                try FileManager.default.removeItem(at: fileURL)
+            }
+        } catch {
+            print(error)
+        }
 
         let vc1 = ConversationsViewController()
         let vc2 = ContactsViewController()

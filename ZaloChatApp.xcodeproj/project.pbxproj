@@ -24,6 +24,8 @@
 		C4DFAA1F29431AEA00EE77E5 /* ChangeProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DFAA1E29431AEA00EE77E5 /* ChangeProfileViewController.swift */; };
 		C4F2A9D52902CDCC000D094F /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4F2A9D42902CDCC000D094F /* Storage.swift */; };
 		E51B628628F6DD0800CECE92 /* HuyExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51B628528F6DD0800CECE92 /* HuyExtension.swift */; };
+		E51B972229483F6800F640E9 /* CustomMessageFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51B972129483F6800F640E9 /* CustomMessageFlowLayout.swift */; };
+		E51B9724294855C800F640E9 /* CustomInputBarAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51B9723294855C800F640E9 /* CustomInputBarAccessoryView.swift */; };
 		E54879A729375FE40072A661 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = E54879A629375FE40072A661 /* Defaults.swift */; };
 		E559280828E2EFF9006ADC72 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E559280728E2EFF9006ADC72 /* AppDelegate.swift */; };
 		E559280A28E2EFF9006ADC72 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E559280928E2EFF9006ADC72 /* SceneDelegate.swift */; };
@@ -37,15 +39,20 @@
 		E5719D7028F6C39800AAF3E0 /* ConversationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5719D6F28F6C39800AAF3E0 /* ConversationsViewController.swift */; };
 		E5719D7228F6C3C300AAF3E0 /* NewConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5719D7128F6C3C300AAF3E0 /* NewConversationViewController.swift */; };
 		E5719D7428F6C3ED00AAF3E0 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5719D7328F6C3ED00AAF3E0 /* ProfileViewController.swift */; };
-		E5719D7628F6C41200AAF3E0 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5719D7528F6C41200AAF3E0 /* ChatViewController.swift */; };
 		E5719D7828F6C43F00AAF3E0 /* MainTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5719D7728F6C43F00AAF3E0 /* MainTabBarViewController.swift */; };
-		E57BF6222934A60600051F6C /* BasicAudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E57BF6212934A60600051F6C /* BasicAudioController.swift */; };
+		E57BF6222934A60600051F6C /* MessageAudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E57BF6212934A60600051F6C /* MessageAudioController.swift */; };
 		E5856A3F28F6C58B00A6DE5A /* ContactsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5856A3E28F6C58B00A6DE5A /* ContactsViewController.swift */; };
 		E5856A4128F6C59F00A6DE5A /* TimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5856A4028F6C59F00A6DE5A /* TimelineViewController.swift */; };
 		E5856A4328F6D20000A6DE5A /* Login&RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5856A4228F6D20000A6DE5A /* Login&RegisterViewController.swift */; };
 		E5856A4528F6D36300A6DE5A /* SwipingCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5856A4428F6D36300A6DE5A /* SwipingCollectionViewController.swift */; };
 		E5856A4728F6D3E900A6DE5A /* PageViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5856A4628F6D3E900A6DE5A /* PageViewCell.swift */; };
+		E596840E295C32E5002379C7 /* BasisChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E596840D295C32E5002379C7 /* BasisChatViewController.swift */; };
+		E5968410295C36E4002379C7 /* AdvanceChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E596840F295C36E4002379C7 /* AdvanceChatViewController.swift */; };
 		E597F44D2922978E000F8B12 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = E597F44C2922978E000F8B12 /* Message.swift */; };
+		E59DEAA229546AD100D74DA7 /* CustomMessageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59DEAA129546AD100D74DA7 /* CustomMessageCollectionViewCell.swift */; };
+		E59DEAA52957143500D74DA7 /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = E59DEAA42957143500D74DA7 /* MessageKit */; };
+		E5B2336C2959A31A00CACF75 /* MessageAudioPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5B2336B2959A31A00CACF75 /* MessageAudioPlayerViewController.swift */; };
+		E5E41A7E29530BA900B681C0 /* MessageAudioRecorderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E41A7D29530BA900B681C0 /* MessageAudioRecorderViewController.swift */; };
 		E5E9C320291BC75D00B6E896 /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E9C31F291BC75D00B6E896 /* Conversation.swift */; };
 /* End PBXBuildFile section */
 
@@ -69,6 +76,8 @@
 		C4DFAA1E29431AEA00EE77E5 /* ChangeProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeProfileViewController.swift; sourceTree = "<group>"; };
 		C4F2A9D42902CDCC000D094F /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		E51B628528F6DD0800CECE92 /* HuyExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuyExtension.swift; sourceTree = "<group>"; };
+		E51B972129483F6800F640E9 /* CustomMessageFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomMessageFlowLayout.swift; sourceTree = "<group>"; };
+		E51B9723294855C800F640E9 /* CustomInputBarAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomInputBarAccessoryView.swift; sourceTree = "<group>"; };
 		E54879A629375FE40072A661 /* Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
 		E559280428E2EFF9006ADC72 /* ZaloChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZaloChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E559280728E2EFF9006ADC72 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -84,15 +93,19 @@
 		E5719D6F28F6C39800AAF3E0 /* ConversationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsViewController.swift; sourceTree = "<group>"; };
 		E5719D7128F6C3C300AAF3E0 /* NewConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationViewController.swift; sourceTree = "<group>"; };
 		E5719D7328F6C3ED00AAF3E0 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
-		E5719D7528F6C41200AAF3E0 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		E5719D7728F6C43F00AAF3E0 /* MainTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarViewController.swift; sourceTree = "<group>"; };
-		E57BF6212934A60600051F6C /* BasicAudioController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicAudioController.swift; sourceTree = "<group>"; };
+		E57BF6212934A60600051F6C /* MessageAudioController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageAudioController.swift; sourceTree = "<group>"; };
 		E5856A3E28F6C58B00A6DE5A /* ContactsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsViewController.swift; sourceTree = "<group>"; };
 		E5856A4028F6C59F00A6DE5A /* TimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineViewController.swift; sourceTree = "<group>"; };
 		E5856A4228F6D20000A6DE5A /* Login&RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Login&RegisterViewController.swift"; sourceTree = "<group>"; };
 		E5856A4428F6D36300A6DE5A /* SwipingCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipingCollectionViewController.swift; sourceTree = "<group>"; };
 		E5856A4628F6D3E900A6DE5A /* PageViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewCell.swift; sourceTree = "<group>"; };
+		E596840D295C32E5002379C7 /* BasisChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasisChatViewController.swift; sourceTree = "<group>"; };
+		E596840F295C36E4002379C7 /* AdvanceChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvanceChatViewController.swift; sourceTree = "<group>"; };
 		E597F44C2922978E000F8B12 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		E59DEAA129546AD100D74DA7 /* CustomMessageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomMessageCollectionViewCell.swift; sourceTree = "<group>"; };
+		E5B2336B2959A31A00CACF75 /* MessageAudioPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageAudioPlayerViewController.swift; sourceTree = "<group>"; };
+		E5E41A7D29530BA900B681C0 /* MessageAudioRecorderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageAudioRecorderViewController.swift; sourceTree = "<group>"; };
 		E5E9C31F291BC75D00B6E896 /* Conversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Conversation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -102,6 +115,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2AD82DD584A1D908812A8341 /* Pods_ZaloChatApp.framework in Frameworks */,
+				E59DEAA52957143500D74DA7 /* MessageKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -155,6 +169,23 @@
 			path = ContactsTableViewCell;
 			sourceTree = "<group>";
 		};
+		E51B971B29483CA100F640E9 /* ChatViewController */ = {
+			isa = PBXGroup;
+			children = (
+				E59DEAA129546AD100D74DA7 /* CustomMessageCollectionViewCell.swift */,
+				E51B9723294855C800F640E9 /* CustomInputBarAccessoryView.swift */,
+			);
+			path = ChatViewController;
+			sourceTree = "<group>";
+		};
+		E51B972029483F2200F640E9 /* Layout */ = {
+			isa = PBXGroup;
+			children = (
+				E51B972129483F6800F640E9 /* CustomMessageFlowLayout.swift */,
+			);
+			path = Layout;
+			sourceTree = "<group>";
+		};
 		E55927FB28E2EFF9006ADC72 = {
 			isa = PBXGroup;
 			children = (
@@ -176,6 +207,7 @@
 		E559280628E2EFF9006ADC72 /* ZaloChatApp */ = {
 			isa = PBXGroup;
 			children = (
+				E51B972029483F2200F640E9 /* Layout */,
 				E57BF6202934A5EE00051F6C /* AudioController */,
 				E559282328E2F7F3006ADC72 /* Models */,
 				E559282228E2F7ED006ADC72 /* Views */,
@@ -215,13 +247,11 @@
 			isa = PBXGroup;
 			children = (
 				E5719D7728F6C43F00AAF3E0 /* MainTabBarViewController.swift */,
+				E596840A295C3267002379C7 /* Chats */,
 				E56B5CEB2940ACA70016D482 /* Setting */,
 				C450042128F5D2DF001F37D7 /* Login&Register */,
 				E5719D6F28F6C39800AAF3E0 /* ConversationsViewController.swift */,
 				E5719D7128F6C3C300AAF3E0 /* NewConversationViewController.swift */,
-				E5719D7528F6C41200AAF3E0 /* ChatViewController.swift */,
-				B61C0467292E371F003F1846 /* PhotoViewController.swift */,
-				B61C0469292E3728003F1846 /* LocationPickerViewController.swift */,
 				E5856A3E28F6C58B00A6DE5A /* ContactsViewController.swift */,
 				E5856A4028F6C59F00A6DE5A /* TimelineViewController.swift */,
 				B6B89FB12906EEB9009CD1D7 /* ScanQRCodeViewController.swift */,
@@ -241,6 +271,7 @@
 		E559282228E2F7ED006ADC72 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				E51B971B29483CA100F640E9 /* ChatViewController */,
 				E559281228E2EFFA006ADC72 /* LaunchScreen.storyboard */,
 				E559282828E2F88B006ADC72 /* ConversationsTableViewCell.swift */,
 				E5856A4628F6D3E900A6DE5A /* PageViewCell.swift */,
@@ -273,9 +304,22 @@
 		E57BF6202934A5EE00051F6C /* AudioController */ = {
 			isa = PBXGroup;
 			children = (
-				E57BF6212934A60600051F6C /* BasicAudioController.swift */,
+				E57BF6212934A60600051F6C /* MessageAudioController.swift */,
 			);
 			path = AudioController;
+			sourceTree = "<group>";
+		};
+		E596840A295C3267002379C7 /* Chats */ = {
+			isa = PBXGroup;
+			children = (
+				B61C0467292E371F003F1846 /* PhotoViewController.swift */,
+				E5E41A7D29530BA900B681C0 /* MessageAudioRecorderViewController.swift */,
+				E5B2336B2959A31A00CACF75 /* MessageAudioPlayerViewController.swift */,
+				B61C0469292E3728003F1846 /* LocationPickerViewController.swift */,
+				E596840D295C32E5002379C7 /* BasisChatViewController.swift */,
+				E596840F295C36E4002379C7 /* AdvanceChatViewController.swift */,
+			);
+			path = Chats;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -296,6 +340,9 @@
 			dependencies = (
 			);
 			name = ZaloChatApp;
+			packageProductDependencies = (
+				E59DEAA42957143500D74DA7 /* MessageKit */,
+			);
 			productName = ZaloChatApp;
 			productReference = E559280428E2EFF9006ADC72 /* ZaloChatApp.app */;
 			productType = "com.apple.product-type.application";
@@ -324,6 +371,9 @@
 				Base,
 			);
 			mainGroup = E55927FB28E2EFF9006ADC72;
+			packageReferences = (
+				E59DEAA32957143500D74DA7 /* XCRemoteSwiftPackageReference "MessageKit" */,
+			);
 			productRefGroup = E559280528E2EFF9006ADC72 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -401,10 +451,12 @@
 				E5719D7228F6C3C300AAF3E0 /* NewConversationViewController.swift in Sources */,
 				E5719D7428F6C3ED00AAF3E0 /* ProfileViewController.swift in Sources */,
 				C480BC812927AC9E00EFBC44 /* SettingViewController.swift in Sources */,
+				E51B972229483F6800F640E9 /* CustomMessageFlowLayout.swift in Sources */,
 				E51B628628F6DD0800CECE92 /* HuyExtension.swift in Sources */,
 				C480BC7A2927ABF600EFBC44 /* LogoutTableViewCell.swift in Sources */,
 				E5719D7028F6C39800AAF3E0 /* ConversationsViewController.swift in Sources */,
 				C480BC7E2927AC2C00EFBC44 /* StaticTableViewCell.swift in Sources */,
+				E51B9724294855C800F640E9 /* CustomInputBarAccessoryView.swift in Sources */,
 				E5856A4728F6D3E900A6DE5A /* PageViewCell.swift in Sources */,
 				E5856A3F28F6C58B00A6DE5A /* ContactsViewController.swift in Sources */,
 				E597F44D2922978E000F8B12 /* Message.swift in Sources */,
@@ -412,20 +464,24 @@
 				B61C046A292E3728003F1846 /* LocationPickerViewController.swift in Sources */,
 				C49B973828F6A6AD0002AF5C /* RegisterViewModel.swift in Sources */,
 				C450041F28F5D26D001F37D7 /* RegisterViewController.swift in Sources */,
+				E596840E295C32E5002379C7 /* BasisChatViewController.swift in Sources */,
 				B6B89FB22906EEBA009CD1D7 /* ScanQRCodeViewController.swift in Sources */,
 				E5719D7828F6C43F00AAF3E0 /* MainTabBarViewController.swift in Sources */,
 				E5E9C320291BC75D00B6E896 /* Conversation.swift in Sources */,
 				E5856A4328F6D20000A6DE5A /* Login&RegisterViewController.swift in Sources */,
 				C450042528F5D338001F37D7 /* Extensions.swift in Sources */,
+				E5968410295C36E4002379C7 /* AdvanceChatViewController.swift in Sources */,
 				E5856A4128F6C59F00A6DE5A /* TimelineViewController.swift in Sources */,
 				C4F2A9D52902CDCC000D094F /* Storage.swift in Sources */,
-				E57BF6222934A60600051F6C /* BasicAudioController.swift in Sources */,
+				E57BF6222934A60600051F6C /* MessageAudioController.swift in Sources */,
+				E59DEAA229546AD100D74DA7 /* CustomMessageCollectionViewCell.swift in Sources */,
+				E5B2336C2959A31A00CACF75 /* MessageAudioPlayerViewController.swift in Sources */,
 				E559282528E2F826006ADC72 /* Database.swift in Sources */,
 				C4951044292B8894004CB787 /* FriendsTableViewCell.swift in Sources */,
 				E559282728E2F840006ADC72 /* User.swift in Sources */,
 				C480BC782927ABD900EFBC44 /* SwitchTableViewCell.swift in Sources */,
 				E559280A28E2EFF9006ADC72 /* SceneDelegate.swift in Sources */,
-				E5719D7628F6C41200AAF3E0 /* ChatViewController.swift in Sources */,
+				E5E41A7E29530BA900B681C0 /* MessageAudioRecorderViewController.swift in Sources */,
 				E559282B28E2F89F006ADC72 /* LoginViewModel.swift in Sources */,
 				E5856A4528F6D36300A6DE5A /* SwipingCollectionViewController.swift in Sources */,
 				B61C0468292E371F003F1846 /* PhotoViewController.swift in Sources */,
@@ -568,7 +624,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6YPTSWJK4P;
+				DEVELOPMENT_TEAM = M669YQ73BG;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ZaloChatApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -596,7 +652,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6YPTSWJK4P;
+				DEVELOPMENT_TEAM = M669YQ73BG;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ZaloChatApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -638,6 +694,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E59DEAA32957143500D74DA7 /* XCRemoteSwiftPackageReference "MessageKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MessageKit/MessageKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E59DEAA42957143500D74DA7 /* MessageKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E59DEAA32957143500D74DA7 /* XCRemoteSwiftPackageReference "MessageKit" */;
+			productName = MessageKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E55927FC28E2EFF9006ADC72 /* Project object */;
 }
