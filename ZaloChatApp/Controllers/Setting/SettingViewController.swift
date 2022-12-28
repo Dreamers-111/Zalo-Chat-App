@@ -6,9 +6,10 @@
 //
 
 import FirebaseAuth
+import FirebaseFirestore
 import GoogleSignIn
+import Kingfisher
 import UIKit
-
 // Tạo setion
 struct Section {
     let title: String
@@ -19,7 +20,7 @@ enum SettingsOptionType {
     case staticCell(model: SettingsOption)
     case switchCell(model: SettingsSwitchOption)
     case logoutButton
-    case userProfileCell(model: SettingViewController.CurrentUser)
+    case userProfileCell(model: User)
 }
 
 struct SettingsSwitchOption {
@@ -38,24 +39,21 @@ struct SettingsOption {
 }
 
 class SettingViewController: UIViewController {
-    struct CurrentUser {
-        var id: String
-        var name: String
-        var profilePictureUrl: String
-    }
-
     private let db = DatabaseManager.shared
 
-    private let currentUser: CurrentUser = {
+    private var currentUserListeners: ListenerRegistration?
+
+    private let currentUser: User = {
         guard let currentUserId = Defaults.currentUser[.id],
               let currentUserName = Defaults.currentUser[.name],
               let currentUserPictureUrl = Defaults.currentUser[.profilePictureUrl]
         else {
-            return CurrentUser(id: "", name: "", profilePictureUrl: "")
+            return User(id: "", name: "", profilePictureUrl: "", isActive: false)
         }
-        return CurrentUser(id: currentUserId,
-                           name: currentUserName,
-                           profilePictureUrl: currentUserPictureUrl)
+        return User(id: currentUserId,
+                    name: currentUserName,
+                    profilePictureUrl: currentUserPictureUrl,
+                    isActive: true)
     }()
 
     private var models = [Section]()
@@ -71,14 +69,28 @@ class SettingViewController: UIViewController {
         return tableView
     }()
 
+    // MARK: Deinit
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
 
         configureNavigationView()
-        configureSettingsTableView()
+        configureSettingsTableView(withUser: currentUser)
 
         view.addSubview(settingsTableView)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        startListeningForCurrentUser()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if currentUserListeners?.remove() != nil {
+            currentUserListeners = nil
+        }
     }
 
     override func viewDidLayoutSubviews() {
@@ -99,9 +111,11 @@ class SettingViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
     }
 
-    private func configureSettingsTableView() {
+    private func configureSettingsTableView(withUser user: User) {
+        models.removeAll()
+
         models.append(Section(title: "", options: [
-            .userProfileCell(model: currentUser)
+            .userProfileCell(model: user)
         ]))
 
         models.append(Section(title: "", options: [
@@ -126,10 +140,34 @@ class SettingViewController: UIViewController {
         settingsTableView.dataSource = self
         settingsTableView.delegate = self
     }
+
+    private func reloadSettingsTableView() {
+        let user = User(id: "", name: "", profilePictureUrl: "", isActive: false)
+        configureSettingsTableView(withUser: user)
+        settingsTableView.reloadData()
+    }
+
+    private func startListeningForCurrentUser() {
+        guard let currentUserId = Defaults.currentUser[.id] else {
+            print("Thất bại lắng nghe người dùng hiện tại")
+            return
+        }
+
+        currentUserListeners = db.listenForUser(with: currentUserId) { [weak self] result in
+            switch result {
+            case .success(let user):
+                DispatchQueue.main.async {
+                    self?.configureSettingsTableView(withUser: user)
+                    self?.settingsTableView.reloadData()
+                }
+            case .failure(let error):
+                print("Thất bại lắng nghe người dùng hiện tại: \(error)")
+            }
+        }
+    }
 }
 
 extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
-
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let section = models[section]
         return section.title
@@ -145,7 +183,7 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let model = models[indexPath.section].options[indexPath.row]
-        
+
         switch model.self {
         case .userProfileCell(let model):
             guard let cell = tableView.dequeueReusableCell(
@@ -220,6 +258,8 @@ extension SettingViewController: UITableViewDataSource, UITableViewDelegate {
                         Defaults.currentUser.removeValue(forKey: .name)
                         Defaults.currentUser.removeValue(forKey: .profilePictureUrl)
                         NotificationCenter.default.post(name: .didSignOut, object: nil)
+
+                        self?.reloadSettingsTableView()
                     }
                 } catch {
                     print("Đăng xuất thất bại", error.localizedDescription)

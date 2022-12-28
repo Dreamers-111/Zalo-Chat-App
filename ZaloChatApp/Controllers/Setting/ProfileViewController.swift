@@ -50,7 +50,7 @@ class ProfileViewController: UIViewController {
         imageView.layer.masksToBounds = true
         return imageView
     }()
-    
+
     private let changeProfileButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -59,7 +59,7 @@ class ProfileViewController: UIViewController {
         button.tintColor = .white
         button.backgroundColor = UIColor.mainColor
         button.layer.cornerRadius = 15
-        
+
         return button
     }()
 
@@ -76,9 +76,9 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        
+
         changeProfileButton.addTarget(self, action: #selector(changeProfileButtonTapped), for: .touchUpInside)
-        
+
         startListeningForCurrentUser()
         configureNavigationView()
         configureProfileTableView()
@@ -95,7 +95,7 @@ class ProfileViewController: UIViewController {
             profileTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             profileTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             profileTableView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.5),
-            
+
             changeProfileButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             changeProfileButton.topAnchor.constraint(equalTo: profileTableView.bottomAnchor, constant: -10),
             changeProfileButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7),
@@ -112,8 +112,8 @@ class ProfileViewController: UIViewController {
 
     private func configureNavigationView() {
         navigationItem.title = "Thông tin cá nhân"
-        navigationItem.largeTitleDisplayMode = .always
-        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .never
+        navigationController?.navigationBar.prefersLargeTitles = false
     }
 
     private func configureProfileTableView() {
@@ -144,6 +144,7 @@ class ProfileViewController: UIViewController {
         let vc = ChangeProfileViewController()
         navigationController?.pushViewController(vc, animated: true)
     }
+
     private func startListeningForCurrentUser() {
         guard let currentUserId = Defaults.currentUser[.id] else {
             print("Thất bại lắng nghe người dùng hiện tại")
