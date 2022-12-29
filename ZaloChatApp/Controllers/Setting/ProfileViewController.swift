@@ -113,7 +113,6 @@ class ProfileViewController: UIViewController {
     private func configureNavigationView() {
         navigationItem.title = "Thông tin cá nhân"
         navigationItem.largeTitleDisplayMode = .never
-        navigationController?.navigationBar.prefersLargeTitles = false
     }
 
     private func configureProfileTableView() {

@@ -10,26 +10,38 @@ import UIKit
 class FriendsTableViewCell: UITableViewCell {
     static let identifier = "FriendsTableViewCell"
 
-    private let userProfileImageView: UIImageView = {
+     let userProfileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.tintColor = .black
-        imageView.contentMode = .scaleToFill
-        imageView.layer.cornerRadius = 25
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds =  true
+        imageView.layer.cornerRadius = 0
         imageView.layer.masksToBounds = true
+        imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        imageView.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        imageView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        imageView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         return imageView
     }()
 
     private let label: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .preferredFont(forTextStyle: .headline)
+        label.adjustsFontForContentSizeCategory = true
+        label.textAlignment = .center
         label.numberOfLines = 1
-        label.font = .systemFont(ofSize: 18, weight: .regular)
+        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        label.setContentHuggingPriority(.defaultLow, for: .vertical)
+        label.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        label.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
         return label
     }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        contentView.layoutMargins = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
         contentView.addSubview(label)
         contentView.addSubview(userProfileImageView)
 
@@ -47,15 +59,21 @@ class FriendsTableViewCell: UITableViewCell {
 
     private func configureContents() {
         let constraints = [
-            contentView.heightAnchor.constraint(equalToConstant: 80),
+            userProfileImageView.leadingAnchor.constraint(
+                equalTo: contentView.layoutMarginsGuide.leadingAnchor),
+            userProfileImageView.topAnchor.constraint(
+                equalTo: contentView.layoutMarginsGuide.topAnchor),
+            userProfileImageView.bottomAnchor.constraint(
+                equalTo: contentView.layoutMarginsGuide.bottomAnchor),
+            userProfileImageView.widthAnchor.constraint(
+                equalTo: userProfileImageView.heightAnchor),
+            
+            userProfileImageView.trailingAnchor.constraint(
+                equalTo: label.leadingAnchor,
+                constant: -20),
+            label.centerYAnchor.constraint(
+                equalTo: contentView.layoutMarginsGuide.centerYAnchor)
 
-            userProfileImageView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.6),
-            userProfileImageView.widthAnchor.constraint(equalTo: userProfileImageView.heightAnchor),
-            userProfileImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
-            userProfileImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-
-            label.leadingAnchor.constraint(equalTo: userProfileImageView.trailingAnchor, constant: 10),
-            label.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
         ]
 
         NSLayoutConstraint.activate(constraints)

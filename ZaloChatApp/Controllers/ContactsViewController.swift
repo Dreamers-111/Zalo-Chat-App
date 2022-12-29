@@ -19,10 +19,19 @@ enum ContactsSectionOptionType {
 
 class ContactsViewController: UIViewController {
     
+    
     private var models = [ContactsSection]()
-    private var userList = [User(id: "", name: "Tuyết Ngọc", profilePictureUrl: "user1", isActive: true),User(id: "", name: "Đình Long", profilePictureUrl: "user2", isActive: true),User(id: "", name: "Lê Huấn", profilePictureUrl: "user3", isActive: true),User(id: "", name: "Nguyễn Dũng", profilePictureUrl: "user4", isActive: true),User(id: "", name: "Lê Ngọc Mai", profilePictureUrl: "user5", isActive: true)]
+    private var userList = [
+        User(id: "", name: "Tuyết Ngọc", profilePictureUrl: "user1", isActive: true),
+        User(id: "", name: "Đình Long", profilePictureUrl: "user2", isActive: true),
+        User(id: "", name: "Lê Huấn", profilePictureUrl: "user3", isActive: true),
+        User(id: "", name: "Nguyễn Dũng", profilePictureUrl: "user4", isActive: true),
+        User(id: "", name: "Lê Ngọc Mai", profilePictureUrl: "user5", isActive: true)]
 
-    private var groupList = [User(id: "", name: "Gia Đình", profilePictureUrl: "gr1", isActive: true),User(id: "", name: "Ăn Uống", profilePictureUrl: "gr2", isActive: true),User(id: "", name: "Du Lịch", profilePictureUrl: "gr3", isActive: true)]
+    private var groupList = [
+        User(id: "", name: "Gia Đình", profilePictureUrl: "gr1", isActive: true),
+        User(id: "", name: "Ăn Uống", profilePictureUrl: "gr2", isActive: true),
+        User(id: "", name: "Du Lịch", profilePictureUrl: "gr3", isActive: true)]
 
 
     private let contactsTableView: UITableView = {
@@ -30,15 +39,15 @@ class ContactsViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(FriendsTableViewCell.self, forCellReuseIdentifier: FriendsTableViewCell.identifier)
         tableView.backgroundColor = .systemBackground
+
         return tableView
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Contacts"
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.title = "Danh bạ"
-        navigationItem.largeTitleDisplayMode = .never
+        navigationItem.largeTitleDisplayMode = .always
         view.backgroundColor = .systemBackground
         
         configure()
@@ -62,9 +71,9 @@ class ContactsViewController: UIViewController {
         
         var groupListGR: [ContactsSectionOptionType] = []
         
-        for gr in groupList
+        for group in groupList
         {
-            groupListGR.append(.friendsProfileCell(model: gr))
+            groupListGR.append(.friendsProfileCell(model: group))
 
         }
 
@@ -112,14 +121,24 @@ extension ContactsViewController: UITableViewDataSource, UITableViewDelegate {
         case .friendsProfileCell(let model):
             guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: FriendsTableViewCell.identifier,
-                for: indexPath
-            ) as? FriendsTableViewCell else {
+                for: indexPath) as? FriendsTableViewCell else {
                 return FriendsTableViewCell()
             }
-            
             cell.configure(with: model)
             return cell
         }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        tableView.setNeedsLayout()
+        tableView.layoutIfNeeded()
+        return tableView.height / 8
+    }
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let cell = cell as? FriendsTableViewCell else{
+            return
+        }
+        cell.userProfileImageView.layer.cornerRadius = cell.userProfileImageView.height / 2
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -128,7 +147,7 @@ extension ContactsViewController: UITableViewDataSource, UITableViewDelegate {
         let type = models[indexPath.section].options[indexPath.row]
         
         switch type.self {
-        case .friendsProfileCell(let model):
+        case .friendsProfileCell(_):
             return
         }
     }
