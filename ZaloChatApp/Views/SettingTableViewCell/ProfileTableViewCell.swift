@@ -67,7 +67,7 @@ class ProfileTableViewCell: UITableViewCell {
         label.text = nil
     }
 
-    public func configure(with model: SettingViewController.CurrentUser) {
+    public func configure(with model: User) {
         label.text = model.name
         userProfileImageView.kf.setImage(with: URL(string: model.profilePictureUrl),
                                          placeholder: UIImage(named: "default_avatar"))
